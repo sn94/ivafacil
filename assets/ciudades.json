@@ -1,0 +1,1257 @@
+[
+	{
+		"id_ciu" : 1,
+		"nombre" : "Areguá",
+		"depart" : "Central"
+	},
+	{
+		"id_ciu" : 2,
+		"nombre" : "Capiatá",
+		"depart" : "Central"
+	},
+	{
+		"id_ciu" : 3,
+		"nombre" : "Fernando de la Mora",
+		"depart" : "Central"
+	},
+	{
+		"id_ciu" : 4,
+		"nombre" : "Guarambaré",
+		"depart" : "Central"
+	},
+	{
+		"id_ciu" : 5,
+		"nombre" : "Itá",
+		"depart" : "Central"
+	},
+	{
+		"id_ciu" : 6,
+		"nombre" : "Itauguá",
+		"depart" : "Central"
+	},
+	{
+		"id_ciu" : 7,
+		"nombre" : "J. Augusto Saldívar",
+		"depart" : "Central"
+	},
+	{
+		"id_ciu" : 8,
+		"nombre" : "Lambaré",
+		"depart" : "Central"
+	},
+	{
+		"id_ciu" : 9,
+		"nombre" : "Limpio",
+		"depart" : "Central"
+	},
+	{
+		"id_ciu" : 10,
+		"nombre" : "Luque",
+		"depart" : "Central"
+	},
+	{
+		"id_ciu" : 11,
+		"nombre" : "Mariano Roque Alonso",
+		"depart" : "Central"
+	},
+	{
+		"id_ciu" : 12,
+		"nombre" : "Ñemby",
+		"depart" : "Central"
+	},
+	{
+		"id_ciu" : 13,
+		"nombre" : "Nueva Italia",
+		"depart" : "Central"
+	},
+	{
+		"id_ciu" : 14,
+		"nombre" : "San Antonio",
+		"depart" : "Central"
+	},
+	{
+		"id_ciu" : 15,
+		"nombre" : "San Lorenzo",
+		"depart" : "Central"
+	},
+	{
+		"id_ciu" : 16,
+		"nombre" : "Villa Elisa",
+		"depart" : "Central"
+	},
+	{
+		"id_ciu" : 17,
+		"nombre" : "Villeta",
+		"depart" : "Central"
+	},
+	{
+		"id_ciu" : 18,
+		"nombre" : "Ypacarai",
+		"depart" : "Central"
+	},
+	{
+		"id_ciu" : 19,
+		"nombre" : "Ypané",
+		"depart" : "Central"
+	},
+	{
+		"id_ciu" : 20,
+		"nombre" : "Arroyito",
+		"depart" : "Concepcion"
+	},
+	{
+		"id_ciu" : 21,
+		"nombre" : "Azotey",
+		"depart" : "Concepcion"
+	},
+	{
+		"id_ciu" : 22,
+		"nombre" : "Belén",
+		"depart" : "Concepcion"
+	},
+	{
+		"id_ciu" : 23,
+		"nombre" : "Concepción",
+		"depart" : "Concepcion"
+	},
+	{
+		"id_ciu" : 24,
+		"nombre" : "Horqueta",
+		"depart" : "Concepcion"
+	},
+	{
+		"id_ciu" : 25,
+		"nombre" : "Loreto",
+		"depart" : "Concepcion"
+	},
+	{
+		"id_ciu" : 26,
+		"nombre" : "Paso Barreto",
+		"depart" : "Concepcion"
+	},
+	{
+		"id_ciu" : 27,
+		"nombre" : "San Alfredo",
+		"depart" : "Concepcion"
+	},
+	{
+		"id_ciu" : 28,
+		"nombre" : "San Carlos del Apa",
+		"depart" : "Concepcion"
+	},
+	{
+		"id_ciu" : 29,
+		"nombre" : "San Lázaro",
+		"depart" : "Concepcion"
+	},
+	{
+		"id_ciu" : 30,
+		"nombre" : "Sargento José Félix López",
+		"depart" : "Concepcion"
+	},
+	{
+		"id_ciu" : 31,
+		"nombre" : "Yby Yau",
+		"depart" : "Concepcion"
+	},
+	{
+		"id_ciu" : 32,
+		"nombre" : "25 de Diciembre",
+		"depart" : "San Pedro"
+	},
+	{
+		"id_ciu" : 33,
+		"nombre" : "Antequera",
+		"depart" : "San Pedro"
+	},
+	{
+		"id_ciu" : 34,
+		"nombre" : "Capiibary",
+		"depart" : "San Pedro"
+	},
+	{
+		"id_ciu" : 35,
+		"nombre" : "Choré",
+		"depart" : "San Pedro"
+	},
+	{
+		"id_ciu" : 36,
+		"nombre" : "Cruce Liberación",
+		"depart" : "San Pedro"
+	},
+	{
+		"id_ciu" : 37,
+		"nombre" : "Gral. Elizardo Aquino",
+		"depart" : "San Pedro"
+	},
+	{
+		"id_ciu" : 38,
+		"nombre" : "Gral. Francisco Isidoro Resquí",
+		"depart" : "San Pedro"
+	},
+	{
+		"id_ciu" : 39,
+		"nombre" : "Guajayvi",
+		"depart" : "San Pedro"
+	},
+	{
+		"id_ciu" : 40,
+		"nombre" : "Itacurubí del Rosario",
+		"depart" : "San Pedro"
+	},
+	{
+		"id_ciu" : 41,
+		"nombre" : "Lima",
+		"depart" : "San Pedro"
+	},
+	{
+		"id_ciu" : 42,
+		"nombre" : "Nueva Germania",
+		"depart" : "San Pedro"
+	},
+	{
+		"id_ciu" : 43,
+		"nombre" : "San Estanislao",
+		"depart" : "San Pedro"
+	},
+	{
+		"id_ciu" : 44,
+		"nombre" : "San Pablo",
+		"depart" : "San Pedro"
+	},
+	{
+		"id_ciu" : 45,
+		"nombre" : "San Pedro de Ycuamandiyú",
+		"depart" : "San Pedro"
+	},
+	{
+		"id_ciu" : 46,
+		"nombre" : "Santa Rosa del Aguaray",
+		"depart" : "San Pedro"
+	},
+	{
+		"id_ciu" : 47,
+		"nombre" : "Tacuatí",
+		"depart" : "San Pedro"
+	},
+	{
+		"id_ciu" : 48,
+		"nombre" : "Unión",
+		"depart" : "San Pedro"
+	},
+	{
+		"id_ciu" : 49,
+		"nombre" : "Villa del Rosario",
+		"depart" : "San Pedro"
+	},
+	{
+		"id_ciu" : 50,
+		"nombre" : "Yataity del Norte",
+		"depart" : "San Pedro"
+	},
+	{
+		"id_ciu" : 51,
+		"nombre" : "Yrybukuá",
+		"depart" : "San Pedro"
+	},
+	{
+		"id_ciu" : 52,
+		"nombre" : "Altos",
+		"depart" : "Cordillera"
+	},
+	{
+		"id_ciu" : 53,
+		"nombre" : "Arroyos y Esteros",
+		"depart" : "Cordillera"
+	},
+	{
+		"id_ciu" : 54,
+		"nombre" : "Atyrá",
+		"depart" : "Cordillera"
+	},
+	{
+		"id_ciu" : 55,
+		"nombre" : "Caacupé",
+		"depart" : "Cordillera"
+	},
+	{
+		"id_ciu" : 56,
+		"nombre" : "Caraguatay",
+		"depart" : "Cordillera"
+	},
+	{
+		"id_ciu" : 57,
+		"nombre" : "Emboscada",
+		"depart" : "Cordillera"
+	},
+	{
+		"id_ciu" : 58,
+		"nombre" : "Eusebio Ayala",
+		"depart" : "Cordillera"
+	},
+	{
+		"id_ciu" : 59,
+		"nombre" : "Isla Pucú",
+		"depart" : "Cordillera"
+	},
+	{
+		"id_ciu" : 60,
+		"nombre" : "Itacurubí de la Cordillera",
+		"depart" : "Cordillera"
+	},
+	{
+		"id_ciu" : 61,
+		"nombre" : "Juan de Mena",
+		"depart" : "Cordillera"
+	},
+	{
+		"id_ciu" : 62,
+		"nombre" : "Loma Grande",
+		"depart" : "Cordillera"
+	},
+	{
+		"id_ciu" : 63,
+		"nombre" : "Mbocayaty del Yhaguy",
+		"depart" : "Cordillera"
+	},
+	{
+		"id_ciu" : 64,
+		"nombre" : "Nueva Colombia",
+		"depart" : "Cordillera"
+	},
+	{
+		"id_ciu" : 65,
+		"nombre" : "Piribebuy",
+		"depart" : "Cordillera"
+	},
+	{
+		"id_ciu" : 66,
+		"nombre" : "Primero de Marzo",
+		"depart" : "Cordillera"
+	},
+	{
+		"id_ciu" : 67,
+		"nombre" : "San Bernardino",
+		"depart" : "Cordillera"
+	},
+	{
+		"id_ciu" : 68,
+		"nombre" : "San José Obrero",
+		"depart" : "Cordillera"
+	},
+	{
+		"id_ciu" : 69,
+		"nombre" : "Santa Elena",
+		"depart" : "Cordillera"
+	},
+	{
+		"id_ciu" : 70,
+		"nombre" : "Tobatí",
+		"depart" : "Cordillera"
+	},
+	{
+		"id_ciu" : 71,
+		"nombre" : "Valenzuela",
+		"depart" : "Cordillera"
+	},
+	{
+		"id_ciu" : 72,
+		"nombre" : "Borja",
+		"depart" : "Guaira"
+	},
+	{
+		"id_ciu" : 73,
+		"nombre" : "Capitan Mauricio Jose Troche",
+		"depart" : "Guaira"
+	},
+	{
+		"id_ciu" : 74,
+		"nombre" : "Coronel Martinez",
+		"depart" : "Guaira"
+	},
+	{
+		"id_ciu" : 75,
+		"nombre" : "Doctor Botrell",
+		"depart" : "Guaira"
+	},
+	{
+		"id_ciu" : 76,
+		"nombre" : "Felix Perez Cardozo",
+		"depart" : "Guaira"
+	},
+	{
+		"id_ciu" : 77,
+		"nombre" : "General Euginio A. Garay",
+		"depart" : "Guaira"
+	},
+	{
+		"id_ciu" : 78,
+		"nombre" : "Independencia",
+		"depart" : "Guaira"
+	},
+	{
+		"id_ciu" : 79,
+		"nombre" : "Itape",
+		"depart" : "Guaira"
+	},
+	{
+		"id_ciu" : 80,
+		"nombre" : "Iturbe",
+		"depart" : "Guaira"
+	},
+	{
+		"id_ciu" : 81,
+		"nombre" : "Jose A. Fassardi",
+		"depart" : "Guaira"
+	},
+	{
+		"id_ciu" : 82,
+		"nombre" : "Mbocayaty del Guaira",
+		"depart" : "Guaira"
+	},
+	{
+		"id_ciu" : 83,
+		"nombre" : "Natalicio Talavera",
+		"depart" : "Guaira"
+	},
+	{
+		"id_ciu" : 84,
+		"nombre" : "Ñumi",
+		"depart" : "Guaira"
+	},
+	{
+		"id_ciu" : 85,
+		"nombre" : "Paso Yovai",
+		"depart" : "Guaira"
+	},
+	{
+		"id_ciu" : 86,
+		"nombre" : "San Salvador",
+		"depart" : "Guaira"
+	},
+	{
+		"id_ciu" : 87,
+		"nombre" : "Villarrica del espiritu santo",
+		"depart" : "Guaira"
+	},
+	{
+		"id_ciu" : 88,
+		"nombre" : "Yataity del Guaira",
+		"depart" : "Guaira"
+	},
+	{
+		"id_ciu" : 89,
+		"nombre" : "Tebicuary",
+		"depart" : "Guaira"
+	},
+	{
+		"id_ciu" : 90,
+		"nombre" : "Coronel Oviedo",
+		"depart" : "Caaguazu"
+	},
+	{
+		"id_ciu" : 91,
+		"nombre" : "3 de febrero",
+		"depart" : "Caaguazu"
+	},
+	{
+		"id_ciu" : 92,
+		"nombre" : "Caaguazu",
+		"depart" : "Caaguazu"
+	},
+	{
+		"id_ciu" : 93,
+		"nombre" : "Carayao",
+		"depart" : "Caaguazu"
+	},
+	{
+		"id_ciu" : 94,
+		"nombre" : "Dr. Cecilio Baez",
+		"depart" : "Caaguazu"
+	},
+	{
+		"id_ciu" : 95,
+		"nombre" : "Dr. Juan Eulogio Estigarribia",
+		"depart" : "Caaguazu"
+	},
+	{
+		"id_ciu" : 96,
+		"nombre" : "Dr. Juan Manuel Frutos",
+		"depart" : "Caaguazu"
+	},
+	{
+		"id_ciu" : 97,
+		"nombre" : "jose Domingo Ocampos",
+		"depart" : "Caaguazu"
+	},
+	{
+		"id_ciu" : 98,
+		"nombre" : "De la Pastora",
+		"depart" : "Caaguazu"
+	},
+	{
+		"id_ciu" : 99,
+		"nombre" : "Mariscal Francisco Solano Lope",
+		"depart" : "Caaguazu"
+	},
+	{
+		"id_ciu" : 100,
+		"nombre" : "Nueva Londres",
+		"depart" : "Caaguazu"
+	},
+	{
+		"id_ciu" : 101,
+		"nombre" : "Nueva Toledo",
+		"depart" : "Caaguazu"
+	},
+	{
+		"id_ciu" : 102,
+		"nombre" : "R.I 3 corrales",
+		"depart" : "Caaguazu"
+	},
+	{
+		"id_ciu" : 103,
+		"nombre" : "Raul Arsenio Oviedo",
+		"depart" : "Caaguazu"
+	},
+	{
+		"id_ciu" : 104,
+		"nombre" : "Repatriacion",
+		"depart" : "Caaguazu"
+	},
+	{
+		"id_ciu" : 105,
+		"nombre" : "San Joaquin",
+		"depart" : "Caaguazu"
+	},
+	{
+		"id_ciu" : 106,
+		"nombre" : "San Jose de los Arroyos",
+		"depart" : "Caaguazu"
+	},
+	{
+		"id_ciu" : 107,
+		"nombre" : "Santa Rosa del Mbutuy",
+		"depart" : "Caaguazu"
+	},
+	{
+		"id_ciu" : 108,
+		"nombre" : "Simon Bolivar",
+		"depart" : "Caaguazu"
+	},
+	{
+		"id_ciu" : 109,
+		"nombre" : "Tembiapora",
+		"depart" : "Caaguazu"
+	},
+	{
+		"id_ciu" : 110,
+		"nombre" : "Vaqueria",
+		"depart" : "Caaguazu"
+	},
+	{
+		"id_ciu" : 111,
+		"nombre" : "Yhu",
+		"depart" : "Caaguazu"
+	},
+	{
+		"id_ciu" : 112,
+		"nombre" : "Tres de Mayo",
+		"depart" : "Caazapa"
+	},
+	{
+		"id_ciu" : 113,
+		"nombre" : "Abaí",
+		"depart" : "Caazapa"
+	},
+	{
+		"id_ciu" : 114,
+		"nombre" : "Buena Vista",
+		"depart" : "Caazapa"
+	},
+	{
+		"id_ciu" : 115,
+		"nombre" : "Caazapá",
+		"depart" : "Caazapa"
+	},
+	{
+		"id_ciu" : 116,
+		"nombre" : "Dr. Moisés Bertoni",
+		"depart" : "Caazapa"
+	},
+	{
+		"id_ciu" : 117,
+		"nombre" : "Fulgencio Yegros",
+		"depart" : "Caazapa"
+	},
+	{
+		"id_ciu" : 118,
+		"nombre" : "General Higinio Morínigo",
+		"depart" : "Caazapa"
+	},
+	{
+		"id_ciu" : 119,
+		"nombre" : "Maciel",
+		"depart" : "Caazapa"
+	},
+	{
+		"id_ciu" : 120,
+		"nombre" : "San Juan Nepomuceno",
+		"depart" : "Caazapa"
+	},
+	{
+		"id_ciu" : 121,
+		"nombre" : "Tavaí",
+		"depart" : "Caazapa"
+	},
+	{
+		"id_ciu" : 122,
+		"nombre" : "Yuty",
+		"depart" : "Caazapa"
+	},
+	{
+		"id_ciu" : 123,
+		"nombre" : "Alto Verá",
+		"depart" : "Itapua"
+	},
+	{
+		"id_ciu" : 124,
+		"nombre" : "Bella Vista",
+		"depart" : "Itapua"
+	},
+	{
+		"id_ciu" : 125,
+		"nombre" : "Cambyreta",
+		"depart" : "Itapua"
+	},
+	{
+		"id_ciu" : 126,
+		"nombre" : "Capitán Meza",
+		"depart" : "Itapua"
+	},
+	{
+		"id_ciu" : 127,
+		"nombre" : "Capitán Miranda",
+		"depart" : "Itapua"
+	},
+	{
+		"id_ciu" : 128,
+		"nombre" : "Carlos Antonio López",
+		"depart" : "Itapua"
+	},
+	{
+		"id_ciu" : 129,
+		"nombre" : "Carmen del Paraná",
+		"depart" : "Itapua"
+	},
+	{
+		"id_ciu" : 130,
+		"nombre" : "Coronel Bogado",
+		"depart" : "Itapua"
+	},
+	{
+		"id_ciu" : 131,
+		"nombre" : "Edelira",
+		"depart" : "Itapua"
+	},
+	{
+		"id_ciu" : 132,
+		"nombre" : "Encarnación",
+		"depart" : "Itapua"
+	},
+	{
+		"id_ciu" : 133,
+		"nombre" : "Fram",
+		"depart" : "Itapua"
+	},
+	{
+		"id_ciu" : 134,
+		"nombre" : "General Artigas",
+		"depart" : "Itapua"
+	},
+	{
+		"id_ciu" : 135,
+		"nombre" : "General Delgado",
+		"depart" : "Itapua"
+	},
+	{
+		"id_ciu" : 136,
+		"nombre" : "Hohenau",
+		"depart" : "Itapua"
+	},
+	{
+		"id_ciu" : 137,
+		"nombre" : "Itapúa Poty",
+		"depart" : "Itapua"
+	},
+	{
+		"id_ciu" : 138,
+		"nombre" : "Jesús",
+		"depart" : "Itapua"
+	},
+	{
+		"id_ciu" : 139,
+		"nombre" : "José Leandro Oviedo",
+		"depart" : "Itapua"
+	},
+	{
+		"id_ciu" : 140,
+		"nombre" : "La Paz",
+		"depart" : "Itapua"
+	},
+	{
+		"id_ciu" : 141,
+		"nombre" : "Mayor Otaño",
+		"depart" : "Itapua"
+	},
+	{
+		"id_ciu" : 142,
+		"nombre" : "Natalio",
+		"depart" : "Itapua"
+	},
+	{
+		"id_ciu" : 143,
+		"nombre" : "Nueva Alborada",
+		"depart" : "Itapua"
+	},
+	{
+		"id_ciu" : 144,
+		"nombre" : "Obligado",
+		"depart" : "Itapua"
+	},
+	{
+		"id_ciu" : 145,
+		"nombre" : "Pirapó",
+		"depart" : "Itapua"
+	},
+	{
+		"id_ciu" : 146,
+		"nombre" : "San Cosme y Damián",
+		"depart" : "Itapua"
+	},
+	{
+		"id_ciu" : 147,
+		"nombre" : "San Juan del Paraná",
+		"depart" : "Itapua"
+	},
+	{
+		"id_ciu" : 148,
+		"nombre" : "San Pedro del Paraná",
+		"depart" : "Itapua"
+	},
+	{
+		"id_ciu" : 149,
+		"nombre" : "San Rafael del Paraná",
+		"depart" : "Itapua"
+	},
+	{
+		"id_ciu" : 150,
+		"nombre" : "Tomás Romero Pereira",
+		"depart" : "Itapua"
+	},
+	{
+		"id_ciu" : 151,
+		"nombre" : "Trinidad",
+		"depart" : "Itapua"
+	},
+	{
+		"id_ciu" : 152,
+		"nombre" : "Yatytay",
+		"depart" : "Itapua"
+	},
+	{
+		"id_ciu" : 153,
+		"nombre" : "Ayolas",
+		"depart" : "Misiones"
+	},
+	{
+		"id_ciu" : 154,
+		"nombre" : "San Ignacio",
+		"depart" : "Misiones"
+	},
+	{
+		"id_ciu" : 155,
+		"nombre" : "San Juan Bautista",
+		"depart" : "Misiones"
+	},
+	{
+		"id_ciu" : 156,
+		"nombre" : "San Miguel",
+		"depart" : "Misiones"
+	},
+	{
+		"id_ciu" : 157,
+		"nombre" : "San Patricio",
+		"depart" : "Misiones"
+	},
+	{
+		"id_ciu" : 158,
+		"nombre" : "Santa María",
+		"depart" : "Misiones"
+	},
+	{
+		"id_ciu" : 159,
+		"nombre" : "Santa Rosa",
+		"depart" : "Misiones"
+	},
+	{
+		"id_ciu" : 160,
+		"nombre" : "Santiago",
+		"depart" : "Misiones"
+	},
+	{
+		"id_ciu" : 161,
+		"nombre" : "Villa Florida",
+		"depart" : "Misiones"
+	},
+	{
+		"id_ciu" : 162,
+		"nombre" : "Yabebyry",
+		"depart" : "Misiones"
+	},
+	{
+		"id_ciu" : 163,
+		"nombre" : "Acahay",
+		"depart" : "Paraguari"
+	},
+	{
+		"id_ciu" : 164,
+		"nombre" : "Caapucú",
+		"depart" : "Paraguari"
+	},
+	{
+		"id_ciu" : 165,
+		"nombre" : "Carapeguá",
+		"depart" : "Paraguari"
+	},
+	{
+		"id_ciu" : 166,
+		"nombre" : "Escobar",
+		"depart" : "Paraguari"
+	},
+	{
+		"id_ciu" : 167,
+		"nombre" : "Gral. Bernardino Caballero",
+		"depart" : "Paraguari"
+	},
+	{
+		"id_ciu" : 168,
+		"nombre" : "La Colmena",
+		"depart" : "Paraguari"
+	},
+	{
+		"id_ciu" : 169,
+		"nombre" : "María Antonia",
+		"depart" : "Paraguari"
+	},
+	{
+		"id_ciu" : 170,
+		"nombre" : "Mbuyapey",
+		"depart" : "Paraguari"
+	},
+	{
+		"id_ciu" : 171,
+		"nombre" : "Paraguarí",
+		"depart" : "Paraguari"
+	},
+	{
+		"id_ciu" : 172,
+		"nombre" : "Pirayú",
+		"depart" : "Paraguari"
+	},
+	{
+		"id_ciu" : 173,
+		"nombre" : "Quiindy",
+		"depart" : "Paraguari"
+	},
+	{
+		"id_ciu" : 174,
+		"nombre" : "Quyquyhó",
+		"depart" : "Paraguari"
+	},
+	{
+		"id_ciu" : 175,
+		"nombre" : "San Roque González de Santa Cr",
+		"depart" : "Paraguari"
+	},
+	{
+		"id_ciu" : 176,
+		"nombre" : "Sapucai",
+		"depart" : "Paraguari"
+	},
+	{
+		"id_ciu" : 177,
+		"nombre" : "Tebicuarymí",
+		"depart" : "Paraguari"
+	},
+	{
+		"id_ciu" : 178,
+		"nombre" : "Yaguarón",
+		"depart" : "Paraguari"
+	},
+	{
+		"id_ciu" : 179,
+		"nombre" : "Ybycui",
+		"depart" : "Paraguari"
+	},
+	{
+		"id_ciu" : 180,
+		"nombre" : "Ybytimí",
+		"depart" : "Paraguari"
+	},
+	{
+		"id_ciu" : 181,
+		"nombre" : "Ciudad del Este",
+		"depart" : "Alto Parana"
+	},
+	{
+		"id_ciu" : 182,
+		"nombre" : "Domingo Martinez de Irala",
+		"depart" : "Alto Parana"
+	},
+	{
+		"id_ciu" : 183,
+		"nombre" : "Dr. Juan León Mallorquín",
+		"depart" : "Alto Parana"
+	},
+	{
+		"id_ciu" : 184,
+		"nombre" : "Dr. Raul Peña",
+		"depart" : "Alto Parana"
+	},
+	{
+		"id_ciu" : 185,
+		"nombre" : "Hernandarias",
+		"depart" : "Alto Parana"
+	},
+	{
+		"id_ciu" : 186,
+		"nombre" : "Iruña",
+		"depart" : "Alto Parana"
+	},
+	{
+		"id_ciu" : 187,
+		"nombre" : "Itakyry",
+		"depart" : "Alto Parana"
+	},
+	{
+		"id_ciu" : 188,
+		"nombre" : "Juan Emilio O´Leary",
+		"depart" : "Alto Parana"
+	},
+	{
+		"id_ciu" : 189,
+		"nombre" : "Los Cedrales",
+		"depart" : "Alto Parana"
+	},
+	{
+		"id_ciu" : 190,
+		"nombre" : "Mbaracayú",
+		"depart" : "Alto Parana"
+	},
+	{
+		"id_ciu" : 191,
+		"nombre" : "Minga Guazú",
+		"depart" : "Alto Parana"
+	},
+	{
+		"id_ciu" : 192,
+		"nombre" : "Minga Porá",
+		"depart" : "Alto Parana"
+	},
+	{
+		"id_ciu" : 193,
+		"nombre" : "Ñacunday",
+		"depart" : "Alto Parana"
+	},
+	{
+		"id_ciu" : 194,
+		"nombre" : "Naranjal",
+		"depart" : "Alto Parana"
+	},
+	{
+		"id_ciu" : 195,
+		"nombre" : "Presidente Franco",
+		"depart" : "Alto Parana"
+	},
+	{
+		"id_ciu" : 196,
+		"nombre" : "San Alberto",
+		"depart" : "Alto Parana"
+	},
+	{
+		"id_ciu" : 197,
+		"nombre" : "San Cristóbal",
+		"depart" : "Alto Parana"
+	},
+	{
+		"id_ciu" : 198,
+		"nombre" : "Santa Fé del Paraná",
+		"depart" : "Alto Parana"
+	},
+	{
+		"id_ciu" : 199,
+		"nombre" : "Santa Rita",
+		"depart" : "Alto Parana"
+	},
+	{
+		"id_ciu" : 200,
+		"nombre" : "Santa Rosa del Monday",
+		"depart" : "Alto Parana"
+	},
+	{
+		"id_ciu" : 201,
+		"nombre" : "Tavapy",
+		"depart" : "Alto Parana"
+	},
+	{
+		"id_ciu" : 202,
+		"nombre" : "Yguazú",
+		"depart" : "Alto Parana"
+	},
+	{
+		"id_ciu" : 203,
+		"nombre" : "Alberdi",
+		"depart" : "Ñeembucu"
+	},
+	{
+		"id_ciu" : 204,
+		"nombre" : "Cerrito",
+		"depart" : "Ñeembucu"
+	},
+	{
+		"id_ciu" : 205,
+		"nombre" : "Desmochados",
+		"depart" : "Ñeembucu"
+	},
+	{
+		"id_ciu" : 206,
+		"nombre" : "Gral. José Eduvigis Díaz",
+		"depart" : "Ñeembucu"
+	},
+	{
+		"id_ciu" : 207,
+		"nombre" : "Guazú Cuá",
+		"depart" : "Ñeembucu"
+	},
+	{
+		"id_ciu" : 208,
+		"nombre" : "Humaitá",
+		"depart" : "Ñeembucu"
+	},
+	{
+		"id_ciu" : 209,
+		"nombre" : "Isla Umbú",
+		"depart" : "Ñeembucu"
+	},
+	{
+		"id_ciu" : 210,
+		"nombre" : "Laureles",
+		"depart" : "Ñeembucu"
+	},
+	{
+		"id_ciu" : 211,
+		"nombre" : "Mayor José D. Martínez",
+		"depart" : "Ñeembucu"
+	},
+	{
+		"id_ciu" : 212,
+		"nombre" : "Paso de Patria",
+		"depart" : "Ñeembucu"
+	},
+	{
+		"id_ciu" : 213,
+		"nombre" : "Pilar",
+		"depart" : "Ñeembucu"
+	},
+	{
+		"id_ciu" : 214,
+		"nombre" : "San Juan B. de Ñeembucú",
+		"depart" : "Ñeembucu"
+	},
+	{
+		"id_ciu" : 215,
+		"nombre" : "Tacuaras",
+		"depart" : "Ñeembucu"
+	},
+	{
+		"id_ciu" : 216,
+		"nombre" : "Villa Franca",
+		"depart" : "Ñeembucu"
+	},
+	{
+		"id_ciu" : 217,
+		"nombre" : "Villa Oliva",
+		"depart" : "Ñeembucu"
+	},
+	{
+		"id_ciu" : 218,
+		"nombre" : "Villalbín",
+		"depart" : "Ñeembucu"
+	},
+	{
+		"id_ciu" : 219,
+		"nombre" : "Bella Vista",
+		"depart" : "Amambay"
+	},
+	{
+		"id_ciu" : 220,
+		"nombre" : "Capitán Bado",
+		"depart" : "Amambay"
+	},
+	{
+		"id_ciu" : 221,
+		"nombre" : "Karapai",
+		"depart" : "Amambay"
+	},
+	{
+		"id_ciu" : 222,
+		"nombre" : "Pedro Juan Caballero",
+		"depart" : "Amambay"
+	},
+	{
+		"id_ciu" : 223,
+		"nombre" : "Zanja Pyta",
+		"depart" : "Amambay"
+	},
+	{
+		"id_ciu" : 224,
+		"nombre" : "Corpus Christi",
+		"depart" : "Canindeyu"
+	},
+	{
+		"id_ciu" : 225,
+		"nombre" : "Gral. Francisco Caballero Alva",
+		"depart" : "Canindeyu"
+	},
+	{
+		"id_ciu" : 226,
+		"nombre" : "Itanará",
+		"depart" : "Canindeyu"
+	},
+	{
+		"id_ciu" : 227,
+		"nombre" : "Katueté",
+		"depart" : "Canindeyu"
+	},
+	{
+		"id_ciu" : 228,
+		"nombre" : "La Paloma",
+		"depart" : "Canindeyu"
+	},
+	{
+		"id_ciu" : 229,
+		"nombre" : "Nueva Esperanza",
+		"depart" : "Canindeyu"
+	},
+	{
+		"id_ciu" : 230,
+		"nombre" : "Salto del Guairá",
+		"depart" : "Canindeyu"
+	},
+	{
+		"id_ciu" : 231,
+		"nombre" : "Villa San Isidro Labrador del ",
+		"depart" : "Canindeyu"
+	},
+	{
+		"id_ciu" : 232,
+		"nombre" : "Villa Ygatimi",
+		"depart" : "Canindeyu"
+	},
+	{
+		"id_ciu" : 233,
+		"nombre" : "Yasy Kañý",
+		"depart" : "Canindeyu"
+	},
+	{
+		"id_ciu" : 234,
+		"nombre" : "Yby Pyta",
+		"depart" : "Canindeyu"
+	},
+	{
+		"id_ciu" : 235,
+		"nombre" : "Ybyrarovaná",
+		"depart" : "Canindeyu"
+	},
+	{
+		"id_ciu" : 236,
+		"nombre" : "Ypejhú",
+		"depart" : "Canindeyu"
+	},
+	{
+		"id_ciu" : 237,
+		"nombre" : "Benjamín Aceval",
+		"depart" : "Presidente Hayes"
+	},
+	{
+		"id_ciu" : 238,
+		"nombre" : "Gral. José María Bruguez",
+		"depart" : "Presidente Hayes"
+	},
+	{
+		"id_ciu" : 239,
+		"nombre" : "Nanawa",
+		"depart" : "Presidente Hayes"
+	},
+	{
+		"id_ciu" : 240,
+		"nombre" : "Puerto José Falcón",
+		"depart" : "Presidente Hayes"
+	},
+	{
+		"id_ciu" : 241,
+		"nombre" : "Puerto Pinasco",
+		"depart" : "Presidente Hayes"
+	},
+	{
+		"id_ciu" : 242,
+		"nombre" : "Tte. 1º Manuel Irala Fernández",
+		"depart" : "Presidente Hayes"
+	},
+	{
+		"id_ciu" : 243,
+		"nombre" : "Tte. Esteban Martínez",
+		"depart" : "Presidente Hayes"
+	},
+	{
+		"id_ciu" : 244,
+		"nombre" : "Villa Hayes",
+		"depart" : "Presidente Hayes"
+	},
+	{
+		"id_ciu" : 245,
+		"nombre" : "Bahía Negra",
+		"depart" : "Alto Paraguay"
+	},
+	{
+		"id_ciu" : 246,
+		"nombre" : "Carmelo Peralta",
+		"depart" : "Alto Paraguay"
+	},
+	{
+		"id_ciu" : 247,
+		"nombre" : "Fuerte Olimpo",
+		"depart" : "Alto Paraguay"
+	},
+	{
+		"id_ciu" : 248,
+		"nombre" : "Puerto Casado",
+		"depart" : "Alto Paraguay"
+	},
+	{
+		"id_ciu" : 249,
+		"nombre" : "Filadelfia",
+		"depart" : "Boqueron"
+	},
+	{
+		"id_ciu" : 250,
+		"nombre" : "Loma Plata",
+		"depart" : "Boqueron"
+	},
+	{
+		"id_ciu" : 251,
+		"nombre" : "Mariscal José Félix Estigarribia",
+		"depart" : "Boqueron"
+	}
+]
