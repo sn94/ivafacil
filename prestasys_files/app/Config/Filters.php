@@ -12,7 +12,7 @@ class Filters extends BaseConfig
 		'csrf'     => \CodeIgniter\Filters\CSRF::class,
 		'toolbar'  => \CodeIgniter\Filters\DebugToolbar::class,
 		'honeypot' => \CodeIgniter\Filters\Honeypot::class,
-	//	'logged_user'=> LoggedUser::class,
+		'logged_user'=> LoggedUser::class,
 		//'right_access'=> RightAccess::class
 	];
 
@@ -21,7 +21,7 @@ class Filters extends BaseConfig
 		'before' => [
 			//'honeypot'
 			// 'csrf',
-			//'logged_user'
+			'logged_user'
 			//'right_access'
 		],
 		'after'  => [

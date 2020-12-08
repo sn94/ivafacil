@@ -18,9 +18,9 @@ class LoggedUser implements FilterInterface
        
        $no_acceso_a_login=  sizeof($uri->getSegments())==2  && $uri->getSegment(1) != "usuario" &&  $uri->getSegment(2)!= "sign_in";;
 
-        if( !$session->has('usuario')  &&   $no_acceso_a_login )
+        if( !$session->has('ruc')  &&   $no_acceso_a_login )
        return redirect()->to(  base_url("usuario/sign_in")); 
-       if( !$session->has('usuario')  && $accede_a_inicio)
+       if( !$session->has('ruc')  && $accede_a_inicio)
        return redirect()->to(  base_url("usuario/sign_in")); 
     }
 

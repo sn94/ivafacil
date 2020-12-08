@@ -4,11 +4,20 @@
 namespace App\Helpers;
 use Exception;
 use DateTime;
-
-use function PHPSTORM_META\type;
+ 
 
 class Utilidades{
 
+
+  public static function limpiar_numero( $ar){
+
+    try{
+      $cleaned= preg_replace("/(\.|,)+/",  "",  $ar);
+      return $cleaned;
+    }catch( Exception $err){
+      return "";
+    }
+    }
 
 
     public static function number_f( $ar){
@@ -17,7 +26,7 @@ class Utilidades{
           $v= floatval( $ar);
           return number_format($v, 0, '', '.');  
         }catch( Exception $err){
-          return 0;
+          return "";
         }
         }
 
@@ -118,6 +127,20 @@ public  static function monthDescr($m=""){
     }
 
 
+
+    public static function generar_password(){
+      //Carácteres para la contraseña
+      $str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
+      $password = "";
+      //Reconstruimos la contraseña segun la longitud que se quiera
+      for($i=0;$i<10;$i++) {
+         //obtenemos un caracter aleatorio escogido de la cadena de caracteres
+         $password .= substr($str,rand(0,62),1);
+      }
+      //Mostramos la contraseña generada
+      return $password;
+ }
+ 
 }
 
 
