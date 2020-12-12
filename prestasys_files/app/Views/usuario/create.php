@@ -24,6 +24,30 @@
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800' rel='stylesheet' type='text/css'>
 
 
+    <style>
+        .empty-field {
+            border: 2px solid #ed2328;
+            /*background-color: #ff9595;*/
+        }
+
+        .password-ok {
+            background-image: url(<?= base_url("assets/img/ok.png") ?>);
+            background-repeat: no-repeat;
+            background-position: right;
+            background-clip: border-box;
+            background-size: contain;
+        }
+
+        .password-wrong {
+            background-image: url(<?= base_url("assets/img/error.png") ?>);
+            background-repeat: no-repeat;
+            background-position: right;
+            background-clip: border-box;
+            background-size: contain;
+        }
+    </style>
+
+
 </head>
 
 <body>
@@ -43,7 +67,7 @@
             <!-- Menu de Usuario -->
             <div class="row">
 
-                <div class="col-12 offset-md-3 col-md-6 ">
+                <div class="col-12 offset-md-1 col-md-10 ">
 
 
                     <?php
@@ -57,125 +81,149 @@
 
                     <div class="card">
                         <div class="card-header">
-                            <strong>Registrarse</strong>
+                            <h4 class="text-center">Registrarse</h4>
                         </div>
-                        <div class="card-body card-block p-0">
+                        <div class="card-body card-block p-2">
                             <div class="row form-group">
-                                <div class="col-3 col-md-3 pl-md-3 pl-0">
-                                    <label for="nf-password" class=" form-control-label form-control-sm -label">Cédula:</label>
-                                </div>
-                                <div class="col-9 col-md-9">
-                                    <input value="<?= Utilidades::number_f(set_value('cedula')) == 0 ? "" :  Utilidades::number_f(set_value('cedula')) ?>" maxlength="10" oninput="formatear(event)" type="text" name="cedula" class=" form-control form-control-label form-control-sm ">
-                                </div>
 
-                                <div class="row pl-md-3 pl-0 pr-3">
-                                    <div class="col-8 ">
-                                        <div class="row">
-                                            <div class="col-3 col-md-3 ">
-                                                <label for="nf-email" class=" form-control-label form-control-sm -label">RUC:</label>
-                                            </div>
-                                            <div class="col-9 col-md-9">
-                                                <input value="<?= set_value('ruc') ?>" maxlength="15" type="text" id="nf-email" name="ruc" class="  form-control form-control-label form-control-sm ">
+                                <div class="col-12 col-md-6">
+                                    <div class="row form-group">
+                                        <div class="col-3 col-md-3 pl-md-3 pl-0">
+                                            <label for="nf-password" class=" form-control-label form-control-sm -label">Cédula:</label>
+                                        </div>
+                                        <div class="col-9    col-md-9">
+                                            <input value="<?= Utilidades::number_f(set_value('cedula')) == 0 ? "" :  Utilidades::number_f(set_value('cedula')) ?>" maxlength="10" oninput="formatear(event);if(this.value=='0') this.value= ''; control_campo_vacio(event);" type="text" name="cedula" class=" form-control form-control-label form-control-sm ">
+                                            <p id="cedula" style="font-size: 11px;color: red;"></p>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="row form-group">
+                                                <div class="col-3 col-md-3 pl-0 pl-md-3">
+                                                    <label class=" form-control-label form-control-sm -label">RUC:</label>
+                                                </div>
+                                                <div class="col-5 col-md-6 pr-0">
+                                                    <input oninput="control_campo_vacio(event)" value="<?= set_value('ruc') ?>" maxlength="15" type="text" id="nf-email" name="ruc" class="  form-control form-control-label form-control-sm ">
+                                                    <p id="ruc" style="font-size: 11px;color: red;"></p>
+                                                </div>
+                                                <div class="col-1 col-md-1 pl-0 ">
+                                                    <label class=" form-control-label form-control-sm -label">DV:</label>
+                                                </div>
+                                                <div class="col-3 col-md-2">
+                                                    <input value="<?= set_value('dv') ?>" maxlength="2" oninput="solo_numero(event);control_campo_vacio(event);" type="text" name="dv" class="  form-control form-control-label form-control-sm ">
+                                                    <p id="dv" style="font-size: 11px;color: red;"></p>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="col-4 ml-0">
-                                        <div class="row">
-                                            <div class="col-3 col-md-3 ">
-                                                <label for="nf-email" class=" form-control-label form-control-sm -label">DV:</label>
-                                            </div>
-                                            <div class="col-9 col-md-9">
-                                                <input value="<?= set_value('dv') ?>" maxlength="2" oninput="solo_numero(event)" type="text" name="dv" class="  form-control form-control-label form-control-sm ">
-                                            </div>
+
+                                        <div class="col-3 col-md-3 pl-md-3 pl-0">
+                                            <label for="nf-password" class=" form-control-label form-control-sm -label">Nombres:</label>
+                                        </div>
+                                        <div class="col-9 col-md-9">
+                                            <input value="<?= set_value('cliente') ?>" type="text" maxlength="80" name="cliente" class=" form-control form-control-label form-control-sm ">
+                                        </div>
+                                        <div class="col-3 col-md-3 pl-md-3 pl-0">
+                                            <label for="nf-password" class=" form-control-label form-control-sm -label">Email:</label>
+                                        </div>
+                                        <div class="col-9 col-md-9">
+                                            <input oninput="control_campo_vacio(event)" value="<?= set_value('email') ?>" maxlength="80" type="text" name="email" class=" form-control form-control-label form-control-sm ">
+                                            <p id="email" style="font-size: 11px;color: red;"></p>
+                                        </div>
+                                        <div class="col-3 col-md-3 pl-md-3 pl-0">
+                                            <label for="nf-password" class=" form-control-label form-control-sm -label">Domicilio:</label>
+                                        </div>
+                                        <div class="col-9 col-md-9">
+                                            <input value="<?= set_value('domicilio') ?>" maxlength="100" type="text" name="domicilio" class=" form-control form-control-label form-control-sm ">
+                                        </div>
+                                        <div class="col-3 col-md-3 pl-md-3 pl-0">
+                                            <label for="nf-password" class=" form-control-label form-control-sm -label">Teléfono:</label>
+                                        </div>
+                                        <div class="col-9 col-md-9">
+                                            <input value="<?= set_value('telefono') ?>" oninput="phone_input(event)" maxlength="20" type="text" name="telefono" class=" form-control form-control-label form-control-sm ">
+                                        </div>
+                                        <div class="col-3 col-md-3 pl-md-3 pl-0">
+                                            <label for="nf-password" class=" form-control-label form-control-sm -label">Celular:</label>
+                                        </div>
+                                        <div class="col-9 col-md-9">
+                                            <input value="<?= set_value('celular') ?>" oninput="phone_input(event)" maxlength="20" type="text" name="celular" class=" form-control form-control-label form-control-sm ">
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="col-3 col-md-3 pl-md-3 pl-0">
-                                    <label for="nf-password" class=" form-control-label form-control-sm -label">Nombres:</label>
-                                </div>
-                                <div class="col-9 col-md-9">
-                                    <input value="<?= set_value('cliente') ?>" type="text" maxlength="80" name="cliente" class=" form-control form-control-label form-control-sm ">
-                                </div>
-                                <div class="col-3 col-md-3 pl-md-3 pl-0">
-                                    <label for="nf-password" class=" form-control-label form-control-sm -label">Email:</label>
-                                </div>
-                                <div class="col-9 col-md-9">
-                                    <input value="<?= set_value('email') ?>" maxlength="80" type="text" name="email" class=" form-control form-control-label form-control-sm ">
-                                </div>
-                                <div class="col-3 col-md-3 pl-md-3 pl-0">
-                                    <label for="nf-password" class=" form-control-label form-control-sm -label">Domicilio:</label>
-                                </div>
-                                <div class="col-9 col-md-9">
-                                    <input value="<?= set_value('domicilio') ?>" maxlength="100" type="text" name="domicilio" class=" form-control form-control-label form-control-sm ">
-                                </div>
-                                <div class="col-3 col-md-3 pl-md-3 pl-0">
-                                    <label for="nf-password" class=" form-control-label form-control-sm -label">Teléfono:</label>
-                                </div>
-                                <div class="col-9 col-md-9">
-                                    <input value="<?= set_value('telefono') ?>" oninput="phone_input(event)" maxlength="20" type="text" name="telefono" class=" form-control form-control-label form-control-sm ">
-                                </div>
-                                <div class="col-3 col-md-3 pl-md-3 pl-0">
-                                    <label for="nf-password" class=" form-control-label form-control-sm -label">Celular:</label>
-                                </div>
-                                <div class="col-9 col-md-9">
-                                    <input value="<?= set_value('celular') ?>" oninput="phone_input(event)" maxlength="20" type="text" name="celular" class=" form-control form-control-label form-control-sm ">
-                                </div>
-                                <div class="col-3 col-md-3 pl-md-3 pl-0">
-                                    <label for="nf-password" class=" form-control-label form-control-sm -label">Ciudad:</label>
-                                </div>
-                                <div class="col-9 col-md-9">
-                                    <select name="ciudad" class=" form-control form-control-label form-control-sm "></select>
-                                </div>
-                                <div class="col-3 col-md-3 pl-md-3 pl-0">
-                                    <label for="nf-password" class=" form-control-label form-control-sm -label">Elegir plan:</label>
-                                </div>
-                                <div class="col-9 col-md-9">
-                                    <select name="tipoplan" class=" form-control form-control-label form-control-sm "></select>
-                                </div>
-                                <div class="col-3 col-md-3 pl-md-3 pl-0">
-                                    <label for="nf-password" class=" form-control-label form-control-sm -label">Rubro:</label>
-                                </div>
-                                <div class="col-9 col-md-9">
-                                    <select name="rubro" class=" form-control form-control-label form-control-sm "></select>
-                                </div>
-                                <div class="col-3 col-md-3 pl-md-3 pl-0">
-                                    <label for="nf-password" class=" form-control-label form-control-sm -label">Contraseña:</label>
-                                </div>
-                                <div class="col-9 col-md-9">
-                                    <input value="" maxlength="80" type="password" name="pass" class=" form-control form-control-label form-control-sm ">
-                                </div>
-                                <div class="col-3 col-md-3 pl-md-3 pl-0">
-                                    <label for="nf-password" class=" form-control-label form-control-sm -label">Repetir contraseña:</label>
-                                </div>
-                                <div class="col-9 col-md-9">
-                                    <input value="" maxlength="80" type="password" class=" form-control form-control-label form-control-sm ">
-                                </div>
-                                <div class="col-3 col-md-3 pl-md-3 pl-0">
-                                    <label for="nf-password" class=" form-control-label form-control-sm -label">Saldo anterior: <span>(a favor del contribuyente)</span></label>
-                                </div>
-                                <div class="col-9 col-md-9">
-                                    <input value="<?= Utilidades::number_f(set_value('saldo_IVA')) ?>" maxlength="11" oninput="formatear( event)" type="text" name="saldo_IVA" class=" form-control form-control-label form-control-sm ">
+                                <div class="col-12 col-md-6">
+                                    <div class="row form-group">
+
+                                        <div class="col-3 col-md-3 pl-md-3 pl-0">
+                                            <label for="nf-password" class=" form-control-label form-control-sm -label">Ciudad:</label>
+                                        </div>
+                                        <div class="col-9 col-md-9">
+                                            <select name="ciudad" class=" form-control form-control-label form-control-sm "></select>
+                                        </div>
+                                        <div class="col-3 col-md-3 pl-md-3 pl-0">
+                                            <label for="nf-password" class=" form-control-label form-control-sm -label">Elegir plan:</label>
+                                        </div>
+                                        <div class="col-9 col-md-9">
+                                            <select name="tipoplan" class=" form-control form-control-label form-control-sm "></select>
+                                        </div>
+                                        <div class="col-3 col-md-3 pl-md-3 pl-0">
+                                            <label for="nf-password" class=" form-control-label form-control-sm -label">Rubro:</label>
+                                        </div>
+                                        <div class="col-9 col-md-9">
+                                            <select name="rubro" class=" form-control form-control-label form-control-sm "></select>
+                                        </div>
+                                        <div class="col-3 col-md-3 pl-md-3 pl-0">
+                                            <label for="nf-password" class=" form-control-label form-control-sm -label">Contraseña:</label>
+                                        </div>
+                                        <div class="col-9 col-md-9">
+                                            <input value="" maxlength="80" type="password" name="pass" class=" form-control form-control-label form-control-sm ">
+                                        </div>
+                                        <div class="col-3 col-md-3 pl-md-3 pl-0">
+                                            <label for="nf-password" class=" form-control-label form-control-sm -label">Repetir contraseña:</label>
+                                        </div>
+                                        <div class="col-9 col-md-9">
+                                            <input oninput="clave_no_coincide(event)" id="pass2" value="" maxlength="80" type="password" class=" form-control form-control-label form-control-sm ">
+                                        </div>
+                                        <div class="col-3 col-md-3 pl-md-3 pl-0">
+                                            <label for="nf-password" class=" form-control-label form-control-sm -label">Saldo anterior: <span>(a favor del contribuyente)</span></label>
+                                        </div>
+                                        <div class="col-9 col-md-9">
+                                            <input value="<?= Utilidades::number_f(set_value('saldo_IVA')) ?>" maxlength="10" oninput="formatear( event)" type="text" name="saldo_IVA" class=" form-control form-control-label form-control-sm ">
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div class="col-12">
-                                    <h6 class="mt-1 text-center" style="color: red; font-weight: 600;">VERIFICAR LOS DATOS REGISTRADOS</h6>
-                                    <p class="mt-1 text-center" style="color: red; font-weight: 600;"> El primer mes es GRATIS</p>
-                                    <p style="color: #026804; font-weight: 600;">El costo del servicio es de Gs. 60.000 mensuales, pagos por mes adelantado, se abona en cualquier ventanilla de pagos de servicios </p>
+
+
+
+
+                                <div class="col-12  col-md-6 mb-2">
+                                    <input type="checkbox" name="aceptar-bases" value="S"> He leído y acepto las <a href="#">bases y condiciones</a>
                                 </div>
+                                <div class="col-12  col-md-6 ">
+                                    <button style="font-size: 12px;font-weight: 600;width:100%;" type="submit" class="btn btn-success btn-sm">
+                                        <i class="fa fa-dot-circle-o"></i> REGISTRARME
+                                    </button>
+                                </div>
+
+                                <div class="col-12" style="border-radius: 20px; background-color: #e8c14c;">
+
+                                    <p class="mt-1 text-center pb-0 mb-0" style="color: red; font-weight: 700;"> PRIMER MES GRATIS</p>
+                                    <p class="mt-0 pt-0" style="color: #1d2101; font-weight: 600;">El costo del servicio es de Gs. 30.000 Gs. en el 2do y 3er mes, a
+                                        partir del 4to mes sube 60.000 Gs. y de ahi no sube más! </p>
+                                </div>
+
 
                             </div>
+                            <!--end row form  -->
 
 
                         </div>
                         <div class="card-footer">
-                            <a style="font-size: 10px;font-weight: 600;" href="<?= base_url("/") ?>" class="btn btn-success btn-sm">
-                                <i class="fa fa-dot-circle-o"></i> ATRÁS
-                            </a>
 
-                            <button style="font-size: 10px;font-weight: 600;" type="submit" class="btn btn-success btn-sm">
-                                <i class="fa fa-dot-circle-o"></i> REGISTRAR E IR AL MENÚ
-                            </button>
+
+
+                            ¿Ya tienes cuenta?
+                            <a style="font-size: 12px;font-weight: 600;" href="<?= base_url("/") ?>" class="btn btn-secondary btn-sm">
+                                Ingresa aquí
+                            </a>
                         </div>
 
                     </div>
@@ -188,7 +236,10 @@
 
 
             <script>
-                //Validaciones js
+                /***
+                Validaciones js
+
+                **/
 
                 function phone_input(ev) {
                     if (ev.data == undefined || ev.data == null) return;
@@ -202,8 +253,12 @@
 
 
                 function formatear(ev) {
-                    if (ev.data == undefined) return;
-                    if (ev.data.charCodeAt() < 48 || ev.data.charCodeAt() > 57) {
+
+                    if (ev.data == null || ev.data == undefined)
+                        ev.target.value = ev.target.value.replaceAll(new RegExp(/[.]*[,]*/g), "");
+
+
+                    if (ev.data != null && (ev.data.charCodeAt() < 48 || ev.data.charCodeAt() > 57)) {
                         ev.target.value =
                             ev.target.value.substr(0, ev.target.selectionStart - 1) +
                             ev.target.value.substr(ev.target.selectionStart);
@@ -233,11 +288,41 @@
 
 
 
+                function clave_no_coincide(ev) {
+                    let rep = ev.target.value;
+                    if (rep == $("input[name=pass]").val()) {
+                        $(ev.target).removeClass("password-wrong");
+                        $(ev.target).addClass("password-ok");
+                        $("input[name=pass]").addClass("password-ok");
+                    } else {
+                        $("input[name=pass]").removeClass("password-ok");
+                        $(ev.target).removeClass("password-ok");
+                        $(ev.target).addClass("password-wrong");
+                    }
+                }
 
 
 
 
-                //Fuentes de datos
+
+                function control_campo_vacio(ev) {
+                    if (ev.target.value == "") {
+                        $(ev.target).addClass("empty-field");
+                        if( ev.target.name != "dv")
+                        $("#" + ev.target.name).text("Campo obligatorio");
+
+                    } else {
+                        $(ev.target).removeClass("empty-field");
+                        $("#" + ev.target.name).text("");
+                    }
+                }
+
+
+
+                /***
+                
+                **Fuentes de datos
+                **/
                 async function get_ciudades() {
                     let req = await fetch("<?= base_url("auxiliar/ciudades") ?>");
                     let json_r = await req.json();
@@ -316,12 +401,59 @@
 
                 //Procesamiento de formulario
 
+
+                function campos_vacios() {
+                    if (!$("input[name=aceptar-bases]").prop("checked")) {
+                        alert("Aceptar primero las bases y condiciones para continuar");
+                        return true;
+                    }
+                    if ($("input[name=email]").val() == "" || $("input[name=ruc]").val() == "" || $("input[name=dv]").val() == "") {
+                        if ($("input[name=email]").val() == "") {
+                            $("input[name=email]").addClass("empty-field");
+
+                        }
+                        if ($("input[name=ruc]").val() == "") {
+                            $("input[name=ruc]").addClass("empty-field");
+
+                        }
+                        if ($("input[name=dv]").val() == "") {
+                            $("input[name=dv]").addClass("empty-field");
+
+                        }
+                        return true;
+                    }
+
+                    return false;
+                }
+
+                function claves_validas() {
+                    if ($("input[name=pass]").val() == "") {
+                        alert("Proporcione una contraseña");
+                        return false;
+                    }
+                    if ($("#pass2").val() == "") {
+                        $("#pass2").addClass("empty-field");
+                        alert("Por favor repita su contraseña");
+                        return false;
+                    }
+                    if ($("input[name=pass]").val() != $("#pass2").val()) {
+                        alert("Ambas contraseñas no coinciden");
+                        return false;
+                    }
+                    return true;
+                }
+
+
                 function registro(ev) {
 
+
                     ev.preventDefault();
+                    if (campos_vacios() || !claves_validas()) return;
+
                     //limpiar numeros
                     clean_number($("input[name=saldo_IVA]"));
                     clean_number($("input[name=cedula]"));
+
                     ev.target.submit();
                 }
 

@@ -140,6 +140,15 @@ public  static function monthDescr($m=""){
       //Mostramos la contraseña generada
       return $password;
  }
+
+
+
+ public static function formato_factura( $arg){
+   $p1=  substr( $arg, 0, 3 );
+   $p2= substr(  $arg,  3, 3);
+   $p3= substr( $arg, 6, 7 );
+   return "$p1-$p2-$p3";
+ }
  
 }
 

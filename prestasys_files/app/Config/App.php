@@ -181,9 +181,11 @@ class App extends BaseConfig
 	| except for 'cookie_prefix' and 'cookie_httponly', which are ignored here.
 	|
 	*/
+ 
+ 
 	public $sessionDriver            = 'CodeIgniter\Session\Handlers\FileHandler';
 	public $sessionCookieName        = 'iva_facil_sess';
-	public $sessionExpiration        = 7200;
+	public $sessionExpiration        =    (365 * 24 * 60 * 60);
 	public $sessionSavePath          = WRITEPATH . 'session';
 	public $sessionMatchIP           = false;
 	public $sessionTimeToUpdate      = 300;

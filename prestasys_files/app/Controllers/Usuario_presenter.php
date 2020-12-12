@@ -7,20 +7,21 @@ use App\Models\Ciudades_model;
 use App\Models\Planes_model;
 use App\Models\Rubro_model;
 use App\Models\Usuario_model;
+use CodeIgniter\Controller;
 use CodeIgniter\HTTP\Request;
 use CodeIgniter\HTTP\Response;
 use CodeIgniter\RESTful\ResourceController;
+use CodeIgniter\RESTful\ResourcePresenter;
 use CodeIgniter\Session\Session;
 use Exception;
 
  
 
-class Usuario extends ResourceController {
+class Usuario extends ResourcePresenter {
+ 
  
 
 	protected $modelName = "App\Models\Usuario_model";
-	protected $format = "json";
-
 	private $API_MODE= true;
 
 
@@ -64,20 +65,13 @@ class Usuario extends ResourceController {
 	
 	public function index()
 	{
-		$this->API_MODE= $this->isAPI();
-		if(  $this->API_MODE ){
-			$sesion= $this->request->getHeader('Ivasession');
-			if(  $sesion != "")
-			return $this->genericResponse($this->model->findAll(), null, 200);
-			else 
-			return $this->genericResponse( null, "No está autenticado", 500);
-		}
-	
+		  return $this->genericResponse($this->model->findAll(), null, 200);
+		 
+
 	}
 
 	public function show( $id = null)
-	{
-		$this->API_MODE=  $this->isAPI();
+	{ 
 		$us=  $this->model->where("regnro", $id)->first();
 	 
 		if( is_null(  $us))
@@ -99,7 +93,7 @@ class Usuario extends ResourceController {
 		$data = $this->request->getRawInput();
 		if ($this->validate('usuarios')) {
 
-			$tipo_plan =  $data["tipoplan"];
+		/*	$tipo_plan =  $data["tipoplan"];
 			if (!$tipo_plan && !is_null((new Planes_model())->find($tipo_plan))) {
 				return  $this->genericResponse(null,  "Codigo $tipo_plan de Tipo de plan no existe", 500);
 			}
@@ -112,39 +106,29 @@ class Usuario extends ResourceController {
 			$rubro =  $data["rubro"];
 			if (!$rubro && !is_null((new Rubro_model())->find($rubro))) {
 				return $this->genericResponse(null,  "Codigo $rubro de rubro, no existe", 500);
-			}
+			}*/
 
-			$resu = []; //Resultado de la operacion
+	
 			try {
 				//Preparar passw 
 				//hash pass
-				$data['pass'] = password_hash($data['pass'],  PASSWORD_BCRYPT);
-				if( $this->API_MODE )  $data['origen']= "A";//ORIGEN Aplicacion
-
+				$data['pass'] = password_hash($data['pass'],  PASSWORD_BCRYPT); 
 				$id = $usu->insert($data);
-				$resu = $this->genericResponse($this->model->find($id), null, 200);
+				return redirect()->to(base_url("usuario/sign_in")); 
 			} catch (Exception $e) {
-				$resu = $this->genericResponse(null, "Hubo un error al registrar ($e)", 500);
-			}
-			//Evaluar resultado
-			if ($this->API_MODE) return  $resu;
-			else {
-				if ($resu['code'] == 200) return redirect()->to(base_url("usuario/sign_in"));
-				else  return view("usuario/create", array("error" => $resu['msj']));
-			}
+				return view("usuario/create", array("error" => $e)  ); 
+			} 
+			
 		}
 		//Hubo errores de validacion
 		$validation = \Config\Services::validation();
-		$resultadoValidacion=  $this->genericResponse(null, $validation->getErrors(), 500);
-		if(  $this->API_MODE)
-		return $resultadoValidacion;
-		else
+		$resultadoValidacion= $validation->getErrors(); 
 		return view("usuario/create", array("error" => $resultadoValidacion['msj']));
+		 
 	}
 
 
 
-	//ruc=14455&dv=23&cedula=4898&pass=123&tipoplan=1&email=sonia@gg.com&cedula=456666&rubro=1&ciudad=1&saldo_IVA=78000
 	public function update(   $id = null)
 	{
 
@@ -161,7 +145,7 @@ class Usuario extends ResourceController {
 				return $this->genericResponse(null, array("error" => "Usuario no existe"), 500);
 			} else {
 
-
+/*
 				$tipo_plan =  $data["tipoplan"];
 				if (!$tipo_plan && !is_null((new Planes_model())->find($tipo_plan))) {
 					return $this->genericResponse(null,   "Codigo $tipo_plan de Tipo de plan no existe", 500);
@@ -176,7 +160,7 @@ class Usuario extends ResourceController {
 				if (!$rubro && !is_null((new Rubro_model())->find($rubro))) {
 					return $this->genericResponse(null,   "Codigo $rubro de rubro, no existe", 500);
 				}
-				$resu= [];//resultado de la operacion
+				$resu= [];//resultado de la operacion*/
 			try{
 				$usu->update($id, $data);
 				$resu=  $this->genericResponse($this->model->find($id), null, 200);
@@ -187,7 +171,7 @@ class Usuario extends ResourceController {
 			if ($this->API_MODE) return  $resu;
 			else {
 				if ($resu['code'] == 200) return redirect()->to(base_url("/"));
-				else  return view("cliente/update", array("error" => $resu['msj']));
+				else  return view("usuario/update", array("error" => $resu['msj']));
 			}
 			}
 		}
@@ -229,51 +213,22 @@ dv
 
 		$request= \Config\Services::request(); 
 
-		$data= $this->request->getRawInput();
-		$ruc = $data['ruc'];
-		$dv = $data["dv"]; 
-		$pass = $data["pass"]; 
-		$recordar= $request->getPost("remember"); 
+		$ruc = $request->getPost("ruc");
+		$dv = $request->getPost("dv"); 
+		$pass = $request->getPost("pass"); 
 		$usu = new Usuario_model();
 		$usuarioObject = $usu->where("ruc", $ruc)
 		->where("dv", $dv)
-		->first() ;
-		///Usuario existe?
-		if (is_null($usuarioObject)) {
-			if( $ruc == "") return array( "msj"=> "Proporcione el RUC",  "code"=>500);
-			else{
-				if( $dv =="") return array( "msj"=> "Proporcione el DV (digito verificador)",  "code"=>500);
-				else{
-					if( $pass == "") return array( "msj"=> "Ingrese la contraseña",  "code"=>500);
-					else
-					return array( "msj"=> "Usuario con RUC: $ruc - $dv no existe",  "code"=>500);
-				}
-			}
-			
-			//return $this->genericResponse(null, "Usuario con RUC: $ruc - $dv no existe",  500);
-		} else {
+		->first() ; 
 
-			//Verificar session id?
-			if( !$this->API_MODE  &&  $recordar=="S" && isset( $_COOKIE["ivafacil_user_pa"] )  ){
-
+	//Verificar session id?
+			if(  isset( $_COOKIE["ivafacil_user_pa"] )  ){
 				$cookie_session=  $_COOKIE["ivafacil_user_pa"];
-				if(  $cookie_session ==  $usuarioObject->session_id){
-					return array( "data"=>"Contraseña Correcta", "code"=>  200);
-				}else{
-					return array( "msj"=>"Contraseña incorrecta",  "code"=> 500);
-				}
+				return $cookie_session ==  $usuarioObject->session_id;
 			}
 			 
 			// VERIFICACION DE contrasenha correcta
-			if (password_verify($pass, $usuarioObject->pass)) {// Pass entered vs. Pass in BD
-				return array( "data"=>"Contraseña Correcta", "code"=>  200);
-			} else {
-				
-				return array( "msj"=>"Contraseña incorrecta",  "code"=> 500);
-			}
-		}
-
-		
+			return password_verify($pass, $usuarioObject->pass);
 	}
 
 
@@ -347,9 +302,8 @@ dv
 		helper("cookie");
 		$request = \Config\Services::request();
 		//valores de sesion
-		$data= $this->request->getRawInput();
-		$ruc =  $data['ruc'];
-		$dv =  $data['dv'];
+		$ruc =  $request->getPost("ruc");
+		$dv =  $request->getPost("dv");
 		
 		 
 
@@ -415,24 +369,17 @@ dv
 		$request = \Config\Services::request();
 		$session =  \Config\Services::session();
 
-		$data = $this->request->getRawInput();
-
-
 		if ($request->getMethod(true) == "GET") {
-
-			if( $this->API_MODE)
-			return $this->genericResponse(null, "Método no permitido (Solo POST)",  500);
-			else
+ 
 			return $this->verificar_cookie_sesion();//Verifica sesiones guardadas
 		} else {
-		 
+
 			$resu = $this->verify_password();
 
 			if ($resu['code'] == 200) {
 				//crear sesion
-				
-				$ruc = $data["ruc"];
-				$dv = $data["dv"];
+				$ruc = $request->getPost("ruc");
+				$dv = $request->getPost("dv");
 				$usuarioId = (new Usuario_model())->where("ruc", $ruc)
 				->where("dv", $dv)
 				->first() ;
@@ -451,10 +398,7 @@ dv
 				 
 				return $this->crear_cookie_recordar_sesion();
 			
-			} else {
-				if ($this->API_MODE)
-					return $this->genericResponse(null, $resu['msj'],  500);
-				else
+			} else { 
 					return view("usuario/login", array("error" => $resu['msj']));
 			}
 		} //END ANALISIS DE PARAMETROS
@@ -464,44 +408,16 @@ dv
 
 
 	public function sign_out(  )
-	{
-		$this->API_MODE=  $this->isAPI();
+	{ 
 		$session =  \Config\Services::session();
-		$session->destroy();
-		if( $this->API_MODE){
-			return $this->genericResponse(null, "Sesion terminada",  500);
-		}else{
-			return redirect()->to(base_url("usuario/sign_in/N"));
-		}
+		$session->destroy(); 
+		return redirect()->to(base_url("usuario/sign_in/N"));
+		
 		
 	}
 
 	 
-	public function passChange(){ 
-		if( sizeof($this->request->getPost()) )
-		{ 
-			//verificar si contrasenha actual es correcta
-			$ced= $this->request->getPost("cedula");
-			$usuarioObject= new Usuario_model();
-			$obj_usr= $usuarioObject->get( $ced);
-			$pass=  $obj_usr->pass;
-			if( $pass == $this->request->getPost("clave-a") ){
-				//cambiar pass
-				if($usuarioObject->passwordUpdate()){
-					echo json_encode( array("OK"=>"Clave cambiada!") );
-				}else{
-					echo json_encode( array("error"=>"Errores tecnicos!") );
-				} 
-			}else{
-				echo json_encode( array("error"=>"La clave ingresada es incorrecta") );
-			}
-
-		}
-		else{ 
-			return view("usuario/passwordChange");
-		} 
-
-	}
+	 
 
 	 
  

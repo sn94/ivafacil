@@ -64,7 +64,7 @@ class Validation
 				'max_length'=>'La longitud máxima permitida de la contraseña es de 80 caracteres'
             ]
 		],
-		'tipo'     => 
+		/*'tipo'     => 
 		[
             'rules'  => 'required|max_length[1]',
             'errors' => [
@@ -73,13 +73,13 @@ class Validation
             ]
         ],
 		
-		'fechainicio'     => 
+	 	'fechainicio'     => 
 		[
             'rules'  => 'if_exist|valid_date',
             'errors' => [
 				'valid_date'=>'El valor para el campo "Fecha de inicio" no es valida'
             ]
-		],
+		],*/
 		'tipoplan'     => 
 		[
             'rules'  => 'integer',
@@ -145,14 +145,14 @@ class Validation
 		[
             'rules'  => 'integer',
             'errors' => [
-				'integer'=>'El campo "Tipo plan" debe ser numericos'
+				'integer'=>'El campo "Ciudad" debe ser numerico'
             ]
 		],
 		'rubro'     => 
 		[
             'rules'  => 'integer',
             'errors' => [
-				'integer'=>'El campo "Tipo plan" debe ser numericos'
+				'integer'=>'El campo "Rubro" debe ser numerico'
             ]
 		],
 		'saldo_IVA'     => 
@@ -270,4 +270,177 @@ class Validation
 		]
 		 
 	];
+	public $ventas = [
+		'ruc'     =>
+		[
+			'rules'  => 'required|max_length[15]|integer',
+			'errors' => [
+				'required' => 'Proporciona un número de RUC',
+				'max_length' => 'La longitud máxima permitida para el RUC es de 15 caracteres',
+				'integer' => 'El Número de RUC solo admite valores numéricos'
+			]
+		],
+		'dv'     =>
+		[
+			'rules'  => 'required|max_length[2]|integer',
+			'errors' => [
+				'required' => 'El digito verificador es obligatorio',
+				'max_length' => 'La longitud máxima permitida para el digito verificador es de 2 caracteres',
+				'integer' => 'El dígito verificador (DV) solo admite valores numéricos'
+			]
+		],
+		'codcliente'  =>
+		[
+			'rules'  => 'required|max_length[20]|integer',
+			'errors' => [
+				'required' => 'Proporciona el código de cliente',
+				'max_length' => 'La longitud máxima permitida para el RUC es de 15 caracteres',
+				'integer' => 'El código de cliente solo admite valores numéricos'
+			]
+		],
+		'fecha' =>
+		[
+			'rules'  => 'required|valid_date',
+			'errors' => [
+				'required' => 'Proporciona la fecha de factura',
+				'valid_date' => 'Proporcione una fecha válida de factura'
+			]
+		],
+
+		'factura' =>
+		[
+			'rules'  => 'required|max_length[13]|integer',
+			'errors' => [
+				'required' => 'Indique el número de factura',
+				'max_length' => 'El número de factura no debe sobrepasar los 13 dígitos',
+				'integer' => 'El número de factura solo admite valores numéricos'
+
+			]
+		],
+		'moneda'  =>
+		[
+			'rules'  => 'required|max_length[2]|integer',
+			'errors' => [
+				'required' => 'Indique código de moneda',
+				'max_length' => 'El código de moneda no debe sobrepasar los 2 dígitos',
+				'integer' => 'El código de moneda solo admite valores numéricos'
+
+			]
+		], 
+
+		'importe1' => /* Monto aplicable a 10 */
+		[
+			'rules'  => 'if_exist|max_length[10]|numeric',
+			'errors' => [
+				 
+				'max_length' => 'El total IVA 10% no debe sobrepasar los 10 dígitos',
+				'numeric' => 'El total IVA 10%  solo admite valores numéricos'
+
+			]
+		],
+		'importe2' => /* monto aplicable 5*/
+		[
+			'rules'  => 'if_exist|max_length[10]|numeric',
+			'errors' => [
+				 
+				'max_length' => 'El total IVA 5% no debe sobrepasar los 10 dígitos',
+				'numeric' => 'El total IVA 5% solo admite valores numéricos'
+
+			]
+		],
+		'importe3' => /* monto exento */
+		[
+			'rules'  => 'if_exist|max_length[10]|numeric',
+			'errors' => [
+				 
+				'max_length' => 'El campo "Exenta" no debe sobrepasar los 10 dígitos',
+				'numeric' => 'El campo "Exenta" solo admite valores numéricos'
+
+			]
+		],
+		'total' =>
+		[
+			'rules'  => 'required|max_length[10]|numeric',
+			'errors' => [
+				'required' => 'Indique el importe total de la factura',
+				'max_length' => 'El campo "Total" no debe sobrepasar los 10 dígitos',
+				'numeric' => 'El campo "Total" solo admite valores numéricos'
+
+			]
+		]
+		 
+	];
+
+	public $retencion = [
+		'ruc'     =>
+		[
+			'rules'  => 'required|max_length[15]|integer',
+			'errors' => [
+				'required' => 'Proporciona un número de RUC',
+				'max_length' => 'La longitud máxima permitida para el RUC es de 15 caracteres',
+				'integer' => 'El Número de RUC solo admite valores numéricos'
+			]
+		],
+		'dv'     =>
+		[
+			'rules'  => 'required|max_length[2]|integer',
+			'errors' => [
+				'required' => 'El digito verificador es obligatorio',
+				'max_length' => 'La longitud máxima permitida para el digito verificador es de 2 caracteres',
+				'integer' => 'El dígito verificador (DV) solo admite valores numéricos'
+			]
+		],
+		'codcliente'  =>
+		[
+			'rules'  => 'required|max_length[20]|integer',
+			'errors' => [
+				'required' => 'Proporciona el código de cliente',
+				'max_length' => 'La longitud máxima permitida para el RUC es de 15 caracteres',
+				'integer' => 'El código de cliente solo admite valores numéricos'
+			]
+		],
+		'fecha' =>
+		[
+			'rules'  => 'required|valid_date',
+			'errors' => [
+				'required' => 'Proporciona la fecha de factura',
+				'valid_date' => 'Proporcione una fecha válida de factura'
+			]
+		],
+
+		'retencion' =>
+		[
+			'rules'  => 'required|max_length[20]|integer',
+			'errors' => [
+				'required' => 'Indique el número de retención',
+				'max_length' => 'El número de retención debe sobrepasar los 20 dígitos',
+				'integer' => 'El número de retención solo admite valores numéricos'
+
+			]
+		],
+		'moneda'  =>
+		[
+			'rules'  => 'required|max_length[2]|integer',
+			'errors' => [
+				'required' => 'Indique código de moneda',
+				'max_length' => 'El código de moneda no debe sobrepasar los 2 dígitos',
+				'integer' => 'El código de moneda solo admite valores numéricos'
+
+			]
+		], 
+
+		'importe' => 
+		[
+			'rules'  => 'if_exist|max_length[15]|integer',
+			'errors' => [
+				 
+				'max_length' => 'El importe retenido no debe sobrepasar los 15 dígitos',
+				'integer' => 'El importe retenido solo admite valores numéricos'
+
+			]
+		]  
+		 
+	];
+
+
 }

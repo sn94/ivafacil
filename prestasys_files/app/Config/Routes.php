@@ -27,11 +27,36 @@ $routes->setAutoRoute(true);
  * Route Definitions
  * --------------------------------------------------------------------
  */
+/*
+$routes->presenter("usuario_presenter", ['controller'=> 'usuario']);
+$routes->resource('usuario', ['controller'=>  'user']);
+*/
 
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
 $routes->get('/', 'Welcome::index'); 
  
+
+//api 
+$routes->get('/api/purchase', 'Compra::index'); 
+$routes->post('/api/purchase/create', 'Compra::create'); 
+$routes->put('/api/purchase/(:num)', 'Compra::update/$1'); 
+$routes->get('/api/purchase/(:num)', 'Compra::show/$1'); 
+$routes->delete('/api/purchase/(:num)', 'Compra::delete/$1');
+
+$routes->get('/api/sales/index', 'Venta::index'); 
+$routes->post('/api/sales/create', 'Venta::create'); 
+
+$routes->get('/api/retencion/index', 'Retencion::index'); 
+$routes->post('/api/retencion/create', 'Retencion::create'); 
+
+$routes->get('/api/user', 'Usuario::index'); 
+$routes->post('/api/user/create', 'Usuario::create'); 
+$routes->put('/api/user/(:num)', 'Usuario::update/$1'); 
+$routes->delete('/api/user/(:num)', 'Usuario::delete/$1'); 
+$routes->get('/api/user/(:num)', 'Usuario::show/$1'); 
+$routes->post('/api/user/sign-in', 'Usuario::sign_in'); 
+
 /**
  * --------------------------------------------------------------------
  * Additional Routing

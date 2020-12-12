@@ -21,7 +21,11 @@ class Filters extends BaseConfig
 		'before' => [
 			//'honeypot'
 			// 'csrf',
-			'logged_user'
+			'logged_user' =>
+			 ['except' => [
+				 'usuario/create/N', 'usuario/sign-in','usuario/sign_in', 'api/user/sign-in', 'api/user/create', 
+				 'auxiliar/*'
+				 ]]
 			//'right_access'
 		],
 		'after'  => [
@@ -38,8 +42,8 @@ class Filters extends BaseConfig
 	// List filter aliases and any before/after uri patterns
 	// that they should run on, like:
 	//    'isLoggedIn' => ['before' => ['account/*', 'profiles/*']],
-	/*public $filters = [
-		'logged_user'=> ['before'=> [ "prestamo/*", 'deudor/*', 'garante/*',  'caja/*','cargo/*',
-						'categoria_monto/*', 'funcionario/*', 'usuario/create', 'usuario/edit','usuario/delete', 'usuario/index'] ]
-	];*/
+	public $filters = [
+		'logged_user'=> ['before'=> [ "api/purchase/*", "compra/*", 'venta/*', 'retencion/*',  'movimiento/*' ]
+		 ]
+	];
 }

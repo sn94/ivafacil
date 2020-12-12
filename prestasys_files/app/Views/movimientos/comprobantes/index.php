@@ -11,10 +11,10 @@ Bienvenido
 <div class="row">
 
     <div class="col-12 offset-md-4 col-md-4">
-    <a style="display: block;"  href="<?= base_url("movimiento/r_f_compra") ?>"  class="btn btn-success mt-3 ">Factura de compra</a>
-    <a  style="display: block;"  href="<?= base_url("movimiento/r_f_venta") ?>"  class="btn btn-success mt-3 ">Factura de venta</a>
+    <a style="display: block;"  href="<?= base_url("compra/create/N") ?>"  class="btn btn-success mt-3 ">Factura de compra</a>
+    <a  style="display: block;"  href="<?= base_url("venta/create/N") ?>"  class="btn btn-success mt-3 ">Factura de venta</a>
     
-    <a  style="display: block;" href="<?= base_url("movimiento/r_retencion") ?>"  class="btn btn-success mt-3 ">Retención</a>
+    <a  style="display: block;" href="<?= base_url("retencion/create/N") ?>"  class="btn btn-success mt-3 ">Retención</a>
     
        
     </div>

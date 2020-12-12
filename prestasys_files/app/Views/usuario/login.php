@@ -53,47 +53,42 @@
 
                     <?php    echo view("plantillas/message");  ?>
                     <form action="<?= base_url('usuario/sign_in') ?>" method="POST">
-                        <div class="row form-group  ">
-                            <div class="col-8 ">
+                        
+                            
                                 <div class="row">
-                                    <div class="col-3 col-md-3 ">
+                                    <div class="col-1 col-md-1 ">
                                         <label style="font-weight: 600;color: #555555;">RUC:</label>
                                     </div>
-                                    <div class="col-9 col-md-9">
-                                        <input maxlength="15" type="text" id="nf-email" name="ruc" class="  form-control form-control-label   ">
+                                    <div class="col-7 col-md-8">
+                                        <input value="<?=isset($ruc) ? $ruc : '' ?>" maxlength="15" type="text" id="nf-email" name="ruc" class="  form-control form-control-label   ">
                                     </div>
-                                </div>
-                            </div>
-                            <div class="col-4 ml-0">
-                                <div class="row">
-                                    <div class="col-3 col-md-3 ">
+                                 
+                                    <div class="col-1 col-md-1 ">
                                         <label style="font-weight: 600;color: #555555;">DV:</label>
                                     </div>
-                                    <div class="col-9 col-md-9">
-                                        <input maxlength="2" oninput="solo_numero(event)" type="text" name="dv" class="  form-control form-control-label  ">
+                                    <div class="col-3 col-md-2">
+                                        <input value="<?=isset($dv) ? $dv : '' ?>" maxlength="2" oninput="solo_numero(event)" type="text" name="dv" class="  form-control form-control-label  ">
                                     </div>
-                                </div>
-                            </div>
-                        </div>
+                                </div> 
 
 
 
                         <div class="form-group">
                             <label style="font-weight: 600;color: #555555;">Password</label>
-                            <input type="password" name="pass" class="form-control" placeholder="Password">
+                            <input value="<?=isset($pass_alt) ? $pass_alt  : '' ?>" type="password" name="pass" class="form-control" placeholder="Password">
                         </div>
 
-                        <button type="submit" class="btn btn-success btn-flat m-b-30 m-t-30">Siguiente</button>
+                        <button type="submit" class="btn btn-success btn-flat m-b-30 m-t-30">INGRESAR</button>
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" name="remember" value="remember"> <span style="font-weight: 600;color: #555555;">Recordar Número de RUC o contraseña</span>
+                                <input <?= isset($remember)?'checked':''?> type="checkbox" name="remember" value="S"> <span style="font-weight: 600;color: #555555;">Recordar Número de RUC o contraseña</span>
                             </label>
                             <label class="pull-right">
                                 <a style="color: #fd4040; font-weight: 600;" href="#">Olvidaste tu contraseña?</a>
                             </label>
 
                         </div>
-                        <a href="<?= base_url("usuario/create/N") ?>" class="btn btn-warning btn-flat m-b-30 m-t-30">Registrarse</a>
+                        <a href="<?= base_url("usuario/create/N") ?>" class="btn btn-secondary btn-flat m-b-30 m-t-30">Registrarse</a>
 
                     </form>
                 </div>

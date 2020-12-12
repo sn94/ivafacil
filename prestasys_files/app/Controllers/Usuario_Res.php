@@ -79,7 +79,7 @@ class Usuario extends ResourceController {
 	{
 		$this->API_MODE=  $this->isAPI();
 		$us=  $this->model->where("regnro", $id)->first();
-	 
+		var_dump( $us );
 		if( is_null(  $us))
 		return $this->genericResponse(  null, "Usuario con $id no existe", 404);
 		else
@@ -144,7 +144,6 @@ class Usuario extends ResourceController {
 
 
 
-	//ruc=14455&dv=23&cedula=4898&pass=123&tipoplan=1&email=sonia@gg.com&cedula=456666&rubro=1&ciudad=1&saldo_IVA=78000
 	public function update(   $id = null)
 	{
 
@@ -229,11 +228,9 @@ dv
 
 		$request= \Config\Services::request(); 
 
-		$data= $this->request->getRawInput();
-		$ruc = $data['ruc'];
-		$dv = $data["dv"]; 
-		$pass = $data["pass"]; 
-		$recordar= $request->getPost("remember"); 
+		$ruc = $request->getPost("ruc");
+		$dv = $request->getPost("dv"); 
+		$pass = $request->getPost("pass"); 
 		$usu = new Usuario_model();
 		$usuarioObject = $usu->where("ruc", $ruc)
 		->where("dv", $dv)
@@ -254,12 +251,14 @@ dv
 		} else {
 
 			//Verificar session id?
-			if( !$this->API_MODE  &&  $recordar=="S" && isset( $_COOKIE["ivafacil_user_pa"] )  ){
+			if( !$this->API_MODE  &&  isset( $_COOKIE["ivafacil_user_pa"] )  ){
 
+				 
 				$cookie_session=  $_COOKIE["ivafacil_user_pa"];
 				if(  $cookie_session ==  $usuarioObject->session_id){
 					return array( "data"=>"Contraseña Correcta", "code"=>  200);
 				}else{
+					 
 					return array( "msj"=>"Contraseña incorrecta",  "code"=> 500);
 				}
 			}
@@ -347,9 +346,8 @@ dv
 		helper("cookie");
 		$request = \Config\Services::request();
 		//valores de sesion
-		$data= $this->request->getRawInput();
-		$ruc =  $data['ruc'];
-		$dv =  $data['dv'];
+		$ruc =  $request->getPost("ruc");
+		$dv =  $request->getPost("dv");
 		
 		 
 
@@ -415,9 +413,6 @@ dv
 		$request = \Config\Services::request();
 		$session =  \Config\Services::session();
 
-		$data = $this->request->getRawInput();
-
-
 		if ($request->getMethod(true) == "GET") {
 
 			if( $this->API_MODE)
@@ -425,14 +420,13 @@ dv
 			else
 			return $this->verificar_cookie_sesion();//Verifica sesiones guardadas
 		} else {
-		 
+
 			$resu = $this->verify_password();
 
 			if ($resu['code'] == 200) {
 				//crear sesion
-				
-				$ruc = $data["ruc"];
-				$dv = $data["dv"];
+				$ruc = $request->getPost("ruc");
+				$dv = $request->getPost("dv");
 				$usuarioId = (new Usuario_model())->where("ruc", $ruc)
 				->where("dv", $dv)
 				->first() ;

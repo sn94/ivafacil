@@ -74,26 +74,24 @@
           <a class="nav-link" href="<?=base_url("movimiento/informe_mes")?>">Movimientos del mes</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" style="  font-weight: 600;color: #422efa;" href="<?=base_url("usuario/sign_out")?>">Cerrar sesión</a>
+          <a class="nav-link" style="  font-weight: 600;color: #422efa;" href="<?=base_url("usuario/sign_out/N")?>">Cerrar sesión</a>
         </li>
       </ul>
       <span class="navbar-text" style="color:black; background-color: white; font-weight: 600;border-radius: 20px;border: 2px dashed  #057e30; padding: 2px 5px !important;">
-      <i class="fa fa-user"></i>
-     <?= session("ruc")."-".session("dv")?>
+      <h5> <i class="fa fa-user"></i>
+     <?= session("ruc")."-".session("dv")?> </h5>
       </span>
     </div>
   </nav>
 
   <!-- Right Panel -->
 
-  <div class="container">
+  <div class="container-fluid">
 
-
-    <div class="content mt-3 p-0">
-
+ 
       <?= $this->renderSection("contenido") ?>
 
-    </div> <!-- .content -->
+      <!-- .content -->
   </div><!-- /#right-panel -->
 
   <!-- Right Panel -->

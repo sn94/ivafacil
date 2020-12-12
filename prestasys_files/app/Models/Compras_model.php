@@ -16,7 +16,7 @@ class Compras_model extends Model {
    protected $useTimestamps = true;
    protected $allowedFields = 
   [ 
-   'ruc','codcliente','dv','fecha','factura','moneda','prefijo','tcambio','importe1','importe2','importe3','total','iva1',
+   'ruc','codcliente','dv','fecha','factura','moneda','tcambio','importe1','importe2','importe3','total','iva1',
    'iva2','iva3','origen'
   ];
     

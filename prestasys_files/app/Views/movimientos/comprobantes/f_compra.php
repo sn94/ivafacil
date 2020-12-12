@@ -17,116 +17,134 @@ Bienvenido
 
 <!-- VISTA IVA -->
 
-<div class="row m-0">
+<div class="row mt-3">
 
 
-    <div class="col-12  offset-md-2 col-md-8 ">
+    <div class="col-12  offset-md-3 col-md-6 ">
         <div class="container p-0">
             <div class="container" style="border-radius: 15px 15px 0px 0px; background-color: #e4e4e4; border-bottom: 1px solid #cecece;border-right: 1px solid #cecece; border-left: 1px solid #cecece;">
-                <strong>Registro de factura de compra</strong>
+                <h4 style="color: #272727;" class="text-center">Registro de factura de compra</h4>
             </div>
 
-            <form onsubmit="guardar_factura( event )" action="<?= base_url("movimiento/r_f_compra/N") ?>" method="post" class="pt-2" style="border: 1px solid #cecece;border-radius: 0px 0px 15px 15px ;">
+            <form onsubmit="guardar_factura( event )" action="<?= base_url("compra/create/N") ?>" method="post" class="pt-2" style="border: 1px solid #cecece;border-radius: 0px 0px 15px 15px ;">
 
-                <input type="hidden" name="ruc"  value="<?= session("ruc")?>" >
-                <input type="hidden" name="dv"  value="<?= session("dv")?>">
-                <input type="hidden" name="codcliente"  value="<?= session("id")?>">
+                <input type="hidden" name="ruc" value="<?= session("ruc") ?>">
+                <input type="hidden" name="dv" value="<?= session("dv") ?>">
+                <input type="hidden" name="codcliente" value="<?= session("id") ?>">
                 <input type="hidden" name="iva1">
                 <input type="hidden" name="iva2">
                 <input type="hidden" name="iva3">
+                <input type="hidden" name="origen" value="W">
 
                 <?php echo view("plantillas/message");  ?>
                 <div class="container-fluid">
 
                     <div class="row form-group">
-                        <div class="col-3 col-md-3  pl-md-3 pl-0">
-                            <label for="nf-email" class=" form-control-label form-control-sm -label">Fecha:</label>
-                        </div>
-                        <div class="col-9 col-md-9">
-                            <input value="<?= date("Y-m-d") ?>" type="date" id="nf-email" name="fecha" class="  form-control form-control-label form-control-sm ">
-                        </div>
-                        <div class="col-3 col-md-3  pl-md-3 pl-0">
-                            <label for="nf-password" class=" form-control-label form-control-sm -label">N° de factura:</label>
-                        </div>
-                        <div class="col-9 col-md-9">
-                            <input oninput="factura_format(event)" value="000-000-0000000" maxlength="15" type="text" id="nf-password" name="factura" class=" form-control form-control-label form-control-sm ">
-                            <p style="color:red; font-size: 11px; font-weight: 600;" id="error-factura"></p>
-                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="row">
+                                <div class="col-3 col-md-3  pl-md-3 pl-0">
+                                    <label for="nf-email" class=" form-control-label form-control-sm -label">Fecha:</label>
+                                </div>
+                                <div class="col-9 col-md-9">
+                                    <input value="<?= date("Y-m-d") ?>" type="date" id="nf-email" name="fecha" class="  form-control form-control-label form-control-sm ">
+                                </div>
+                                <div class="col-3 col-md-3  pl-md-3 pl-0">
+                                    <label for="nf-password" class=" form-control-label form-control-sm -label">N° de factura:</label>
+                                </div>
+                                <div class="col-9 col-md-9">
+                                    <input oninput="factura_format(event)" placeholder="000-000-0000000" maxlength="15" type="text" id="nf-password" name="factura" class=" form-control form-control-label form-control-sm ">
+                                    <p style="color:red; font-size: 11px; font-weight: 600;" id="error-factura"></p>
+                                </div>
 
-                        <div class="col-3 col-md-3  pl-md-3 pl-0">
-                            <label for="nf-password" class=" form-control-label form-control-sm -label">Moneda:</label>
-                        </div>
-                        <div class="col-9 col-md-9">
-                            <select name="moneda" class=" form-control form-control-label form-control-sm "></select>
-                        </div>
-                        <div class="col-3 col-md-3  pl-md-3 pl-0">
-                            <label for="nf-password" class=" form-control-label form-control-sm -label">Tipo de cambio:</label>
-                        </div>
-                        <div class="col-9 col-md-9">
-                            <input value="0" oninput="formatear(event)" type="text" name="tcambio" class=" form-control form-control-label form-control-sm ">
-                        </div>
-                        <div class="col-3 col-md-3  pl-md-3 pl-0">
-                            <label for="nf-password" class=" form-control-label form-control-sm -label">10%:</label>
-                        </div>
-                        <div class="col-9 col-md-9">
-                            <input value="0" oninput="totalizar(event)" type="text" id="nf-password" name="importe1" class=" form-control form-control-label form-control-sm ">
-                        </div>
-                        <div class="col-3 col-md-3  pl-md-3 pl-0">
-                            <label for="nf-password" class=" form-control-label form-control-sm -label">5%:</label>
-                        </div>
-                        <div class="col-9 col-md-9">
-                            <input value="0" oninput="totalizar(event)" type="text" id="nf-password" name="importe2" class=" form-control form-control-label form-control-sm ">
-                        </div>
-                        <div class="col-3 col-md-3  pl-md-3 pl-0">
-                            <label for="nf-password" class=" form-control-label form-control-sm -label">Exenta:</label>
-                        </div>
-                        <div class="col-9 col-md-9">
-                            <input value="0" oninput="totalizar(event)" type="text" id="nf-password" name="importe3" class="  form-control form-control-label form-control-sm ">
-                        </div>
-                        <div class="col-3 col-md-3  pl-md-3 pl-0">
-                            <label for="nf-password" class=" form-control-label form-control-sm -label">TOTAL:</label>
-                        </div>
-                        <div class="col-9 col-md-9">
-                            <input readonly oninput="formatear(event)" type="text" id="nf-password" name="total" class=" form-control form-control-label form-control-sm ">
-                        </div>
-
-                        <div class="col-12 col-md-12 ">
-                            <div class="container-fluid p-0" style="border-bottom: 1px solid #cecece;border-right: 1px solid #cecece; border-left: 1px solid #cecece;border-radius: 20px;">
-
-                                <h6 class="text-center" style="border: 1px solid #cecece;background-color: #a5df99;border-radius: 10px 10px 0px 0px;">Total IVA</h6>
-                                <dl class="row">
-                                    <dt class="col-3 col-md-3 col-lg-2 " style="font-size: 12px;">
-                                        10%
-                                    </dt>
-                                    <dd class="col-9 col-md-9 col-lg-4"><input value="0" class="form-control form-control-sm" type="text" id="iva1" readonly></dd>
-                                    <dt class="col-3 col-md-3 col-lg-2 " style="font-size: 12px;">
-                                        5%
-                                    </dt>
-                                    <dd class="col-9 col-md-9 col-lg-4 "><input value="0" class="form-control form-control-sm" type="text" id="iva2" readonly></dd>
-                                </dl>
-
+                                <div class="col-3 col-md-3  pl-md-3 pl-0">
+                                    <label for="nf-password" class=" form-control-label form-control-sm -label">Moneda:</label>
+                                </div>
+                                <div class="col-9 col-md-9">
+                                    <select name="moneda" class=" form-control form-control-label form-control-sm "></select>
+                                </div>
+                                <div class="col-3 col-md-3  pl-md-3 pl-0">
+                                    <label for="nf-password" class=" form-control-label form-control-sm -label">Tipo de cambio:</label>
+                                </div>
+                                <div class="col-9 col-md-9">
+                                    <input value="0" oninput="formatear_entero(event)" type="text" name="tcambio" class=" form-control form-control-label form-control-sm text-right">
+                                </div>
                             </div>
                         </div>
+
+                        <div class="col-12 col-md-6">
+                            <div class="row">
+                                <div class="col-3 col-md-3  pl-md-3 pl-0">
+                                    <label for="nf-password" class=" form-control-label form-control-sm -label">10%:</label>
+                                </div>
+                                <div class="col-9 col-md-9">
+                                    <input value="0" oninput="totalizar(event)" type="text" id="nf-password" name="importe1" class=" form-control form-control-label form-control-sm text-right ">
+                                </div>
+                                <div class="col-3 col-md-3  pl-md-3 pl-0">
+                                    <label for="nf-password" class=" form-control-label form-control-sm -label">5%:</label>
+                                </div>
+                                <div class="col-9 col-md-9">
+                                    <input value="0" oninput="totalizar(event)" type="text" id="nf-password" name="importe2" class=" form-control form-control-label form-control-sm text-right ">
+                                </div>
+                                <div class="col-3 col-md-3  pl-md-3 pl-0">
+                                    <label for="nf-password" class=" form-control-label form-control-sm -label">Exenta:</label>
+                                </div>
+                                <div class="col-9 col-md-9">
+                                    <input value="0" oninput="totalizar(event)" type="text" id="nf-password" name="importe3" class="  form-control form-control-label form-control-sm text-right">
+                                </div>
+                                <div class="col-3 col-md-3  pl-md-3 pl-0">
+                                    <label for="nf-password" class=" form-control-label form-control-sm -label">TOTAL:</label>
+                                </div>
+                                <div class="col-9 col-md-9">
+                                    <input readonly oninput="formatear_entero(event)" type="text" id="nf-password" name="total" class=" form-control form-control-label form-control-sm text-right ">
+                                </div>
+                            </div>
+                        </div>
+
+
 
                     </div>
 
 
                     <div class="row">
-                        <div class="col-12 col-md-4">
-                            <a style="font-size: 11px;font-weight: 600;display:block;" href="<?= base_url("/") ?>" class="btn btn-success">
-                                <i class="fa fa-dot-circle-o"></i> IR AL MENÚ
-                            </a>
+                        <div class="col-12 col-md-6">
+                            <div class="container-fluid p-0" style="border-bottom: 1px solid #cecece;border-right: 1px solid #cecece; border-left: 1px solid #cecece;border-radius: 20px;">
+
+                                <h6 class="text-center" style="border: 1px solid #cecece;background-color: #a5df99;border-radius: 10px 10px 0px 0px;">Total IVA</h6>
+                                <div class="row form-group">
+                                    <div class="col-3" style="font-size: 12px;">
+                                        10%
+                                    </div>
+                                    <div class="col-9"><input value="0" class="form-control form-control-sm text-right" type="text" id="iva1" readonly></div>
+                                    <div class="col-3" style="font-size: 12px;">
+                                        5%
+                                    </div>
+                                    <div class="col-9"><input value="0" class="form-control form-control-sm text-right" type="text" id="iva2" readonly></div>
+                                </div>
+
+                            </div>
                         </div>
-                        <div class="col-12 col-md-4">
-                            <a style="font-size: 11px;font-weight: 600;display:block;" href="<?= base_url("movimiento/index") ?>" class="btn btn-success ">
-                                <i class="fa fa-dot-circle-o"></i> REGISTRAR OTROS COMPROBANTES
-                            </a>
+                        <div class="col-12 col-md-6">
+                            <div class="row">
+                                <div class="col-12">
+                                    <button style="font-size: 12px;font-weight: 600; width: 100%;" type="submit" class="btn btn-primary">
+                                        GUARDAR
+                                    </button>
+                                </div>
+
+                                <div class="col-12">
+                                    <a style="font-size: 12px;font-weight: 600;display:block;" href="<?= base_url("movimiento/index") ?>" class="btn btn-secondary ">
+                                        REGISTRAR OTROS COMPROBANTES
+                                    </a>
+                                </div>
+                                <div class="col-12">
+                                    <a style="font-size: 12px;font-weight: 600;display:block;" href="<?= base_url("/") ?>" class="btn btn-secondary">
+                                        IR AL MENÚ PRINCIPAL
+                                    </a>
+                                </div>
+
+                            </div>
                         </div>
-                        <div class="col-12 col-md-4">
-                            <button style="font-size: 11px;font-weight: 600; width: 100%;" type="submit" class="btn btn-success">
-                                <i class="fa fa-dot-circle-o"></i> SEGUIR REGISTRANDO
-                            </button>
-                        </div>
+
                     </div>
 
                 </div>
@@ -169,14 +187,17 @@ Validaciones
         return val.replaceAll(new RegExp(/[.]*/g), "").replaceAll(new RegExp(/[,]{1}/g), ".");
     }
 
-    
+
     function dar_formato_millares(val_float) {
         return new Intl.NumberFormat("de-DE").format(val_float);
     }
 
-    function formatear(ev) {
+    function formatear_decimal(ev) { //
 
-        if (ev.data == undefined) {  ev.target.value= "0";  return;}
+        if (ev.data == undefined) {
+            ev.target.value = "0";
+            return;
+        }
         if (ev.data.charCodeAt() < 48 || ev.data.charCodeAt() > 57) {
             let noEsComa = ev.data.charCodeAt() != 44;
             let yaHayComa = ev.data.charCodeAt() == 44 && /(,){1}/.test(ev.target.value.substr(0, ev.target.value.length - 2));
@@ -198,12 +219,30 @@ Validaciones
             let enpuntos = dar_formato_millares(float__);
             $(ev.target).val(enpuntos);
         }
-        
+    }
+
+
+    function formatear_entero(ev) {
+   
+      //       if (ev.data == undefined) return;
+        if(  ev.data == null  ||  ev.data == undefined)
+        ev.target.value=  ev.target.value.replaceAll(new RegExp(/[.]*[,]*/g), "");
+        if ( ev.data != null  && (ev.data.charCodeAt() < 48 || ev.data.charCodeAt() > 57)  ) {
+            
+            ev.target.value =
+                ev.target.value.substr(0, ev.target.selectionStart - 1) +
+                ev.target.value.substr(ev.target.selectionStart);
+        }
+        //Formato de millares
+        let val_Act = ev.target.value;
+        val_Act = val_Act.replaceAll(new RegExp(/[.]*[,]*/g), "");
+        let enpuntos = new Intl.NumberFormat("de-DE").format(val_Act);
+        $(ev.target).val(enpuntos);
     }
 
 
     function totalizar(ev) {
-        formatear(ev);
+        formatear_entero(ev);
         let monto1 = limpiar_numero_para_float($("input[name=importe1]").val());
         let monto2 = limpiar_numero_para_float($("input[name=importe2]").val());
         let monto3 = limpiar_numero_para_float($("input[name= importe3]").val());
@@ -215,15 +254,15 @@ Validaciones
         console.log(monto1_f, monto2_f, monto3_f, tot);
         $("input[name=total]").val(dar_formato_millares(tot));
         //calculos de iva
-        let iva1 = monto1_f / 11;
-        let iva2 = monto2_f / 21;
+        let iva1 = Math.round(monto1_f / 11);
+        let iva2 = Math.round(monto2_f / 21);
         let iva3 = 0;
         $("input[name=iva1]").val(iva1);
         $("input[name=iva2]").val(iva2);
         $("input[name=iva3]").val(iva3);
         $("#iva1").val(dar_formato_millares(iva1));
         $("#iva2").val(dar_formato_millares(iva2));
-        if( ev.target.value == "")  ev.target.value= "0";
+        if (ev.target.value == "") ev.target.value = "0";
     }
 
 
@@ -254,7 +293,9 @@ Validaciones
     */
 
     function campos_vacios() {
-        if ($("input[name=importe1]").val() == "" && $("input[name=importe2]").val() == "" && $("input[name=importe3]").val() == "") {
+        if (($("input[name=importe1]").val() == "" || $("input[name=importe1]").val() == "0") &&
+            ($("input[name=importe2]").val() == "" || $("input[name=importe2]").val() == "0") &&
+            ($("input[name=importe3]").val() == "" || $("input[name=importe3]").val() == "0")) {
             alert("Indique al menos de estos importes: 10% | 5% | Exenta");
             return true;
         }
@@ -274,9 +315,14 @@ Validaciones
     function guardar_factura(ev) {
         ev.preventDefault();
         if (campos_vacios()) return;
+
+        if (!formato_valido_factura($("input[name=factura]").val())) {
+            alert("Formato de Numero de factura no valido");
+            return;
+        }
         //limpiar numero de factura
-        let factu= $("input[name=factura]").val().replaceAll(/-+/g, "");
-        $("input[name=factura]").val( factu);
+        let factu = $("input[name=factura]").val().replaceAll(/-+/g, "");
+        $("input[name=factura]").val(factu);
         //reemplazar comas por puntos, eliminar los otros puntos
         $("input[name=importe1]").val(limpiar_numero_para_float($("input[name=importe1]").val()));
         $("input[name=importe2]").val(limpiar_numero_para_float($("input[name=importe2]").val()));
