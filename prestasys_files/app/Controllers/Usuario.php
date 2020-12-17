@@ -2,8 +2,10 @@
  namespace App\Controllers;
 
 use App\Helpers\Utilidades;
+use App\Libraries\Correo;
 use App\Libraries\pdf_gen\PDF;
 use App\Models\Ciudades_model;
+use App\Models\Pago_model;
 use App\Models\Planes_model;
 use App\Models\Rubro_model;
 use App\Models\Usuario_model;
@@ -34,6 +36,9 @@ class Usuario extends ResourceController {
 	}
 
 
+	public function t(){
+		return view("home");
+	}
 
 	private function isAPI(){
 
@@ -89,32 +94,117 @@ class Usuario extends ResourceController {
 
 
 
-	public function create(  )
+
+
+
+	/**
+	 * 
+	 * 
+	 * Registro de usuario
+	 * 
+	 */
+	/*
+
+		Va li da ci o nes
+	*/
+	private function campos_referenciales_validos(  $update= false){
+	 
+		$data = $this->request->getRawInput(); 
+
+
+			$tipo_plan =  $data["tipoplan"]; 
+			if (is_null((new Planes_model())->find($tipo_plan))) {
+				return  $this->genericResponse(null,  "Codigo $tipo_plan de Tipo de plan no existe", 500);
+			}
+
+			$ciudad =  $data["ciudad"];
+			if (!$ciudad && is_null((new Ciudades_model())->find($ciudad))) {
+				return $this->genericResponse(null,  "Codigo $ciudad de ciudad no existe", 500);
+			}
+			$rubro =  $data["rubro"];
+			if (!$rubro && is_null((new Rubro_model())->find($rubro))) {
+				return $this->genericResponse(null,  "Codigo $rubro de rubro, no existe", 500);
+			}
+			 return null;
+	}
+
+
+
+	/**
+	 * 
+	 * EMAIL NOTIFI
+	 */
+	public function email_bienvenida( $destinatario=""){
+		/*******Envio de correo */
+		$dest=  $destinatario == "" ? $this->request->getRawInput("email") :  $destinatario;
+		$correo= new Correo();
+		$correo->setDestinatario( $dest);
+		$correo->setAsunto("Bienvenido");
+		$correo->setMensaje(   "usuario/welcome_email" );
+		$correo->enviar();
+		/********* */
+	}
+
+	/**
+	 * 
+	 * PRIMER PAGO (VERSION TRIAL)
+	 */
+
+	 private function prueba_gratuita( $CODCLIENTE){
+		$data = $this->request->getRawInput();
+		$DIASPLAN= 30;
+		//CALCULO DE FECHA CADUCIDAD PRUEBA GRATIS
+		$validez= date("Y-m-d H:i:s",  strtotime( date("Y-m-d H:i:s")." + $DIASPLAN days"  )  );
+		$datos = [
+			'fecha' => date("Y-m-d H:i:s"),
+			"validez"=>  $validez,
+			"plan" => $data['tipoplan'],
+			"concepto" => "PRUEBA GRATUITA",
+			"precio" => "0",
+			"cliente" => $CODCLIENTE, 
+			"estado" => "A"
+		];
+		$pago = new Pago_model();
+		$pago->insert( $datos);
+	 }
+
+
+
+	public function create()
 	{
 		if( $this->request->getMethod( true) == "GET") return view("usuario/create");
+
+
 
 		$this->API_MODE=  $this->isAPI();
 		$usu = new Usuario_model();
 
 		$data = $this->request->getRawInput();
+		 
 		if ($this->validate('usuarios')) {
 
-			$tipo_plan =  $data["tipoplan"];
-			if (!$tipo_plan && !is_null((new Planes_model())->find($tipo_plan))) {
-				return  $this->genericResponse(null,  "Codigo $tipo_plan de Tipo de plan no existe", 500);
+			//Existe
+			  
+			$EXISTE=  $this->existe_usuario();
+			if( $EXISTE['code'] == 200)
+			{	
+				
+				return $this->response->setJSON(  [ "msj"=> "RUC ya registrado anteriormente", "code"=> 500]);
 			}
 
-			$ciudad =  $data["ciudad"];
-			if (!$ciudad && !is_null((new Ciudades_model())->find($ciudad))) {
-				return $this->genericResponse(null,  "Codigo $ciudad de ciudad no existe", 500);
+			//Ya existe RUC y DV
+			//Los campos referenciales son validos?
+			$resultadoValidacion = $this->campos_referenciales_validos();
+			if (!is_null($resultadoValidacion)) {
+				 return  $resultadoValidacion;	 
 			}
-
-			$rubro =  $data["rubro"];
-			if (!$rubro && !is_null((new Rubro_model())->find($rubro))) {
-				return $this->genericResponse(null,  "Codigo $rubro de rubro, no existe", 500);
-			}
-
+ 
 			$resu = []; //Resultado de la operacion
+
+			//transaccion
+			$db= \Config\Database::connect();
+
+			$db->transStart();
 			try {
 				//Preparar passw 
 				//hash pass
@@ -122,15 +212,24 @@ class Usuario extends ResourceController {
 				if( $this->API_MODE )  $data['origen']= "A";//ORIGEN Aplicacion
 
 				$id = $usu->insert($data);
+				$this->prueba_gratuita(   $id );
+				//Email bienvenida
+				if(! $this->API_MODE ) 
+				$this->email_bienvenida( $data['email']);
 				$resu = $this->genericResponse($this->model->find($id), null, 200);
+				 
+
 			} catch (Exception $e) {
 				$resu = $this->genericResponse(null, "Hubo un error al registrar ($e)", 500);
 			}
+			$db->transComplete();
 			//Evaluar resultado
 			if ($this->API_MODE) return  $resu;
 			else {
-				if ($resu['code'] == 200) return redirect()->to(base_url("usuario/sign_in"));
-				else  return view("usuario/create", array("error" => $resu['msj']));
+				if ($resu['code'] == 200) {
+					return $this->response->setJSON( $resu );
+				//	return redirect()->to(base_url("usuario/sign_in"));
+				} else  return view("usuario/create", array("error" => $resu['msj']));
 			}
 		}
 		//Hubo errores de validacion
@@ -139,14 +238,35 @@ class Usuario extends ResourceController {
 		if(  $this->API_MODE)
 		return $resultadoValidacion;
 		else
-		return view("usuario/create", array("error" => $resultadoValidacion['msj']));
+		return $this->response->setJSON( $resultadoValidacion );
+		//return view("usuario/create", array("error" => $resultadoValidacion['msj']));
 	}
 
 
 
+
+
+	/**
+	 * 
+	 * Validar cambio RUC y DV */ 
+
+	 private function cambio_valido_ruc_dv(){
+		$data = $this->request->getRawInput();
+		$regnro = $data['regnro'];
+		$ruc = $data['ruc'];
+		$dv = $data['dv']; 
+		$usu= (new Usuario_model())->find( $regnro);
+		return ( $usu->ruc ==  $ruc &&  $usu->dv ==  $dv);
+	 }
+
 	//ruc=14455&dv=23&cedula=4898&pass=123&tipoplan=1&email=sonia@gg.com&cedula=456666&rubro=1&ciudad=1&saldo_IVA=78000
 	public function update(   $id = null)
 	{
+		if ($this->request->getMethod(true) == "GET") {
+			$us = new Usuario_model();
+			$usua = $us->find($id);
+			return view("usuario/update",  ['usuario' =>   $usua, "OPERACION"=> "M"]);
+		}
 
 		$this->API_MODE=  $this->isAPI();
 
@@ -154,27 +274,20 @@ class Usuario extends ResourceController {
 
 		$data = $this->request->getRawInput();
 
-		if ($this->validate('usuarios')) {
+		if ($this->validate('usuarios_update')) {
 
 
-			if (!$usu->get($id)) {
+			if (is_null(  $usu->find($id) )) {
 				return $this->genericResponse(null, array("error" => "Usuario no existe"), 500);
 			} else {
-
-
-				$tipo_plan =  $data["tipoplan"];
-				if (!$tipo_plan && !is_null((new Planes_model())->find($tipo_plan))) {
-					return $this->genericResponse(null,   "Codigo $tipo_plan de Tipo de plan no existe", 500);
-				}
-
-				$ciudad =  $data["ciudad"];
-				if (!$ciudad && !is_null((new Ciudades_model())->find($ciudad))) {
-					return $this->genericResponse(null,  "Codigo $ciudad de ciudad no existe", 500);
-				}
-
-				$rubro =  $data["rubro"];
-				if (!$rubro && !is_null((new Rubro_model())->find($rubro))) {
-					return $this->genericResponse(null,   "Codigo $rubro de rubro, no existe", 500);
+ 
+				//QUITAR QUITAR
+				unset(  $data['ruc']);
+				unset(  $data['dv']);
+			 
+				$resu_v=  $this->campos_referenciales_validos( true);
+				if( !is_null( $resu_v)){
+					return $resu_v;
 				}
 				$resu= [];//resultado de la operacion
 			try{
@@ -183,17 +296,24 @@ class Usuario extends ResourceController {
 			}catch( Exception $e){
 				$resu=  $this->genericResponse( null, "Hubo un error: ($e)", 500);
 			}
+			
 				//Evaluar resultado
 			if ($this->API_MODE) return  $resu;
 			else {
-				if ($resu['code'] == 200) return redirect()->to(base_url("/"));
+				if ($resu['code'] == 200) return	$this->response->setJSON( ['data'=>"ACTUALIZADO", "code"=>"200"] );
 				else  return view("cliente/update", array("error" => $resu['msj']));
 			}
 			}
 		}
 		//Hubo errores de validacion
 		$validation = \Config\Services::validation();
-		return $this->genericResponse(null, $validation->getErrors(), 500);
+		
+		 
+		$res_err_val=  $this->genericResponse(null, $validation->getErrors(), 500);
+		if( $this->API_MODE)  return   $res_err_val;
+		else{
+			return $this->response->setJSON( $res_err_val );
+		}
 	}
 
 
@@ -223,41 +343,20 @@ application/x-www-form-urlencoded
 ruc
 dv
 */
-	public function verify_password()
+	public function verify_password( $CODCLIENTE)
 	{
 		//Content-Type: application/x-www-form-urlencoded
 
-		$request= \Config\Services::request(); 
-
-		$data= $this->request->getRawInput();
-		$ruc = $data['ruc'];
-		$dv = $data["dv"]; 
+		$data= $this->request->getRawInput();  
 		$pass = $data["pass"]; 
-		$recordar= $request->getPost("remember"); 
-		$usu = new Usuario_model();
-		$usuarioObject = $usu->where("ruc", $ruc)
-		->where("dv", $dv)
-		->first() ;
-		///Usuario existe?
-		if (is_null($usuarioObject)) {
-			if( $ruc == "") return array( "msj"=> "Proporcione el RUC",  "code"=>500);
-			else{
-				if( $dv =="") return array( "msj"=> "Proporcione el DV (digito verificador)",  "code"=>500);
-				else{
-					if( $pass == "") return array( "msj"=> "Ingrese la contraseña",  "code"=>500);
-					else
-					return array( "msj"=> "Usuario con RUC: $ruc - $dv no existe",  "code"=>500);
-				}
-			}
-			
-			//return $this->genericResponse(null, "Usuario con RUC: $ruc - $dv no existe",  500);
-		} else {
-
+		$recordar= isset(  $data["remember"])  ?  $data["remember"] : "N" ;
+		$usu = (new Usuario_model())->find( $CODCLIENTE); 
+		
 			//Verificar session id?
 			if( !$this->API_MODE  &&  $recordar=="S" && isset( $_COOKIE["ivafacil_user_pa"] )  ){
 
 				$cookie_session=  $_COOKIE["ivafacil_user_pa"];
-				if(  $cookie_session ==  $usuarioObject->session_id){
+				if(  $cookie_session ==  $usu->session_id){
 					return array( "data"=>"Contraseña Correcta", "code"=>  200);
 				}else{
 					return array( "msj"=>"Contraseña incorrecta",  "code"=> 500);
@@ -265,13 +364,12 @@ dv
 			}
 			 
 			// VERIFICACION DE contrasenha correcta
-			if (password_verify($pass, $usuarioObject->pass)) {// Pass entered vs. Pass in BD
+			if (password_verify($pass, $usu->pass)) {// Pass entered vs. Pass in BD
 				return array( "data"=>"Contraseña Correcta", "code"=>  200);
 			} else {
-				
-				return array( "msj"=>"Contraseña incorrecta",  "code"=> 500);
+				return array( "msj"=>"Contraseña Incorrecta", "code"=>  500); 
 			}
-		}
+		
 
 		
 	}
@@ -342,7 +440,7 @@ dv
 	}
 
 
-	private function crear_cookie_recordar_sesion()
+	private function crear_cookie_recordar_sesion( $CODCLIENTE)
 	{
 		helper("cookie");
 		$request = \Config\Services::request();
@@ -350,24 +448,19 @@ dv
 		$data= $this->request->getRawInput();
 		$ruc =  $data['ruc'];
 		$dv =  $data['dv'];
-		
-		 
-
+		$remember= isset(  $data["remember"])  ?  $data["remember"] : "N" ;
+	
 		//cONDICION PARA PERMITIR RECORDAR PASS PARA CLIENTES DE WEB
-		$USU_WEB_PIDE_RECORD_PASS= $request->getPost("remember") == "S"  &&  $request->getPost("remember") != NULL;
+		$USU_WEB_PIDE_RECORD_PASS= $remember == "S";
 		
 		if (   $this->API_MODE  ||  $USU_WEB_PIDE_RECORD_PASS ) {
 			try {
 				//Guardar sesion 
-				$usu_ = new Usuario_model();
-				$usu_->where("ruc", $ruc)->where("dv", $dv);
-				$ID= $usu_->first()->regnro;
-
 				 $fecha_expire_session=     date(  "Y-m-d H:i",   strtotime(date("Y-m-d H:i")." + 10 days")  );
 				 //Para autenticar desde la API, y tambien para recordar sesiones para clientes web
-				 $SESSIONID=  password_hash( $ID,  PASSWORD_BCRYPT);
-
-				 $usu_->where("ruc", $ruc)->where("dv", $dv);
+				 $SESSIONID=  password_hash( $CODCLIENTE,  PASSWORD_BCRYPT);
+				 $usu_ = new Usuario_model(); 
+				 $usu_->where("regnro", $CODCLIENTE);
 				$usu_->set(["session_id" => $SESSIONID, 'session_expire'=> $fecha_expire_session ,'remember'=>'S' ]);
 				$usu_->update();
 				//Solo crear cookies para clientes  autenticados deSDE la web
@@ -407,10 +500,67 @@ dv
 	}
 
 
+
+
+
+	/**
+	 * 
+	 * 
+	 * Control antes de autenticar
+	 * 
+	 * 
+	 */
+
+
+
+	private function existe_usuario()
+	{
+		$data = $this->request->getRawInput();
+		$ruc = $data['ruc'];
+		$dv = $data["dv"]; 
+		$pass = $data["pass"]; 
+		$usu = new Usuario_model();
+		$usuarioObject = $usu->where("ruc", $ruc)
+		->where("dv", $dv)
+		->first();
+		if (is_null($usuarioObject)) {
+			 
+			$mensaje_error="";
+			if( $ruc == "") $mensaje_error=  "Proporcione el RUC";
+			else{
+				if( $dv =="") $mensaje_error= "Proporcione el DV (digito verificador)";
+				else{
+					if( $pass == "") $mensaje_error=  "Ingrese la contraseña";
+					else  $mensaje_error= "Usuario con RUC: $ruc - $dv no existe";
+				}
+			}
+
+			
+			$noexiste= array( "msj"=> $mensaje_error, "code"=>  500);
+			return $noexiste;
+		} else {
+			return array( "data"=> $usuarioObject, "code"=>  200); 
+		}
+	}
+
+	private function servicio_habilitado(  $CODCLIENTE){
+	 
+		$usuarioObject = (new Usuario_model())->find( $CODCLIENTE);
+	 
+		$pagos=  (new Pago_model())->where("cliente",  $usuarioObject->regnro )->orderBy("fecha", "DESC")->first();
+		if(  is_null( $pagos ) ) 	return  array("msj"=>"Servicio no habilitado", "code"=> 500 );
+		else{
+			if( strtotime( date("Y-m-d H:i:s") )      <= strtotime( $pagos->validez) ) 
+			return array("data"=>"Habilitado", "code"=> 200 );
+			else{ 	return  array("msj"=>"Servicio no habilitado", "code"=> 500 );}
+		} 
+	}
+
+
 	public function sign_in(  )
 	{
 
-		$this->API_MODE =  $this->isAPI(); //Opcion  disponible solo para Web
+		$this->API_MODE =  $this->isAPI();  
 
 		$request = \Config\Services::request();
 		$session =  \Config\Services::session();
@@ -425,38 +575,49 @@ dv
 			else
 			return $this->verificar_cookie_sesion();//Verifica sesiones guardadas
 		} else {
-		 
-			$resu = $this->verify_password();
 
-			if ($resu['code'] == 200) {
-				//crear sesion
-				
-				$ruc = $data["ruc"];
-				$dv = $data["dv"];
-				$usuarioId = (new Usuario_model())->where("ruc", $ruc)
-				->where("dv", $dv)
-				->first() ;
-				$newdata = [
-					'id'=>  $usuarioId->regnro,
-					'ruc'  => $ruc,
-					'dv'     => $dv,
-					'origen' => $this->API_MODE ? "A": "W"
-				];
-
-				$session->set($newdata);
-			
-			
-				//Crear cookie
-				//Se pidio recordar contrasenha?
-				 
-				return $this->crear_cookie_recordar_sesion();
-			
-			} else {
+			$usuario__check = $this->existe_usuario(); 
+			if ($usuario__check['code'] != 200) {
 				if ($this->API_MODE)
-					return $this->genericResponse(null, $resu['msj'],  500);
+				return $this->response->setJSON($usuario__check);
 				else
-					return view("usuario/login", array("error" => $resu['msj']));
+				return view("usuario/login", array("error" => $usuario__check['msj']));
 			}
+
+			//oBJETO DE USUARIO
+			$usuario_refere= $usuario__check['data'];
+
+			//Servicio habilitado , al dia?
+			$check_habilitado =  $this->servicio_habilitado($usuario_refere->regnro);
+			if ($check_habilitado['code'] != 200) {
+				if ($this->API_MODE)
+				return $this->response->setJSON($check_habilitado);
+				else
+				return view("usuario/login", array("error" => $check_habilitado['msj']));
+			}
+
+			//Password correcta
+			$check_pass= $this->verify_password(  $usuario_refere->regnro);
+			if( $check_pass['code'] !=200){
+				if( $this->API_MODE) 
+				return  $this->response->setJSON(  $check_pass );
+				else
+				return view("usuario/login", array("error" => $check_pass['msj'])); 
+			}
+
+			//Crear sesion
+			$newdata = [
+				'id'=>  $usuario_refere->regnro,
+				'ruc'  => $usuario_refere->ruc,
+				'dv'     => $usuario_refere->dv,
+				'origen' => $this->API_MODE ? "A": "W"
+			];
+			$session->set($newdata);
+
+			//crear cookies de sesion si es necesario 
+			return $this->crear_cookie_recordar_sesion(  $usuario_refere->regnro);
+
+			  
 		} //END ANALISIS DE PARAMETROS
 	} //END SIGN IN
 
@@ -471,7 +632,7 @@ dv
 		if( $this->API_MODE){
 			return $this->genericResponse(null, "Sesion terminada",  500);
 		}else{
-			return redirect()->to(base_url("usuario/sign_in/N"));
+			return redirect()->to(base_url("usuario/sign-in"));
 		}
 		
 	}

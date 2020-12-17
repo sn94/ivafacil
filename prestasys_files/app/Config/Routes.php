@@ -17,7 +17,7 @@ if (file_exists(SYSTEMPATH . 'Config/Routes.php'))
  */
 $routes->setDefaultNamespace('App\Controllers');
 $routes->setDefaultController('Welcome');
-$routes->setDefaultMethod('index');
+$routes->setDefaultMethod('publico');
 $routes->setTranslateURIDashes(true);
 $routes->set404Override();
 $routes->setAutoRoute(true);
@@ -34,21 +34,37 @@ $routes->resource('usuario', ['controller'=>  'user']);
 
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
-$routes->get('/', 'Welcome::index'); 
- 
+
+
+$routes->get('/home', 'Welcome::publico'); //pagina publica
+
+$routes->get('/', 'Welcome::index'); //pagina principal del cliente
+
+
+
 
 //api 
+$routes->get('/api/cities', 'Auxiliar::ciudades'); 
+$routes->get('/api/plans', 'Auxiliar::planes'); 
+$routes->get('/api/currencies', 'Auxiliar::monedas'); 
+
 $routes->get('/api/purchase', 'Compra::index'); 
 $routes->post('/api/purchase/create', 'Compra::create'); 
 $routes->put('/api/purchase/(:num)', 'Compra::update/$1'); 
 $routes->get('/api/purchase/(:num)', 'Compra::show/$1'); 
 $routes->delete('/api/purchase/(:num)', 'Compra::delete/$1');
 
-$routes->get('/api/sales/index', 'Venta::index'); 
+$routes->get('/api/sales', 'Venta::index'); 
 $routes->post('/api/sales/create', 'Venta::create'); 
+$routes->put('/api/sales/(:num)', 'Venta::update/$1'); 
+$routes->get('/api/sales/(:num)', 'Venta::show/$1'); 
+$routes->delete('/api/sales/(:num)', 'Venta::delete/$1');
 
-$routes->get('/api/retencion/index', 'Retencion::index'); 
-$routes->post('/api/retencion/create', 'Retencion::create'); 
+$routes->get('/api/retention', 'Retencion::index'); 
+$routes->post('/api/retention/create', 'Retencion::create'); 
+$routes->put('/api/retention/(:num)', 'Retencion::update/$1'); 
+$routes->get('/api/retention/(:num)', 'Retencion::show/$1'); 
+$routes->delete('/api/retention/(:num)', 'Retencion::delete/$1');
 
 $routes->get('/api/user', 'Usuario::index'); 
 $routes->post('/api/user/create', 'Usuario::create'); 
@@ -56,6 +72,20 @@ $routes->put('/api/user/(:num)', 'Usuario::update/$1');
 $routes->delete('/api/user/(:num)', 'Usuario::delete/$1'); 
 $routes->get('/api/user/(:num)', 'Usuario::show/$1'); 
 $routes->post('/api/user/sign-in', 'Usuario::sign_in'); 
+$routes->post('/api/email-user-registered', 'Usuario::email_bienvenida'); 
+
+
+
+//Administrativo 
+$routes->get('/admin/parametros/create', 'Parametros::create'); 
+$routes->post('/admin/parametros/create', 'Parametros::create'); 
+
+$routes->get('/admin/monedas', 'Monedas::index'); 
+$routes->get('/admin/monedas/create', 'Monedas::create'); 
+$routes->post('/admin/monedas/create', 'Monedas::create'); 
+$routes->get('/admin/monedas/update/(:num)', 'Monedas::update/$1'); 
+$routes->post('/admin/monedas/update', 'Monedas::update'); 
+
 
 /**
  * --------------------------------------------------------------------

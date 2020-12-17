@@ -52,83 +52,9 @@ class Retencion extends ResourceController {
 
 
 	
-   
 
-
-	public function create(){
-
-		$this->API_MODE =  $this->isAPI();
-		
-		$request = \Config\Services::request();
-		if ($request->getMethod(true) == "GET")
-		return view("movimientos/comprobantes/retencion");
-		//Manejo POST
 
 	
-		
-		$usu = new Retencion_model();
-
-		$data = $this->request->getRawInput();
-
-		if( $this->API_MODE)  $data['origen']= "A";
-
-
-		if ($this->validate('retencion')) { //Validacion OK
-
-			$cod_cliente =  $data["codcliente"];
-			if (!$cod_cliente && !is_null((new Usuario_model())->find($cod_cliente))) {
-				return  $this->genericResponse(null,  "Codigo de cliente: $cod_cliente no existe", 500);
-			}
-
-			$moneda =  $data["moneda"] ;
-			if (!$moneda && !is_null((new Monedas_model())->find($moneda))) {
-				return $this->genericResponse(null,  "Codigo de moneda: $moneda no existe", 500);
-			}
-			 
-			if( $moneda != "1" && (  !isset( $data['tcambio'] )  ||  $data['tcambio']=="")   ){
-				return $this->genericResponse(null,  "Indique el monto para cambio de moneda", 500);
-			}
-			$resu = []; //Resultado de la operacion
-			try {
-				if ($this->API_MODE)  $data['origen'] = "A"; //ORIGEN Aplicacion
-				$id = $usu->insert($data);
-				$resu = $this->genericResponse($this->model->find($id), null, 200);
-			} catch (Exception $e) {
-				$resu = $this->genericResponse(null, "Hubo un error al registrar ($e)", 500);
-			}
-			//Evaluar resultado
-			if ($this->API_MODE) return  $resu;
-			else {
-				if ($resu['code'] == 200) return redirect()->to(base_url("movimiento/index"));
-				else  return view("movimientos/comprobantes/retencion", array("error" => $resu['msj']));
-			}
-		}
-
-		//Hubo errores de validacion
-		$validation = \Config\Services::validation();
-		$resultadoValidacion =  $this->genericResponse(null, $validation->getErrors(), 500);
-		if ($this->API_MODE)
-		return $resultadoValidacion;
-		else  return view("movimientos/comprobantes/retencion", array("error" => $resultadoValidacion['msj']));
-
-	 
-	}
-	 
-
-
-	/**
-	 * 
-	 * 
-	 * informes
-	 */
-	public function resumen_anio(){
-		return view("movimientos/resumen_anio");
-	}
-
- 
-	//Subinformes 
-
-
 	public function index( ){
 
 		$this->API_MODE=  $this->isAPI();
@@ -161,6 +87,171 @@ class Retencion extends ResourceController {
 		 
 	}
 	 
-     
+
+
+
+
+   
+
+
+	public function create(){
+
+		$this->API_MODE =  $this->isAPI();
+		
+		$request = \Config\Services::request();
+		if ($request->getMethod(true) == "GET")
+		return view("movimientos/comprobantes/retencion");
+		//Manejo POST
+		$usu = new Retencion_model();
+		$data = $this->request->getRawInput();
+
+		if( $this->API_MODE)  $data['origen']= "A";
+
+
+		if ($this->validate('retencion')) { //Validacion OK
+
+			$cod_cliente =  $data["codcliente"];
+			if (!$cod_cliente && !is_null((new Usuario_model())->find($cod_cliente))) {
+				return  $this->genericResponse(null,  "Codigo de cliente: $cod_cliente no existe", 500);
+			}
+
+			$moneda =  $data["moneda"] ;
+			if (!$moneda && !is_null((new Monedas_model())->find($moneda))) {
+				return $this->genericResponse(null,  "Codigo de moneda: $moneda no existe", 500);
+			}
+			 
+			if( $moneda != "1" && (  !isset( $data['tcambio'] )  ||  $data['tcambio']=="")   ){
+				return $this->genericResponse(null,  "Indique el monto para cambio de moneda", 500);
+			}
+			$resu = []; //Resultado de la operacion
+			try {
+				if ($this->API_MODE)  $data['origen'] = "A"; //ORIGEN Aplicacion
+				$id = $usu->insert($data);
+				$resu = $this->genericResponse($this->model->find($id), null, 200);
+			} catch (Exception $e) {
+				$resu = $this->genericResponse(null, "Hubo un error al registrar ($e)", 500);
+			}
+			//Evaluar resultado
+			if ($this->API_MODE) return  $resu;
+			else {
+				if ($resu['code'] == 200) return redirect()->to(base_url("movimiento/informes_mes"));
+				else  return view("movimientos/comprobantes/retencion", array("error" => $resu['msj']));
+			}
+		}
+
+		//Hubo errores de validacion
+		$validation = \Config\Services::validation();
+		$resultadoValidacion =  $this->genericResponse(null, $validation->getErrors(), 500);
+		if ($this->API_MODE)
+		return $resultadoValidacion;
+		else  return view("movimientos/comprobantes/retencion", array("error" => $resultadoValidacion['msj']));
+
+	 
+	}
+	 
+
+
+	 
+
+
+
+
+	public function update( $cod_retencion= null){
+
+		$this->API_MODE =  $this->isAPI();
+		$request = \Config\Services::request();
+
+		if ($request->getMethod(true) == "GET")
+		return view("movimientos/comprobantes/retencion");
+
+		//Manejo POST
+		$usu = new Retencion_model();
+		$data = $this->request->getRawInput();
+
+		if( $this->API_MODE)  $data['origen']= "A";
+
+
+		if ($this->validate('retencion')) { //Validacion OK
+
+			$cod_cliente =  $data["codcliente"];
+			if (!$cod_cliente && !is_null((new Usuario_model())->find($cod_cliente))) {
+				return  $this->genericResponse(null,  "Codigo de cliente: $cod_cliente no existe", 500);
+			}
+
+			$moneda =  $data["moneda"] ;
+			if (!$moneda && !is_null((new Monedas_model())->find($moneda))) {
+				return $this->genericResponse(null,  "Codigo de moneda: $moneda no existe", 500);
+			}
+			 
+			if( $moneda != "1" && (  !isset( $data['tcambio'] )  ||  $data['tcambio']=="")   ){
+				return $this->genericResponse(null,  "Indique el monto para cambio de moneda", 500);
+			}
+			$resu = []; //Resultado de la operacion
+			try {
+				if ($this->API_MODE)  $data['origen'] = "A"; //ORIGEN Aplicacion
+				$retencionObj= new Retencion_model();
+				$retencionObj->set( $data)
+				->update(  $cod_retencion);
+				 
+				$resu = $this->genericResponse($this->model->find($cod_retencion), null, 200);
+			} catch (Exception $e) {
+				$resu = $this->genericResponse(null, "Hubo un error al registrar ($e)", 500);
+			}
+			//Evaluar resultado
+			if ($this->API_MODE) return  $resu;
+			else {
+				if ($resu['code'] == 200) return redirect()->to(base_url("movimiento/index"));
+				else  return view("movimientos/comprobantes/retencion", array("error" => $resu['msj']));
+			}
+		}
+
+		//Hubo errores de validacion
+		$validation = \Config\Services::validation();
+		$resultadoValidacion =  $this->genericResponse(null, $validation->getErrors(), 500);
+		if ($this->API_MODE)
+		return $resultadoValidacion;
+		else  return view("movimientos/comprobantes/retencion", array("error" => $resultadoValidacion['msj']));
+
+	 
+	}
+
+
+
+
+	
+	public function show($id = null)
+	{
+		$re = (new Retencion_model())->find($id);
+		if (is_null($re))
+		return $this->genericResponse(null, "Este registro de retención no existe", 404);
+		else
+		return $this->genericResponse($re, null, 200);
+	}
+
+
+
+
+	
+	public function delete( $id = null)
+	{
+		$this->API_MODE= $this->isAPI();
+	 
+		$us= (new Retencion_model())->find(  $id);
+ 
+		if (is_null( $us))
+		return $this->genericResponse(null, "Registro de retención no existe",  404);
+		else { 
+			(new Retencion_model())->where("regnro", $id)->delete( $id );
+			return $this->genericResponse("Registro de retención eliminado", null,  200);
+		}
+	}
+
+
+	 
+
+
+
+
+
 	  
 }

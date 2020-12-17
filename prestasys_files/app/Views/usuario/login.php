@@ -3,7 +3,7 @@
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9" lang=""> <![endif]-->
 <!--[if gt IE 8]><!-->
-<html class="no-js" lang="en">
+<html class="no-js" lang="en" style="height: 100% !important; background-image: url(<?= base_url("assets/ivax/assets/images/homebg.jpg") ?>);">
 <!--<![endif]-->
 
 <head>
@@ -33,15 +33,22 @@
             border: none;
             border-bottom: 1px solid #0f0;
         }
+
+ 
+body { 
+  line-height: unset;
+  height: 100%;
+}
+
     </style>
 
 
 </head>
 
-<body class="bg-dark">
+<body  style="background-color: #000000e0;" >
 
 
-    <div class="sufee-login d-flex align-content-center flex-wrap" style="background-color: #a5df99;">
+    <div class="sufee-login d-flex align-content-center flex-wrap"  >
         <div class="container">
             <div class="login-content">
                 <div class="login-logo">
@@ -52,18 +59,18 @@
                 <div class="login-form">
 
                     <?php    echo view("plantillas/message");  ?>
-                    <form action="<?= base_url('usuario/sign_in') ?>" method="POST">
+                    <form action="<?= base_url('usuario/sign-in') ?>" method="POST">
                         
                             
-                                <div class="row">
+                                <div class="row mb-1">
                                     <div class="col-1 col-md-1 ">
                                         <label style="font-weight: 600;color: #555555;">RUC:</label>
                                     </div>
-                                    <div class="col-7 col-md-8">
-                                        <input value="<?=isset($ruc) ? $ruc : '' ?>" maxlength="15" type="text" id="nf-email" name="ruc" class="  form-control form-control-label   ">
+                                    <div class="col-6 col-md-8">
+                                        <input value="<?=isset($ruc) ? $ruc : '' ?>" maxlength="15" type="text"  name="ruc" class="  form-control form-control-label   ">
                                     </div>
                                  
-                                    <div class="col-1 col-md-1 ">
+                                    <div class="col-1 col-md-1 ml-0 pl-0 ">
                                         <label style="font-weight: 600;color: #555555;">DV:</label>
                                     </div>
                                     <div class="col-3 col-md-2">
@@ -88,7 +95,8 @@
                             </label>
 
                         </div>
-                        <a href="<?= base_url("usuario/create/N") ?>" class="btn btn-secondary btn-flat m-b-30 m-t-30">Registrarse</a>
+                        <a href="<?= base_url("usuario/create") ?>" class="btn btn-secondary btn-flat m-b-30 m-t-30">Registrarse</a>
+                        <a href="<?= base_url("home") ?>" class="badge badge-success"  >PÁGINA PRINCIPAL</a>
 
                     </form>
                 </div>

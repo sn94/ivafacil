@@ -14,13 +14,16 @@ class Welcome extends BaseController {
 
 	public function index()
 	{
-		if( session("tipo")== "V"){//SOLO VENDEDOR
-			$comisiones= $this->Usuario_model->comision_acumulada( session("id"));
-			 
-			return view("inicio", array("comisiones"=> $comisiones->total ));	
-		}else{  return view("inicio");	 }
+		  return view("principal_panel");
 	 
 	 
+	}
+
+
+
+	public function publico()
+	{
+		 return view("home"); 
 	}
 
 

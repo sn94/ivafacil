@@ -47,15 +47,39 @@
 
     .navbar .navbar-nav li:hover .toggle_nav_button::before,
     .navbar .navbar-nav li .toggle_nav_button.nav-open::before {
-      color: #0a2601 !important;
+      color: #e1fed8 !important;
+      text-transform: uppercase;
     }
-  </style>
+  
+    <?php
+
+use App\Libraries\Mobile_Detect;
+
+$adaptativo = new Mobile_Detect();
+$estilo_ = " ";
+if ($adaptativo->isMobile())
+    $estilo_ = "body{  background-color: white; }";
+else
+    $estilo_ = "body{     background: url(".base_url("assets/ivax/assets/images/homebg.jpg") ."); }";
+echo    $estilo_;
+?>
+
+ 
+   
+.navbar, aside.left-panel {
+    
+  /* background: #a5df99 !important; */
+  background: #000c !important;
+}
+
+
+</style>
 </head>
 
 <body>
 
 
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <nav class="navbar navbar-expand-lg navbar-light text-light">
     <a class="navbar-brand" href="<?=base_url("/")?>">
       <img src="<?= base_url("assets/img/Logo.jpg") ?>" alt="Logo">
     </a>
@@ -77,7 +101,7 @@
           <a class="nav-link" style="  font-weight: 600;color: #422efa;" href="<?=base_url("usuario/sign_out/N")?>">Cerrar sesión</a>
         </li>
       </ul>
-      <span class="navbar-text" style="color:black; background-color: white; font-weight: 600;border-radius: 20px;border: 2px dashed  #057e30; padding: 2px 5px !important;">
+      <span class="navbar-text text-light"   >
       <h5> <i class="fa fa-user"></i>
      <?= session("ruc")."-".session("dv")?> </h5>
       </span>

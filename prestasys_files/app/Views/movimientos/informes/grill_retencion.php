@@ -6,7 +6,7 @@ use App\Helpers\Utilidades;
 $retencion_t= 0;
 ?>
 
-<table style="font-size: 12.5px;font-weight: 600 !important;" class="table table-bordered table-striped table-dark ">
+<table style="font-size: 12.5px;font-weight: 600 !important;" class="table table-bordered table-striped table-secondary ">
     <thead>
         <tr>
             <th class="p-0 text-center">N° COMP.</th> 
@@ -29,7 +29,7 @@ $retencion_t= 0;
     <tfoot>
         <tr>
             <td>TOTALES</td> 
-            <td  class="text-right" >  <?=Utilidades::number_f(  $retencion_t )?>  </td>    
+            <td  class="text-right" id="retencion-total">  <?=Utilidades::number_f(  $retencion_t )?>  </td>    
         </tr>
         
     </tfoot>

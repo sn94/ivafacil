@@ -8,7 +8,7 @@ $compras_total_ex = 0;
 $compras_t= 0;
 ?>
 
-<table style="font-size: 12.5px;font-weight: 600 !important;" class="table table-bordered table-striped table-dark ">
+<table style="font-size: 12.5px;font-weight: 600 !important;" class="table table-bordered table-striped table-secondary ">
     <thead>
         <tr>
             <th class="p-0 text-center">N° COMP.</th>
@@ -39,10 +39,10 @@ $compras_t= 0;
     <tfoot>
         <tr>
             <td>TOTALES</td>
-            <td  class="text-right" > <?= $compras_total_ex?> </td>
-            <td   class="text-right"> <?= $compras_total_5?> </td> 
-            <td  class="text-right" >  <?=Utilidades::number_f(  $compras_total_10 )?>  </td>  
-            <td  class="text-right" >  <?=Utilidades::number_f(  $compras_t )?>  </td>  
+            <td  class="text-right" id="compra-total-ex"> <?= $compras_total_ex?> </td>
+            <td   class="text-right" id="compra-total-5"> <?= $compras_total_5?> </td> 
+            <td  class="text-right" id="compra-total-10" >  <?=Utilidades::number_f(  $compras_total_10 )?>  </td>  
+            <td  class="text-right" id="compra-total" >  <?=Utilidades::number_f(  $compras_t )?>  </td>  
         </tr>
         
     </tfoot>

@@ -1,0 +1,5 @@
+{
+    "require": {
+        "codeigniter4/translations": "^4.0"
+    }
+}

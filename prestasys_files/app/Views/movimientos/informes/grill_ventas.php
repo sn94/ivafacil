@@ -8,7 +8,7 @@ $ventas_total_ex = 0;
 $ventas_t= 0;
 ?>
 
-<table style="font-size: 12.5px;font-weight: 600 !important;" class="table table-bordered table-striped table-dark ">
+<table style="font-size: 12.5px;font-weight: 600 !important;" class="table table-bordered table-striped table-secondary ">
     <thead>
         <tr>
             <th class="p-0 text-center">N° COMP.</th>
@@ -39,10 +39,10 @@ $ventas_t= 0;
     <tfoot>
         <tr>
             <td>TOTALES</td>
-            <td  class="text-right" > <?= $ventas_total_ex?> </td>
-            <td   class="text-right"> <?= $ventas_total_5?> </td> 
-            <td  class="text-right" >  <?=Utilidades::number_f(  $ventas_total_10 )?>  </td>  
-            <td  class="text-right" >  <?=Utilidades::number_f(  $ventas_t )?>  </td>  
+            <td  class="text-right" id="venta-total-ex" > <?= $ventas_total_ex?> </td>
+            <td   class="text-right" id="venta-total-5"> <?= $ventas_total_5?> </td> 
+            <td  class="text-right" id="venta-total-10">  <?=Utilidades::number_f(  $ventas_total_10 )?>  </td>  
+            <td  class="text-right" id="venta-total" >  <?=Utilidades::number_f(  $ventas_t )?>  </td>  
         </tr>
         
     </tfoot>

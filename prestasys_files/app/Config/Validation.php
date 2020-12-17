@@ -58,7 +58,7 @@ class Validation
 		],
 		'pass'     => 
 		[
-            'rules'  => 'required|max_length[80]',
+            'rules'  => 'if_exist|required|max_length[80]',
             'errors' => [
 				'required' => 'La contraseña de usuario es requerida',
 				'max_length'=>'La longitud máxima permitida de la contraseña es de 80 caracteres'
@@ -84,7 +84,7 @@ class Validation
 		[
             'rules'  => 'integer',
             'errors' => [
-				'integer'=>'El campo "Tipo plan" debe ser numericos'
+				'integer'=>'El campo "Tipo plan" debe ser numerico'
             ]
 		],
 		'estado'     => 
@@ -157,9 +157,126 @@ class Validation
 		],
 		'saldo_IVA'     => 
 		[
-            'rules'  => 'required|max_length[10]|integer',
+            'rules'  => 'max_length[10]|integer',
             'errors' => [
-				'required'=>'Indique su saldo anterior',
+			 
+				'max_length'=>'La longitud maxima del valor para campo "saldo IVA" es de 10 caracteres' ,	
+				'integer'=> 'El campo "saldo IVA" solo permite caracteres numericos'
+
+            ]
+		]
+         
+		 
+	]; //$validation->run($data, 'usuarios');
+
+
+	public $usuarios_update= [
+		 
+		 
+		'pass'     => 
+		[
+            'rules'  => 'if_exist|required|max_length[80]',
+            'errors' => [
+				'required' => 'La contraseña de usuario es requerida',
+				'max_length'=>'La longitud máxima permitida de la contraseña es de 80 caracteres'
+            ]
+		],
+		/*'tipo'     => 
+		[
+            'rules'  => 'required|max_length[1]',
+            'errors' => [
+				'required' => 'Por favor indique el tipo de usuario',
+				'max_length'=>'La longitud máxima permitida para el campo tipo es de 1 caracter'
+            ]
+        ],
+		
+	 	'fechainicio'     => 
+		[
+            'rules'  => 'if_exist|valid_date',
+            'errors' => [
+				'valid_date'=>'El valor para el campo "Fecha de inicio" no es valida'
+            ]
+		],*/
+		'tipoplan'     => 
+		[
+            'rules'  => 'integer',
+            'errors' => [
+				'integer'=>'El campo "Tipo plan" debe ser numerico'
+            ]
+		],
+		'estado'     => 
+		[
+            'rules'  => 'max_length[1]',
+            'errors' => [
+				'max_length'=>'La longitud maxima del valor para campo "estado" es de 1 caracter'
+            ]
+		],
+		'email'     => 
+		[
+            'rules'  => 'required|max_length[80]|valid_email',
+            'errors' => [
+				'required'=>'Proporcione su email',
+				'max_length'=>'La longitud maxima del valor para campo "email" es de 80 caracteres',
+				'valid_email'=>'El email proporcionado no es valido'
+            ]
+		],
+		'cliente'     => 
+		[
+            'rules'  => 'max_length[80]',
+            'errors' => [
+				'max_length'=>'La longitud maxima del valor para campo "cliente" es de 80 caracteres' 
+            ]
+		],
+		'cedula'     => 
+		[
+            'rules'  => 'max_length[10]|integer',
+            'errors' => [
+				'max_length'=>'La longitud maxima del valor para campo "cedula" es de 10 caracteres' ,
+				'integer'=>'El campo "cedula" solo permite caracteres numericos'
+            ]
+		],
+
+		'telefono'     => 
+		[
+            'rules'  => 'if_exist|max_length[20]',
+            'errors' => [
+				'max_length'=>'La longitud maxima del valor para campo "telefono" es de 20 caracteres' ,	 
+            ]
+		],
+
+		'celular'     => 
+		[
+            'rules'  => 'if_exist|max_length[20]',
+            'errors' => [
+				'max_length'=>'La longitud maxima del valor para campo "celular" es de 20 caracteres' ,	 
+            ]
+		],
+		'domicilio'     => 
+		[
+            'rules'  => 'if_exist|max_length[100]',
+            'errors' => [
+				'max_length'=>'La longitud maxima del valor para campo "domicilio" es de 100 caracteres' ,	  
+            ]
+		],
+		'ciudad'     => 
+		[
+            'rules'  => 'integer',
+            'errors' => [
+				'integer'=>'El campo "Ciudad" debe ser numerico'
+            ]
+		],
+		'rubro'     => 
+		[
+            'rules'  => 'integer',
+            'errors' => [
+				'integer'=>'El campo "Rubro" debe ser numerico'
+            ]
+		],
+		'saldo_IVA'     => 
+		[
+            'rules'  => 'max_length[10]|integer',
+            'errors' => [
+			 
 				'max_length'=>'La longitud maxima del valor para campo "saldo IVA" es de 10 caracteres' ,	
 				'integer'=> 'El campo "saldo IVA" solo permite caracteres numericos'
 
@@ -209,9 +326,9 @@ class Validation
 
 		'factura' =>
 		[
-			'rules'  => 'required|max_length[13]|integer',
+			'rules'  => 'max_length[13]|integer',
 			'errors' => [
-				'required' => 'Indique el número de factura',
+				//'required' => 'Indique el número de factura',
 				'max_length' => 'El número de factura no debe sobrepasar los 13 dígitos',
 				'integer' => 'El número de factura solo admite valores numéricos'
 
@@ -309,9 +426,9 @@ class Validation
 
 		'factura' =>
 		[
-			'rules'  => 'required|max_length[13]|integer',
+			'rules'  => 'max_length[13]|integer',
 			'errors' => [
-				'required' => 'Indique el número de factura',
+				//'required' => 'Indique el número de factura',
 				'max_length' => 'El número de factura no debe sobrepasar los 13 dígitos',
 				'integer' => 'El número de factura solo admite valores numéricos'
 
@@ -442,5 +559,88 @@ class Validation
 		 
 	];
 
+
+	public $admins= [
+		'nick'     => 
+		[
+            'rules'  => 'required|max_length[20]',
+            'errors' => [
+				'required' => 'Proporciona un nick',
+				'max_length'=>'La longitud máxima permitida para el nick es de 20 caracteres'
+            ]
+		],
+		'email'     => 
+		[
+            'rules'  => 'required|max_length[80]|valid_email',
+            'errors' => [
+				'required'=>'Proporcione su email',
+				'max_length'=>'La longitud maxima del valor para campo "email" es de 80 caracteres',
+				'valid_email'=>'El email proporcionado no es valido'
+            ]
+		],
+		'pass'     => 
+		[
+            'rules'  => 'required|max_length[80]',
+            'errors' => [
+				'required' => 'La contraseña de usuario es requerida',
+				'max_length'=>'La longitud máxima permitida de la contraseña es de 80 caracteres'
+            ]
+		]
+			];
+
+
+	public $parametros = [
+		'EMAIL'     =>
+		[
+			'rules'  => 'if_exist|max_length[80]|valid_email',
+			'errors' => [
+				'max_length' => 'La longitud máxima permitida para el email es de 80 caracteres',
+				'valid_email' => 'El email proporcionado no es válido'
+			]
+		],
+		'REDONDEO'     =>
+		[
+			'rules'  => 'if_exist|max_length[1]',
+			'errors' => [ 
+				'max_length' => 'La longitud maxima del valor para campo "Redondeo" es de 1 dígito' 
+			]
+		],
+		'DIASGRATIS'     =>
+		[
+			'rules'  => 'if_exist|max_length[3]',
+			'errors' => [ 
+				'max_length' => 'La longitud máxima permitida para "Dias de prueba" es de 3 caracteres'
+			]
+		]
+	];
+
+
+	public $monedas = [
+		'moneda'     =>
+		[
+			'rules'  => 'required|max_length[50]',
+			'errors' => [
+				'required' => 'El nombre de moneda es requerido',
+				'max_length' => 'El nombre de moneda es hasta 50 caracteres'
+				
+			]
+		],
+		'prefijo'     =>
+		[
+			'rules'  => 'if_exist|max_length[3]',
+			'errors' => [ 
+				'max_length' => 'La longitud maxima del código de moneda es de 3 caracteres' 
+			]
+		],
+		'tcambio'     =>
+		[
+			'rules'  => 'if_exist|max_length[10]|integer',
+			'errors' => [ 
+				'max_length' => 'La longitud máxima permitida para el cambio de moneda es de 10 dígitos',
+				'integer'=> "El cambio de moneda solo admite valores numéricos"
+			]
+			] 	
+		 
+	];
 
 }

@@ -45,12 +45,30 @@
             background-clip: border-box;
             background-size: contain;
         }
+
+
+
+        /***Opacidad */
+        <?php
+
+        use App\Libraries\Mobile_Detect;
+
+        $adaptativo = new Mobile_Detect();
+        $estilo_ = " ";
+        if ($adaptativo->isMobile())
+            $estilo_ = "#fondoimg{  background-color: #000000bf !important; }";
+        else
+            $estilo_ = "#fondoimg{  background-color: #000000e0 !important; }";
+        echo    $estilo_;
+        ?>
     </style>
+
+
 
 
 </head>
 
-<body>
+<body style="background-image: url(<?= base_url("assets/ivax/assets/images/homebg.jpg") ?>);">
 
 
     <!-- Right Panel -->
@@ -61,174 +79,98 @@
         <div class="content mt-3">
 
 
+            <div id="message-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel"></h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div id="message-modal-content" class="text-center p-2" style="font-weight: 600;">
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            <?= view("plantillas/message") ?>
+            <div id="testest">
+
+            </div>
+            <div id="loaderplace">
+            </div>
 
             <!-- Menu de Usuario -->
             <div class="row">
 
-                <div class="col-12 offset-md-1 col-md-10 ">
+                <div class="col-12">
+                    <?= view("plantillas/message") ?>
+
+                </div>
+                <div class="col-12 offset-md-1 col-md-10 p-0">
+
+                    <div class="card text-light" style="background-color: #000000e0;">
 
 
-                    <?php
-
-                    use App\Helpers\Utilidades;
-
-                    echo  form_open("usuario/create/N",  ['class' => 'container', 'onsubmit' => 'registro(event)']); ?>
-
-
-                    <input type="hidden" name="tipo" value="C"><!-- C= cliente  -->
-
-                    <div class="card">
                         <div class="card-header">
-                            <h4 class="text-center">Registrarse</h4>
+                            <div class="row">
+                                <div class="col-6">
+                                    <img src="<?= base_url("assets/img/Logo.jpg") ?>" alt="Logo">
+                                </div>
+                                <div class="col-6">
+                                    <h4 class="text-center">Registrarme</h4>
+                                </div>
+                            </div>
                         </div>
-                        <div class="card-body card-block p-2">
-                            <div class="row form-group">
+                        <div class="card-body">
+                            <?php
 
-                                <div class="col-12 col-md-6">
-                                    <div class="row form-group">
-                                        <div class="col-3 col-md-3 pl-md-3 pl-0">
-                                            <label for="nf-password" class=" form-control-label form-control-sm -label">Cédula:</label>
-                                        </div>
-                                        <div class="col-9    col-md-9">
-                                            <input value="<?= Utilidades::number_f(set_value('cedula')) == 0 ? "" :  Utilidades::number_f(set_value('cedula')) ?>" maxlength="10" oninput="formatear(event);if(this.value=='0') this.value= ''; control_campo_vacio(event);" type="text" name="cedula" class=" form-control form-control-label form-control-sm ">
-                                            <p id="cedula" style="font-size: 11px;color: red;"></p>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="row form-group">
-                                                <div class="col-3 col-md-3 pl-0 pl-md-3">
-                                                    <label class=" form-control-label form-control-sm -label">RUC:</label>
-                                                </div>
-                                                <div class="col-5 col-md-6 pr-0">
-                                                    <input oninput="control_campo_vacio(event)" value="<?= set_value('ruc') ?>" maxlength="15" type="text" id="nf-email" name="ruc" class="  form-control form-control-label form-control-sm ">
-                                                    <p id="ruc" style="font-size: 11px;color: red;"></p>
-                                                </div>
-                                                <div class="col-1 col-md-1 pl-0 ">
-                                                    <label class=" form-control-label form-control-sm -label">DV:</label>
-                                                </div>
-                                                <div class="col-3 col-md-2">
-                                                    <input value="<?= set_value('dv') ?>" maxlength="2" oninput="solo_numero(event);control_campo_vacio(event);" type="text" name="dv" class="  form-control form-control-label form-control-sm ">
-                                                    <p id="dv" style="font-size: 11px;color: red;"></p>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-3 col-md-3 pl-md-3 pl-0">
-                                            <label for="nf-password" class=" form-control-label form-control-sm -label">Nombres:</label>
-                                        </div>
-                                        <div class="col-9 col-md-9">
-                                            <input value="<?= set_value('cliente') ?>" type="text" maxlength="80" name="cliente" class=" form-control form-control-label form-control-sm ">
-                                        </div>
-                                        <div class="col-3 col-md-3 pl-md-3 pl-0">
-                                            <label for="nf-password" class=" form-control-label form-control-sm -label">Email:</label>
-                                        </div>
-                                        <div class="col-9 col-md-9">
-                                            <input oninput="control_campo_vacio(event)" value="<?= set_value('email') ?>" maxlength="80" type="text" name="email" class=" form-control form-control-label form-control-sm ">
-                                            <p id="email" style="font-size: 11px;color: red;"></p>
-                                        </div>
-                                        <div class="col-3 col-md-3 pl-md-3 pl-0">
-                                            <label for="nf-password" class=" form-control-label form-control-sm -label">Domicilio:</label>
-                                        </div>
-                                        <div class="col-9 col-md-9">
-                                            <input value="<?= set_value('domicilio') ?>" maxlength="100" type="text" name="domicilio" class=" form-control form-control-label form-control-sm ">
-                                        </div>
-                                        <div class="col-3 col-md-3 pl-md-3 pl-0">
-                                            <label for="nf-password" class=" form-control-label form-control-sm -label">Teléfono:</label>
-                                        </div>
-                                        <div class="col-9 col-md-9">
-                                            <input value="<?= set_value('telefono') ?>" oninput="phone_input(event)" maxlength="20" type="text" name="telefono" class=" form-control form-control-label form-control-sm ">
-                                        </div>
-                                        <div class="col-3 col-md-3 pl-md-3 pl-0">
-                                            <label for="nf-password" class=" form-control-label form-control-sm -label">Celular:</label>
-                                        </div>
-                                        <div class="col-9 col-md-9">
-                                            <input value="<?= set_value('celular') ?>" oninput="phone_input(event)" maxlength="20" type="text" name="celular" class=" form-control form-control-label form-control-sm ">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-12 col-md-6">
-                                    <div class="row form-group">
-
-                                        <div class="col-3 col-md-3 pl-md-3 pl-0">
-                                            <label for="nf-password" class=" form-control-label form-control-sm -label">Ciudad:</label>
-                                        </div>
-                                        <div class="col-9 col-md-9">
-                                            <select name="ciudad" class=" form-control form-control-label form-control-sm "></select>
-                                        </div>
-                                        <div class="col-3 col-md-3 pl-md-3 pl-0">
-                                            <label for="nf-password" class=" form-control-label form-control-sm -label">Elegir plan:</label>
-                                        </div>
-                                        <div class="col-9 col-md-9">
-                                            <select name="tipoplan" class=" form-control form-control-label form-control-sm "></select>
-                                        </div>
-                                        <div class="col-3 col-md-3 pl-md-3 pl-0">
-                                            <label for="nf-password" class=" form-control-label form-control-sm -label">Rubro:</label>
-                                        </div>
-                                        <div class="col-9 col-md-9">
-                                            <select name="rubro" class=" form-control form-control-label form-control-sm "></select>
-                                        </div>
-                                        <div class="col-3 col-md-3 pl-md-3 pl-0">
-                                            <label for="nf-password" class=" form-control-label form-control-sm -label">Contraseña:</label>
-                                        </div>
-                                        <div class="col-9 col-md-9">
-                                            <input value="" maxlength="80" type="password" name="pass" class=" form-control form-control-label form-control-sm ">
-                                        </div>
-                                        <div class="col-3 col-md-3 pl-md-3 pl-0">
-                                            <label for="nf-password" class=" form-control-label form-control-sm -label">Repetir contraseña:</label>
-                                        </div>
-                                        <div class="col-9 col-md-9">
-                                            <input oninput="clave_no_coincide(event)" id="pass2" value="" maxlength="80" type="password" class=" form-control form-control-label form-control-sm ">
-                                        </div>
-                                        <div class="col-3 col-md-3 pl-md-3 pl-0">
-                                            <label for="nf-password" class=" form-control-label form-control-sm -label">Saldo anterior: <span>(a favor del contribuyente)</span></label>
-                                        </div>
-                                        <div class="col-9 col-md-9">
-                                            <input value="<?= Utilidades::number_f(set_value('saldo_IVA')) ?>" maxlength="10" oninput="formatear( event)" type="text" name="saldo_IVA" class=" form-control form-control-label form-control-sm ">
-                                        </div>
-                                    </div>
-                                </div>
+                            use App\Helpers\Utilidades;
 
 
+                            echo  form_open(
+                                "usuario/create",
+                                [
+                                    'id' => 'user-form',
+                                    'class' => 'container p-0 p-md-2',
+                                    'onsubmit' => 'registro(event)'
+                                ]
+                            ); ?>
 
-
-
+                            <?= view("usuario/form") ?>
+                            <div class="row">
                                 <div class="col-12  col-md-6 mb-2">
                                     <input type="checkbox" name="aceptar-bases" value="S"> He leído y acepto las <a href="#">bases y condiciones</a>
                                 </div>
-                                <div class="col-12  col-md-6 ">
+                                <div class="col-12  col-md-6  mb-2 ">
                                     <button style="font-size: 12px;font-weight: 600;width:100%;" type="submit" class="btn btn-success btn-sm">
-                                        <i class="fa fa-dot-circle-o"></i> REGISTRARME
+                                        <i class="fa fa-dot-circle-o"></i> GUARDAR
                                     </button>
                                 </div>
 
-                                <div class="col-12" style="border-radius: 20px; background-color: #e8c14c;">
+                                <div class="col-12 col-md-12">
 
-                                    <p class="mt-1 text-center pb-0 mb-0" style="color: red; font-weight: 700;"> PRIMER MES GRATIS</p>
-                                    <p class="mt-0 pt-0" style="color: #1d2101; font-weight: 600;">El costo del servicio es de Gs. 30.000 Gs. en el 2do y 3er mes, a
-                                        partir del 4to mes sube 60.000 Gs. y de ahi no sube más! </p>
+                                    <div class="alert alert-warning pb-1 pt-1 mb-1">
+                                        <p class="mt-1 text-center pb-0 mb-0" style="color: red; font-weight: 700;"> PRIMER MES GRATIS</p>
+                                        <p class="mt-0 pt-0" style=" font-weight: 600;">El costo del servicio es de Gs. 30.000 Gs. en el 2do y 3er mes, a
+                                            partir del 4to mes sube 60.000 Gs. y de ahi no sube más! </p>
+                                    </div>
+
                                 </div>
-
-
                             </div>
-                            <!--end row form  -->
-
-
+                            </form>
                         </div>
+
+
+
                         <div class="card-footer">
-
-
-
                             ¿Ya tienes cuenta?
-                            <a style="font-size: 12px;font-weight: 600;" href="<?= base_url("/") ?>" class="btn btn-secondary btn-sm">
+                            <a style="font-size: 12px;font-weight: 600;" href="<?= base_url("usuario/sign-in") ?>" class="btn btn-secondary btn-sm">
                                 Ingresa aquí
                             </a>
                         </div>
 
                     </div>
-                    </form>
-
 
                 </div>
 
@@ -268,7 +210,15 @@
                     val_Act = val_Act.replaceAll(new RegExp(/[.]*[,]*/g), "");
                     let enpuntos = new Intl.NumberFormat("de-DE").format(val_Act);
                     $(ev.target).val(enpuntos);
+
+                    try {
+                        if (parseInt(enpuntos) == 0) $(ev.target).val("");
+                        else $(ev.target).val(enpuntos);
+                    } catch (err) {
+                        $(ev.target).val(enpuntos);
+                    }
                 }
+
 
                 function solo_numero(ev) {
 
@@ -291,6 +241,7 @@
                 function clave_no_coincide(ev) {
                     let rep = ev.target.value;
                     if (rep == $("input[name=pass]").val()) {
+                        $(ev.target).removeClass("empty-field");
                         $(ev.target).removeClass("password-wrong");
                         $(ev.target).addClass("password-ok");
                         $("input[name=pass]").addClass("password-ok");
@@ -308,8 +259,8 @@
                 function control_campo_vacio(ev) {
                     if (ev.target.value == "") {
                         $(ev.target).addClass("empty-field");
-                        if( ev.target.name != "dv")
-                        $("#" + ev.target.name).text("Campo obligatorio");
+                        if (ev.target.name != "dv")
+                            $("#" + ev.target.name).text("Campo obligatorio");
 
                     } else {
                         $(ev.target).removeClass("empty-field");
@@ -444,7 +395,33 @@
                 }
 
 
-                function registro(ev) {
+                function show_loader() {
+                    let loader = "<img style='z-index: 400000;position: absolute;top: 50%;left: 50%;'  src='<?= base_url("assets/img/loader.gif") ?>'   />";
+                    $("#loaderplace").html(loader);
+                }
+
+                function hide_loader() {
+                    $("#loaderplace").html("");
+                }
+
+
+
+
+                function procesar_errores(err) {
+                    if (typeof err == "object") {
+                        let errs = Object.keys(err);
+                        let concat_errs = errs.map(function(it) {
+                            return err[it];
+                        }).join("<br>");
+                        console.log(concat_errs);
+                        return concat_errs;
+                    }
+                    return err;
+
+                }
+
+
+                async function registro(ev) {
 
 
                     ev.preventDefault();
@@ -454,7 +431,26 @@
                     clean_number($("input[name=saldo_IVA]"));
                     clean_number($("input[name=cedula]"));
 
-                    ev.target.submit();
+                    let datos = $("#user-form").serialize();
+                    show_loader();
+                    let req = await fetch($("#user-form").attr("action"), {
+                        method: "POST",
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: JSON.stringify(datos)
+                    });
+                    let respuesta = await req.json();
+                    hide_loader();
+                    if (("data" in respuesta) && parseInt(respuesta.code) == 200) {
+
+                        $("#message-modal-content").html("REGISTRADO<br> <a href='<?= base_url("usuario/sign-in") ?>'>Iniciar sesión</a>");
+
+                        $("#message-modal").modal("show");
+                    } else {
+                        $("#message-modal-content").html(procesar_errores(respuesta.msj));
+                        $("#message-modal").modal("show");
+                    }
                 }
 
 
@@ -482,7 +478,9 @@
 
     $base_url_for_resources = base_url() . "/assets/template/";
     ?>
+
     <script src="<?= $base_url_for_resources ?>vendors/jquery/dist/jquery.min.js"></script>
+    <script src="<?= $base_url_for_resources ?>vendors/bootstrap/dist/js/bootstrap.min.js"></script>
 
 
 </body>

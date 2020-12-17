@@ -1,4 +1,4 @@
-<?= $this->extend("layouts/index") ?>
+<?= $this->extend("layouts/index_cliente") ?>
 <?= $this->section("titulo") ?>
 Bienvenido
 <?= $this->endSection() ?>
@@ -26,7 +26,7 @@ Bienvenido
                 <h4 style="color: #272727;" class="text-center">Registro de factura de venta</h4>
             </div>
 
-            <form onsubmit="guardar_factura( event )" action="<?= base_url("venta/create/N") ?>" method="post" class="pt-2" style="border: 1px solid #cecece;border-radius: 0px 0px 15px 15px ;">
+            <form onsubmit="guardar_factura( event )" action="<?= base_url("venta/create") ?>" method="post" class="pt-2 bg-light" style="border: 1px solid #cecece;border-radius: 0px 0px 15px 15px ;">
 
                 <input type="hidden" name="ruc" value="<?= session("ruc") ?>">
                 <input type="hidden" name="dv" value="<?= session("dv") ?>">
@@ -52,7 +52,7 @@ Bienvenido
                                     <label for="nf-password" class=" form-control-label form-control-sm -label">N° de factura:</label>
                                 </div>
                                 <div class="col-9 col-md-9">
-                                    <input oninput="factura_format(event)" placeholder="000-000-0000000" maxlength="15" type="text" id="nf-password" name="factura" class=" form-control form-control-label form-control-sm ">
+                                    <input   placeholder="000-000-0000000" maxlength="15" type="text" id="nf-password" name="factura" class=" form-control form-control-label form-control-sm ">
                                     <p style="color:red; font-size: 11px; font-weight: 600;" id="error-factura"></p>
                                 </div>
 
@@ -66,7 +66,7 @@ Bienvenido
                                     <label for="nf-password" class=" form-control-label form-control-sm -label">Tipo de cambio:</label>
                                 </div>
                                 <div class="col-9 col-md-9">
-                                    <input value="0" oninput="formatear_entero(event)" type="text" name="tcambio" class=" form-control form-control-label form-control-sm text-right">
+                                    <input value="0" onfocus="if(this.value=='0') this.value='';"  onblur="if(this.value=='') this.value='0';"  oninput="formatear_entero(event)" type="text" name="tcambio" class=" form-control form-control-label form-control-sm text-right">
                                 </div>
                             </div>
                         </div>
@@ -77,19 +77,19 @@ Bienvenido
                                     <label for="nf-password" class=" form-control-label form-control-sm -label">10%:</label>
                                 </div>
                                 <div class="col-9 col-md-9">
-                                    <input value="0" oninput="totalizar(event)" type="text" id="nf-password" name="importe1" class=" form-control form-control-label form-control-sm text-right ">
+                                    <input value="0" onfocus="if(this.value=='0') this.value='';"  onblur="if(this.value=='') this.value='0';"  oninput="totalizar(event)" type="text" id="nf-password" name="importe1" class=" form-control form-control-label form-control-sm text-right ">
                                 </div>
                                 <div class="col-3 col-md-3  pl-md-3 pl-0">
                                     <label for="nf-password" class=" form-control-label form-control-sm -label">5%:</label>
                                 </div>
                                 <div class="col-9 col-md-9">
-                                    <input value="0" oninput="totalizar(event)" type="text" id="nf-password" name="importe2" class=" form-control form-control-label form-control-sm text-right ">
+                                    <input value="0" onfocus="if(this.value=='0') this.value='';"  onblur="if(this.value=='') this.value='0';" oninput="totalizar(event)" type="text" id="nf-password" name="importe2" class=" form-control form-control-label form-control-sm text-right ">
                                 </div>
                                 <div class="col-3 col-md-3  pl-md-3 pl-0">
                                     <label for="nf-password" class=" form-control-label form-control-sm -label">Exenta:</label>
                                 </div>
                                 <div class="col-9 col-md-9">
-                                    <input value="0" oninput="totalizar(event)" type="text" id="nf-password" name="importe3" class="  form-control form-control-label form-control-sm text-right">
+                                    <input value="0"  onfocus="if(this.value=='0') this.value='';"  onblur="if(this.value=='') this.value='0';"  oninput="totalizar(event)" type="text" id="nf-password" name="importe3" class="  form-control form-control-label form-control-sm text-right">
                                 </div>
                                 <div class="col-3 col-md-3  pl-md-3 pl-0">
                                     <label for="nf-password" class=" form-control-label form-control-sm -label">TOTAL:</label>
@@ -223,10 +223,12 @@ Validaciones
 
 
     function formatear_entero(ev) {
-        if (ev.data == null || ev.data == undefined)
-            ev.target.value = ev.target.value.replaceAll(new RegExp(/[.]*[,]*/g), "");
-
-        if ( ev.data != null  && (ev.data.charCodeAt() < 48 || ev.data.charCodeAt() > 57) ) {
+   
+      //       if (ev.data == undefined) return;
+        if(  ev.data == null  ||  ev.data == undefined)
+        ev.target.value=  ev.target.value.replaceAll(new RegExp(/[.]*[,]*/g), "");
+        if ( ev.data != null  && (ev.data.charCodeAt() < 48 || ev.data.charCodeAt() > 57)  ) {
+            
             ev.target.value =
                 ev.target.value.substr(0, ev.target.selectionStart - 1) +
                 ev.target.value.substr(ev.target.selectionStart);
@@ -235,11 +237,18 @@ Validaciones
         let val_Act = ev.target.value;
         val_Act = val_Act.replaceAll(new RegExp(/[.]*[,]*/g), "");
         let enpuntos = new Intl.NumberFormat("de-DE").format(val_Act);
-        $(ev.target).val(enpuntos);
+        
+        try{
+            if( parseInt( enpuntos) == 0)  $(ev.target).val("");
+            else   $(ev.target).val(enpuntos); 
+        }catch( err){    $(ev.target).val(enpuntos); }
+      
     }
 
 
     function totalizar(ev) {
+         
+
         formatear_entero(ev);
         let monto1 = limpiar_numero_para_float($("input[name=importe1]").val());
         let monto2 = limpiar_numero_para_float($("input[name=importe2]").val());
@@ -260,7 +269,7 @@ Validaciones
         $("input[name=iva3]").val(iva3);
         $("#iva1").val(dar_formato_millares(iva1));
         $("#iva2").val(dar_formato_millares(iva2));
-        if (ev.target.value == "") ev.target.value = "0";
+       // if (ev.target.value == "") ev.target.value = "0";
     }
 
 

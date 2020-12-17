@@ -1,4 +1,4 @@
-<?= $this->extend("layouts/index") ?>
+<?= $this->extend("layouts/index_cliente") ?>
 <?= $this->section("titulo") ?>
 Bienvenido
 <?= $this->endSection() ?>
@@ -7,16 +7,24 @@ Bienvenido
 
 
 
-<!-- Menu de Usuario -->
-<div class="row  mt-2">
 
-    <div class="col-12 offset-md-4 col-md-4 ">
-        <div class="card">
-            <div class="card-header p-0">
-                <h4 class="text-center m-0">Registro de Retención</h4>
+
+
+<div class="row mt-3">
+
+
+<div class="col-12">
+    <?= view("plantillas/message") ?>
+
+</div>
+
+    <div class="col-12  offset-md-3 col-md-6 ">
+        <div class="container p-0">
+            <div class="container" style="border-radius: 15px 15px 0px 0px; background-color: #e4e4e4; border-bottom: 1px solid #cecece;border-right: 1px solid #cecece; border-left: 1px solid #cecece;">
+                <h4 style="color: #272727;" class="text-center">Retención</h4>
             </div>
-            <div class="card-body card-block p-0">
-                <form action="<?= base_url("retencion/create/N") ?>" method="post" class="container" onsubmit="guardar(event)">
+
+            <form action="<?= base_url("retencion/create") ?>" method="post" class="container" onsubmit="guardar(event)">
 
 
                 <input type="hidden" name="ruc" value="<?= session("ruc") ?>">
@@ -25,64 +33,63 @@ Bienvenido
                 <input type="hidden" name="origen" value="W">
 
 
-                    <div class="row form-group">
-                        <div class="col-3 col-md-3 pl-md-3 pl-0">
-                            <label for="nf-email" class=" form-control-label form-control-sm -label">Fecha:</label>
-                        </div>
-                        <div class="col-9 col-md-9">
-                            <input value="<?= date("Y-m-d") ?>" type="date" name="fecha" class="  form-control form-control-label form-control-sm ">
-                        </div>
-                        <div class="col-3 col-md-3 pl-md-3 pl-0">
-                            <label for="nf-password" class=" form-control-label form-control-sm -label">N° de retención:</label>
-                        </div>
-                        <div class="col-9 col-md-9">
-                            <input type="text" maxlength="20" name="retencion" class=" form-control form-control-label form-control-sm ">
-                        </div>
+                <div class="row form-group">
+                    <div class="col-3 col-md-3 pl-md-3 pl-0">
+                        <label for="nf-email" class=" form-control-label form-control-sm -label">Fecha:</label>
+                    </div>
+                    <div class="col-9 col-md-9">
+                        <input value="<?= date("Y-m-d") ?>" type="date" name="fecha" class="  form-control form-control-label form-control-sm ">
+                    </div>
+                    <div class="col-3 col-md-3 pl-md-3 pl-0">
+                        <label for="nf-password" class=" form-control-label form-control-sm -label">N° de retención:</label>
+                    </div>
+                    <div class="col-9 col-md-9">
+                        <input type="text" maxlength="20" name="retencion" class=" form-control form-control-label form-control-sm ">
+                    </div>
 
-                        <div class="col-3 col-md-3 pl-md-3 pl-0">
-                            <label for="nf-password" class=" form-control-label form-control-sm -label">Importe retenido:</label>
-                        </div>
-                        <div class="col-9 col-md-9">
-                            <input maxlength="15" oninput="formatear_entero( event);" type="text" name="importe" class=" form-control form-control-label form-control-sm ">
-                        </div>
+                    <div class="col-3 col-md-3 pl-md-3 pl-0">
+                        <label for="nf-password" class=" form-control-label form-control-sm -label">Importe retenido:</label>
+                    </div>
+                    <div class="col-9 col-md-9">
+                        <input maxlength="15" oninput="formatear_entero( event);" type="text" name="importe" class=" form-control form-control-label form-control-sm ">
+                    </div>
 
-                        <div class="col-3 col-md-3 pl-md-3 pl-0">
-                            <label for="nf-password" class=" form-control-label form-control-sm -label">Moneda:</label>
-                        </div>
-                        <div class="col-9 col-md-9">
-                            <select onchange="cargar_cambio( event)" name="moneda" class=" form-control form-control-label form-control-sm "></select>
-                        </div>
+                    <div class="col-3 col-md-3 pl-md-3 pl-0">
+                        <label for="nf-password" class=" form-control-label form-control-sm -label">Moneda:</label>
+                    </div>
+                    <div class="col-9 col-md-9">
+                        <select onchange="cargar_cambio( event)" name="moneda" class=" form-control form-control-label form-control-sm "></select>
+                    </div>
 
-                        <div id="cambio1" class="col-3 col-md-3  pl-md-3 pl-0 d-none">
-                            <label for="nf-password" class=" form-control-label form-control-sm -label">Tipo de cambio:</label>
-                        </div>
-                        <div id="cambio2" class="col-9 col-md-9 d-none">
-                            <input value="0" oninput="formatear_entero(event)" type="text" name="tcambio" class=" form-control form-control-label form-control-sm text-right">
-                        </div>
-
-
-                        <div class="col-12">
-                            <button style="font-size: 12px;font-weight: 600;width: 100%;" type="submit" class="btn btn-success btn-sm">
-                                REGISTRAR
-                            </button>
-                        </div>
+                    <div id="cambio1" class="col-3 col-md-3  pl-md-3 pl-0 d-none">
+                        <label for="nf-password" class=" form-control-label form-control-sm -label">Tipo de cambio:</label>
+                    </div>
+                    <div id="cambio2" class="col-9 col-md-9 d-none">
+                        <input value="0" oninput="formatear_entero(event)" type="text" name="tcambio" class=" form-control form-control-label form-control-sm text-right">
                     </div>
 
 
+                    <div class="col-12">
+                        <button style="font-size: 12px;font-weight: 600;width: 100%;" type="submit" class="btn btn-success btn-sm">
+                            REGISTRAR
+                        </button>
+                    </div>
+                </div>
 
 
-                </form>
-            </div>
-            <div class="card-footer">
-                <a style="font-size: 12px;font-weight: 600;" href="<?= base_url("/") ?>" class="btn btn-secondary btn-sm">
-                    <i class="fa fa-dot-circle-o"></i> IR AL MENÚ
-                </a>
 
-            </div>
+
+            </form>
         </div>
     </div>
+    <!--end second col -->
 
 </div>
+
+
+
+
+
 
 
 
@@ -111,9 +118,9 @@ Bienvenido
 
 
     function cargar_cambio(ev) {
-        if ( parseInt(  ev.target.value  ) != 1)
+        if (parseInt(ev.target.value) != 1)
             $("#cambio1,#cambio2").removeClass("d-none");
-            else  $("#cambio1,#cambio2").addClass("d-none");
+        else $("#cambio1,#cambio2").addClass("d-none");
     }
 
 
@@ -144,7 +151,7 @@ Bienvenido
         ev.preventDefault();
 
         //limpiar numericos
-        $("input[name=importe]").val(   $("input[name=importe]").val().replaceAll(new RegExp(/\.+/g), "") );
+        $("input[name=importe]").val($("input[name=importe]").val().replaceAll(new RegExp(/\.+/g), ""));
         ev.target.submit();
     }
 

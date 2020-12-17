@@ -1,4 +1,4 @@
-<?= $this->extend("layouts/index") ?>
+<?= $this->extend("layouts/index_cliente") ?>
 <?= $this->section("titulo") ?>
 Bienvenido
 <?= $this->endSection() ?>
@@ -16,7 +16,7 @@ Bienvenido
 
     <div class="col-12 col-md-4">
 
-        <h5>VENTAS</h5>
+        <h5  class="text-center">VENTAS</h5>
         <div id="tabla-ventas">
             <table style="font-size: 11px;" class="table table-bordered ">
                 <thead>
@@ -50,7 +50,7 @@ Bienvenido
 
     <div class="col-12 col-md-4">
 
-        <h5>COMPRA</h5>
+        <h5  class="text-center">COMPRA</h5>
         <div id="tabla-compras">
             <table style="font-size: 11px;" class="table table-bordered  ">
                 <thead>
@@ -84,7 +84,7 @@ Bienvenido
 
     <div class="col-12 col-md-4">
 
-        <h5>RETENCIONES</h5>
+        <h5 class="text-center">RETENCIONES</h5>
       <div id="tabla-retencion">
       <table style="font-size: 11px;" class="table table-bordered ">
             <thead>
@@ -113,16 +113,16 @@ Bienvenido
     <div class="col-12">
         <dl class="row">
             <dt class="col-12 col-md-3">SALDO A FAVOR DEL CONTRIBUYENTE </dt>
-            <dd class="col-12 col-md-9">xxxx</dd>
+            <dd class="col-12 col-md-3" id="SALDO-CONTRI"> 0 </dd>
             <dt class="col-12 col-md-3">SALDO A FAVOR DEL FISCO </dt>
-            <dd class="col-12 col-md-9">xxxxx</dd>
+            <dd class="col-12 col-md-3" id="SALDO-FISCO">0 </dd>
         </dl>
 
 
     </div>
 
     <div class="col-12">
-        <a href="#" class="btn btn-success mt-3 ">ACTUALIZAR</a>
+        <button type="button" onclick="window.location.reload();" class="btn btn-dark mt-3 ">ACTUALIZAR</button>
         <a href="<?= base_url("/") ?>" class="btn btn-success mt-3 ">IR A MENÚ</a>
     </div>
 
@@ -130,6 +130,10 @@ Bienvenido
 </div>
 
 <script>
+
+    var total_iva_10 = 0, total_iva_5=0, total_ex=0;
+
+
     async function informe_compras() {
         //Obtener el resumen de compras
         let loader= "<img  src='<?=base_url("assets/img/loader.gif")?>'   />";
@@ -138,6 +142,11 @@ Bienvenido
         let resp_html = await req.text();
         $("#tabla-compras").html(  resp_html );
 
+        let saldo= parseInt( $("#SALDO-CONTRI").text() );
+        let s5= parseInt(  limpiar_numero($("#compra-total-5").text() )   );
+        let s10= parseInt( limpiar_numero($("#compra-total-10").text())   );
+        saldo+=  s5+ s10;
+        $("#SALDO-CONTRI").text( dar_formato_millares(  saldo) );
     }
 
     async function informe_ventas() {
@@ -147,6 +156,12 @@ Bienvenido
         let req = await fetch($("#info-ventas").val());
         let resp_html = await req.text();
         $("#tabla-ventas").html(  resp_html );
+
+        let saldo= parseInt( $("#SALDO-FISCO").text() );
+        let s5= parseInt(  limpiar_numero($("#venta-total-5").text() )   );
+        let s10= parseInt( limpiar_numero($("#venta-total-10").text())   );
+        saldo+=  s5+ s10;
+        $("#SALDO-FISCO").text( dar_formato_millares(  saldo) );
 
     }
     async function informe_retencion() {
@@ -158,6 +173,19 @@ Bienvenido
         $("#tabla-retencion").html(  resp_html );
 
     }
+
+
+    function dar_formato_millares(val_float) {
+        return new Intl.NumberFormat("de-DE").format(val_float);
+    }
+
+
+    function limpiar_numero(val) {
+        return val.replaceAll(new RegExp(/[.]*/g), "");
+    }
+
+
+
     window.onload= function(){
       
         informe_ventas();

@@ -56,11 +56,16 @@ class LoggedUser implements FilterInterface
             $accede_a_inicio = ($uri->getSegment(1) == "");
             $no_acceso_a_login =  sizeof($uri->getSegments()) == 2  && $uri->getSegment(1) != "usuario" &&  $uri->getSegment(2) != "sign_in";
             $creacion_usuario=  $no_acceso_a_login =  sizeof($uri->getSegments()) == 2  && $uri->getSegment(1) != "usuario" &&  $uri->getSegment(2) != "create";
-            $auxi= sizeof($uri->getSegments())>0 &&  $uri->getSegment(1) != "auxiliar";
-
+            $principal= sizeof($uri->getSegments()) ==0  ;
+ 
             //&&   $no_acceso_a_login && $auxi  &&  $creacion_usuario
-        if (!$session->has('ruc')  )
-        return redirect()->to(base_url("usuario/sign_in"));
+        if (!$session->has('ruc')  ){
+            if(  $principal )
+            return redirect()->to(base_url("welcome/publico"));
+            else
+            return redirect()->to(base_url("usuario/sign_in"));
+        }
+        
           
         }else{
             //Si es usuario de API, verificar la validez de su sesion id

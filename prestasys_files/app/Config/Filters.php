@@ -23,8 +23,9 @@ class Filters extends BaseConfig
 			// 'csrf',
 			'logged_user' =>
 			 ['except' => [
-				 'usuario/create/N', 'usuario/sign-in','usuario/sign_in', 'api/user/sign-in', 'api/user/create', 
-				 'auxiliar/*'
+				 'usuario/create', 'usuario/sign-in','usuario/sign_in', 'api/user/sign-in', 'api/user/create', 
+				 'auxiliar/*','api/cities','api/plans', 'api/currencies',
+				 'admin',  'admin/*', 'home', 'welcome/publico'
 				 ]]
 			//'right_access'
 		],
@@ -43,7 +44,7 @@ class Filters extends BaseConfig
 	// that they should run on, like:
 	//    'isLoggedIn' => ['before' => ['account/*', 'profiles/*']],
 	public $filters = [
-		'logged_user'=> ['before'=> [ "api/purchase/*", "compra/*", 'venta/*', 'retencion/*',  'movimiento/*' ]
+		'logged_user'=> ['before'=> [ "/", "api/purchase/*", "compra/*", 'venta/*', 'retencion/*',  'movimiento/*' ]
 		 ]
 	];
 }

@@ -131,6 +131,26 @@ class Compra extends ResourceController {
 			$resu = []; //Resultado de la operacion
 			try {
 				if ($this->API_MODE)  $data['origen'] = "A"; //ORIGEN Aplicacion
+				//Convertir a guaranies
+				if( $moneda != 1){
+					$cambio = $data['tcambio'];
+					$im1= $data['importe1'];
+					$im2= $data['importe2'];
+					$im3= $data['importe3'];
+					$iva1= $data['iva1'];
+					$iva2= $data['iva2'];
+					$iva3= $data['iva3'];
+					$data['importe1'] =  intval( $cambio) * intval( $im1);
+					$data['importe2'] =  intval( $cambio) * intval( $im2);
+					$data['importe3'] =  intval( $cambio) * intval( $im3);
+					$data['iva1'] =  intval( $cambio) * intval( $iva1);
+					$data['iva2'] =  intval( $cambio) * intval( $iva2);
+					$data['iva3'] =  intval( $cambio) * intval( $iva3);
+					$data["total"] =  $data['importe1']  + $data['importe2']  + $data['importe3']  ;
+					 
+				}
+
+
 				$id = $usu->insert($data);
 				$resu = $this->genericResponse( (new Compras_model())->find($id), null, 200);
 			} catch (Exception $e) {
@@ -139,7 +159,7 @@ class Compra extends ResourceController {
 			//Evaluar resultado
 			if ($this->API_MODE) return  $resu;
 			else {
-				if ($resu['code'] == 200) return redirect()->to(base_url("movimiento/index"));
+				if ($resu['code'] == 200);// return redirect()->to(base_url("movimiento/index"));
 				else  return view("movimientos/comprobantes/f_compra", array("error" => $resu['msj']));
 			}
 		}
@@ -247,8 +267,7 @@ class Compra extends ResourceController {
  
 		if (is_null( $us))
 		return $this->genericResponse(null, "Compra  no existe",  404);
-		else {
-			echo $id;
+		else { 
 			(new Compras_model())->where("regnro", $id)->delete( $id );
 			return $this->genericResponse("Compra eliminada", null,  200);
 		}
