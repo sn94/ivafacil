@@ -68,9 +68,15 @@ $base_url_for_resources = base_url() . "/assets/ivax/";
     <?= $this->renderSection("section_menu") ?>
     <?= $this->renderSection("section_presentacion") ?>
     <?= $this->renderSection("section_register") ?>
-    <?= $this->renderSection("section_plans") ?>
-    <?= $this->renderSection("section_comments") ?>
-    <?= $this->renderSection("section_services") ?>
+
+    <?= ""
+    //$this->renderSection("section_plans") ?>
+    <?=  ""
+    //$this->renderSection("section_comments") ?>
+
+    <?= ""
+    // $this->renderSection("section_services") ?>
+    
     <?= $this->renderSection("section_footer") ?>
 
 

@@ -76,7 +76,8 @@ class PDF extends TCPDF{
 
     public function setHeaderAndFooter(){
             // set default header data
-            $this->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, $this->tituloPdf, $this->subtituloPdf, array(0,64,255), array(0,64,128));
+         //   $this->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, $this->tituloPdf, $this->subtituloPdf, array(0,64,255), array(0,64,128));
+         $this->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, $this->tituloPdf, $this->subtituloPdf, array(90,90,90), array(80,80,80));
             $this->setFooterData(array(0,64,0), array(0,64,128));
 
             // set header and footer fonts

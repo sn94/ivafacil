@@ -20,6 +20,8 @@ Bienvenido
 <div class="row mt-3">
 
 
+    <div class="col-12" id="loaderplace">
+    </div>
     <div class="col-12  offset-md-3 col-md-6 ">
         <div class="container p-0">
             <div class="container" style="border-radius: 15px 15px 0px 0px; background-color: #e4e4e4; border-bottom: 1px solid #cecece;border-right: 1px solid #cecece; border-left: 1px solid #cecece;">
@@ -52,7 +54,7 @@ Bienvenido
                                     <label for="nf-password" class=" form-control-label form-control-sm -label">N° de factura:</label>
                                 </div>
                                 <div class="col-9 col-md-9">
-                                    <input   placeholder="000-000-0000000" maxlength="15" type="text" id="nf-password" name="factura" class=" form-control form-control-label form-control-sm ">
+                                    <input placeholder="000-000-0000000" maxlength="15" type="text" id="nf-password" name="factura" class=" form-control form-control-label form-control-sm ">
                                     <p style="color:red; font-size: 11px; font-weight: 600;" id="error-factura"></p>
                                 </div>
 
@@ -60,13 +62,13 @@ Bienvenido
                                     <label for="nf-password" class=" form-control-label form-control-sm -label">Moneda:</label>
                                 </div>
                                 <div class="col-9 col-md-9">
-                                    <select name="moneda" class=" form-control form-control-label form-control-sm "></select>
+                                    <select onchange="obtener_cambio( event)" name="moneda" class=" form-control form-control-label form-control-sm "></select>
                                 </div>
                                 <div class="col-3 col-md-3  pl-md-3 pl-0">
                                     <label for="nf-password" class=" form-control-label form-control-sm -label">Tipo de cambio:</label>
                                 </div>
                                 <div class="col-9 col-md-9">
-                                    <input value="0" onfocus="if(this.value=='0') this.value='';"  onblur="if(this.value=='') this.value='0';"  oninput="formatear_entero(event)" type="text" name="tcambio" class=" form-control form-control-label form-control-sm text-right">
+                                    <input value="0" onfocus="if(this.value=='0') this.value='';" onblur="if(this.value=='') this.value='0';" oninput="formatear_entero(event)" type="text" name="tcambio" class=" form-control form-control-label form-control-sm text-right">
                                 </div>
                             </div>
                         </div>
@@ -77,19 +79,19 @@ Bienvenido
                                     <label for="nf-password" class=" form-control-label form-control-sm -label">10%:</label>
                                 </div>
                                 <div class="col-9 col-md-9">
-                                    <input value="0" onfocus="if(this.value=='0') this.value='';"  onblur="if(this.value=='') this.value='0';"  oninput="totalizar(event)" type="text" id="nf-password" name="importe1" class=" form-control form-control-label form-control-sm text-right ">
+                                    <input value="0" onfocus="if(this.value=='0') this.value='';" onblur="if(this.value=='') this.value='0';" oninput="totalizar(event)" type="text" id="nf-password" name="importe1" class=" form-control form-control-label form-control-sm text-right ">
                                 </div>
                                 <div class="col-3 col-md-3  pl-md-3 pl-0">
                                     <label for="nf-password" class=" form-control-label form-control-sm -label">5%:</label>
                                 </div>
                                 <div class="col-9 col-md-9">
-                                    <input value="0" onfocus="if(this.value=='0') this.value='';"  onblur="if(this.value=='') this.value='0';" oninput="totalizar(event)" type="text" id="nf-password" name="importe2" class=" form-control form-control-label form-control-sm text-right ">
+                                    <input value="0" onfocus="if(this.value=='0') this.value='';" onblur="if(this.value=='') this.value='0';" oninput="totalizar(event)" type="text" id="nf-password" name="importe2" class=" form-control form-control-label form-control-sm text-right ">
                                 </div>
                                 <div class="col-3 col-md-3  pl-md-3 pl-0">
                                     <label for="nf-password" class=" form-control-label form-control-sm -label">Exenta:</label>
                                 </div>
                                 <div class="col-9 col-md-9">
-                                    <input value="0"  onfocus="if(this.value=='0') this.value='';"  onblur="if(this.value=='') this.value='0';"  oninput="totalizar(event)" type="text" id="nf-password" name="importe3" class="  form-control form-control-label form-control-sm text-right">
+                                    <input value="0" onfocus="if(this.value=='0') this.value='';" onblur="if(this.value=='') this.value='0';" oninput="totalizar(event)" type="text" id="nf-password" name="importe3" class="  form-control form-control-label form-control-sm text-right">
                                 </div>
                                 <div class="col-3 col-md-3  pl-md-3 pl-0">
                                     <label for="nf-password" class=" form-control-label form-control-sm -label">TOTAL:</label>
@@ -126,21 +128,12 @@ Bienvenido
                         <div class="col-12 col-md-6">
                             <div class="row">
                                 <div class="col-12">
-                                    <button style="font-size: 12px;font-weight: 600; width: 100%;" type="submit" class="btn btn-primary">
+                                    <button style="font-size: 12px;font-weight: 600; width: 100%;" type="submit" class="btn btn-success">
                                         GUARDAR
                                     </button>
                                 </div>
 
-                                <div class="col-12">
-                                    <a style="font-size: 12px;font-weight: 600;display:block;" href="<?= base_url("movimiento/index") ?>" class="btn btn-secondary ">
-                                        REGISTRAR OTROS COMPROBANTES
-                                    </a>
-                                </div>
-                                <div class="col-12">
-                                    <a style="font-size: 12px;font-weight: 600;display:block;" href="<?= base_url("/") ?>" class="btn btn-secondary">
-                                        IR AL MENÚ PRINCIPAL
-                                    </a>
-                                </div>
+
 
                             </div>
                         </div>
@@ -223,12 +216,12 @@ Validaciones
 
 
     function formatear_entero(ev) {
-   
-      //       if (ev.data == undefined) return;
-        if(  ev.data == null  ||  ev.data == undefined)
-        ev.target.value=  ev.target.value.replaceAll(new RegExp(/[.]*[,]*/g), "");
-        if ( ev.data != null  && (ev.data.charCodeAt() < 48 || ev.data.charCodeAt() > 57)  ) {
-            
+
+        //       if (ev.data == undefined) return;
+        if (ev.data == null || ev.data == undefined)
+            ev.target.value = ev.target.value.replaceAll(new RegExp(/[.]*[,]*/g), "");
+        if (ev.data != null && (ev.data.charCodeAt() < 48 || ev.data.charCodeAt() > 57)) {
+
             ev.target.value =
                 ev.target.value.substr(0, ev.target.selectionStart - 1) +
                 ev.target.value.substr(ev.target.selectionStart);
@@ -237,17 +230,19 @@ Validaciones
         let val_Act = ev.target.value;
         val_Act = val_Act.replaceAll(new RegExp(/[.]*[,]*/g), "");
         let enpuntos = new Intl.NumberFormat("de-DE").format(val_Act);
-        
-        try{
-            if( parseInt( enpuntos) == 0)  $(ev.target).val("");
-            else   $(ev.target).val(enpuntos); 
-        }catch( err){    $(ev.target).val(enpuntos); }
-      
+
+        try {
+            if (parseInt(enpuntos) == 0) $(ev.target).val("");
+            else $(ev.target).val(enpuntos);
+        } catch (err) {
+            $(ev.target).val(enpuntos);
+        }
+
     }
 
 
     function totalizar(ev) {
-         
+
 
         formatear_entero(ev);
         let monto1 = limpiar_numero_para_float($("input[name=importe1]").val());
@@ -269,7 +264,7 @@ Validaciones
         $("input[name=iva3]").val(iva3);
         $("#iva1").val(dar_formato_millares(iva1));
         $("#iva2").val(dar_formato_millares(iva2));
-       // if (ev.target.value == "") ev.target.value = "0";
+        // if (ev.target.value == "") ev.target.value = "0";
     }
 
 
@@ -291,6 +286,25 @@ Validaciones
 
 
 
+    async function obtener_cambio(ev) {
+
+        let id = ev.target.value;
+
+        let req = await fetch("<?= base_url("monedas/show") ?>/" + id);
+        let json_r = await req.json();
+        if ("data" in json_r) {
+            let cambio = json_r.data.tcambio;
+            try {
+                cambio = parseInt(cambio);
+            } catch (err) {
+                cambio = 0;
+            }
+            $("input[name=tcambio]").val(dar_formato_millares(cambio));
+        }
+    }
+
+
+
 
 
 
@@ -298,6 +312,24 @@ Validaciones
     ***
     Envio de formulario
     */
+
+
+
+    function procesar_errores(err) {
+        if (typeof err == "object") {
+            let errs = Object.keys(err);
+            let concat_errs = errs.map(function(it) {
+                return err[it];
+            }).join("<br>");
+            console.log(concat_errs);
+            return concat_errs;
+        }
+        return err;
+
+    }
+
+
+
 
     function campos_vacios() {
         if (($("input[name=importe1]").val() == "" || $("input[name=importe1]").val() == "0") &&
@@ -307,10 +339,10 @@ Validaciones
             return true;
         }
 
-        if ($("input[name=factura]").val() == "") {
-            alert("Indique el número de factura");
-            return true;
-        }
+        /*  if ($("input[name=factura]").val() == "") {
+              alert("Indique el número de factura");
+              return true;
+          }*/
         if ($("select[name=moneda]").val() != "1" && $("input[name=tcambio]").val() == "") {
             alert("Indique el tipo de cambio");
             return true;
@@ -319,14 +351,24 @@ Validaciones
 
     }
 
-    function guardar_factura(ev) {
+    function show_loader() {
+        let loader = "<img style='z-index: 400000;position: absolute;top: 50%;left: 50%;'  src='<?= base_url("assets/img/loader.gif") ?>'   />";
+        $("#loaderplace").html(loader);
+    }
+
+    function hide_loader() {
+        $("#loaderplace").html("");
+    }
+
+
+    async function guardar_factura(ev) {
         ev.preventDefault();
         if (campos_vacios()) return;
 
-        if (!formato_valido_factura($("input[name=factura]").val())) {
-            alert("Formato de Numero de factura no valido");
-            return;
-        }
+        /* if (!formato_valido_factura($("input[name=factura]").val())) {
+             alert("Formato de Numero de factura no valido");
+             return;
+         }*/
         //limpiar numero de factura
         let factu = $("input[name=factura]").val().replaceAll(/-+/g, "");
         $("input[name=factura]").val(factu);
@@ -336,8 +378,26 @@ Validaciones
         $("input[name=importe3]").val(limpiar_numero_para_float($("input[name=importe3]").val()));
         $("input[name=total]").val(limpiar_numero_para_float($("input[name=total]").val()));
         $("input[name=tcambio]").val(limpiar_numero_para_float($("input[name=tcambio]").val()));
-        ev.target.submit();
+
+         show_loader();
+        let req = await fetch(ev.target.action, {
+            "method": "POST",
+            headers: {
+                // "Content-Type": "application/json"
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: $(ev.target).serialize()
+        });
+        let resp = await req.json();
+        hide_loader();
+        if ("data" in resp) alert(resp.data);
+        else alert(procesar_errores(resp.msj));
+
+        window.location.reload();
     }
+
+
+
 
 
     //init

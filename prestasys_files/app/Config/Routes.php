@@ -85,6 +85,14 @@ $routes->get('/admin/monedas/create', 'Monedas::create');
 $routes->post('/admin/monedas/create', 'Monedas::create'); 
 $routes->get('/admin/monedas/update/(:num)', 'Monedas::update/$1'); 
 $routes->post('/admin/monedas/update', 'Monedas::update'); 
+$routes->get('/admin/monedas/delete/(:num)', 'Monedas::delete/$1'); 
+
+$routes->get('/admin/planes', 'Planes::index'); 
+$routes->get('/admin/planes/create', 'Planes::create'); 
+$routes->post('/admin/planes/create', 'Planes::create'); 
+$routes->get('/admin/planes/update/(:num)', 'Planes::update/$1'); 
+$routes->post('/admin/planes/update', 'Planes::update'); 
+$routes->get('/admin/planes/delete/(:num)', 'Planes::delete/$1'); 
 
 
 /**

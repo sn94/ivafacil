@@ -285,13 +285,18 @@ class Usuario extends ResourceController {
 				unset(  $data['ruc']);
 				unset(  $data['dv']);
 			 
+				if( array_key_exists("pass",  $data))
+				$data['pass'] = password_hash($data['pass'],  PASSWORD_BCRYPT);
+
 				$resu_v=  $this->campos_referenciales_validos( true);
 				if( !is_null( $resu_v)){
 					return $resu_v;
 				}
 				$resu= [];//resultado de la operacion
 			try{
-				$usu->update($id, $data);
+				$usu->where("regnro",  $data['regnro'])
+				->set($data)
+				->update();
 				$resu=  $this->genericResponse($this->model->find($id), null, 200);
 			}catch( Exception $e){
 				$resu=  $this->genericResponse( null, "Hubo un error: ($e)", 500);

@@ -324,16 +324,16 @@ class Validation
 			]
 		],
 
-		'factura' =>
+	/*	'factura' =>
 		[
-			'rules'  => 'max_length[13]|integer',
+			'rules'  => 'min_length[0]|max_length[13]|integer',
 			'errors' => [
 				//'required' => 'Indique el número de factura',
 				'max_length' => 'El número de factura no debe sobrepasar los 13 dígitos',
 				'integer' => 'El número de factura solo admite valores numéricos'
 
 			]
-		],
+		],*/
 		'moneda'  =>
 		[
 			'rules'  => 'required|max_length[2]|integer',
@@ -424,7 +424,7 @@ class Validation
 			]
 		],
 
-		'factura' =>
+		/*'factura' =>
 		[
 			'rules'  => 'max_length[13]|integer',
 			'errors' => [
@@ -433,7 +433,7 @@ class Validation
 				'integer' => 'El número de factura solo admite valores numéricos'
 
 			]
-		],
+		],*/
 		'moneda'  =>
 		[
 			'rules'  => 'required|max_length[2]|integer',
@@ -588,6 +588,35 @@ class Validation
 		]
 			];
 
+	public $admins_update = [
+		'nick'     =>
+		[
+			'rules'  => 'required|max_length[20]',
+			'errors' => [
+				'required' => 'Proporciona un nick',
+				'max_length' => 'La longitud máxima permitida para el nick es de 20 caracteres'
+			]
+		],
+		'email'     =>
+		[
+			'rules'  => 'required|max_length[80]|valid_email',
+			'errors' => [
+				'required' => 'Proporcione su email',
+				'max_length' => 'La longitud maxima del valor para campo "email" es de 80 caracteres',
+				'valid_email' => 'El email proporcionado no es valido'
+			]
+		],
+		'pass'     =>
+		[
+			'rules'  => 'if_exist|required|max_length[80]',
+			'errors' => [
+				'required' => 'La contraseña de usuario es requerida',
+				'max_length' => 'La longitud máxima permitida de la contraseña es de 80 caracteres'
+			]
+		]
+	];
+		
+		
 
 	public $parametros = [
 		'EMAIL'     =>
@@ -642,5 +671,30 @@ class Validation
 			] 	
 		 
 	];
+
+
+
+	
+
+	public $planes = [
+		'descr'     =>
+		[
+			'rules'  => 'required|max_length[100]',
+			'errors' => [
+				'required' => 'Favor detallar descripción del servicio',
+				'max_length' => 'Descripción: Hasta 100 caracteres'
+				
+			]
+		],
+		'precio'     =>
+		[
+			'rules'  => 'if_exist|max_length[10]',
+			'errors' => [ 
+				'max_length' => 'Precio: La longitud maxima de dígitos es 10' 
+			]
+		] 	
+		 
+	];
+
 
 }

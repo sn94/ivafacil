@@ -1,6 +1,8 @@
 <?php 
 namespace App\Controllers;
- 
+
+use App\Helpers\Utilidades;
+use App\Libraries\pdf_gen\PDF;
 use App\Models\Monedas_model;
 use App\Models\Retencion_model;
 use App\Models\Usuario_model; 
@@ -134,7 +136,9 @@ class Retencion extends ResourceController {
 			//Evaluar resultado
 			if ($this->API_MODE) return  $resu;
 			else {
-				if ($resu['code'] == 200) return redirect()->to(base_url("movimiento/informes_mes"));
+				if ($resu['code'] == 200) 
+				return $this->response->setJSON( ['data'=>  'Guardado', 'code'=>'200'] );
+				//return redirect()->to(base_url("movimiento/informe_mes"));
 				else  return view("movimientos/comprobantes/retencion", array("error" => $resu['msj']));
 			}
 		}
@@ -144,7 +148,9 @@ class Retencion extends ResourceController {
 		$resultadoValidacion =  $this->genericResponse(null, $validation->getErrors(), 500);
 		if ($this->API_MODE)
 		return $resultadoValidacion;
-		else  return view("movimientos/comprobantes/retencion", array("error" => $resultadoValidacion['msj']));
+		else  
+		return $this->response->setJSON( ['msj'=>  $resultadoValidacion['msj'], 'code'=>'500'] );
+		//return view("movimientos/comprobantes/retencion", array("error" => $resultadoValidacion['msj']));
 
 	 
 	}
@@ -248,6 +254,101 @@ class Retencion extends ResourceController {
 
 
 	 
+
+
+
+
+
+
+
+
+	
+
+	
+	public function informes( $tipo){
+		try{
+			//parametros
+		$params=  $this->request->getRawInput();
+		$Mes= $params['mes']; 
+		$Anio=  $params['anio'];
+		$Cliente= session("id");
+
+		$lista=	(new Retencion_model())
+		->where("codcliente",   $Cliente)
+		->where("year(fecha)", $Anio)
+		->where(" month( fecha) ",  $Mes)->get()->getResult(); 
+
+		
+		if($tipo== "PDF") return  $this->pdf( $lista);
+		if($tipo == "JSON") return $this->response->setJSON(   $lista ); 
+		}catch( Exception $e)
+		{return $this->response->setJSON(  [] ); }
+}
+
+
+
+public function pdf( $lista){ 
+	 
+	 
+	$html=<<<EOF
+	<style>
+	table.tabla{
+		color: #404040;
+		font-family: Arial;
+		font-size: 8pt;
+		border-left: none; 
+	}
+	
+	tr.header th{ 
+		font-weight: bold;
+		border-bottom: 1px solid black;
+	} 
+	tr.footer td{  
+		font-weight: bold; 
+		border-top: 1px solid black;
+	} 
+	 
+	</style>
+
+	<table class="tabla">
+	<thead >
+	<tr class="header">
+	<th style="text-align:center;">COMPROBANTE</th>
+	<th style="text-align:right;">IMPORTE</th>
+	</tr>
+	</thead>
+	<tbody>
+	EOF;
+
+	$t_importe=0;
+
+	foreach( $lista as $row){
+		$comprobante= Utilidades::formato_factura( $row->retencion );
+		$importe= Utilidades::number_f( $row->importe ); 
+
+		$t_importe= intval(  $row->importe); 
+
+		$html.="<tr> <td style=\"text-align:center;\">$comprobante</td> <td style=\"text-align:right;\" >$importe</td>    </tr>";
+	}
+	$t_importe= Utilidades::number_f( $t_importe); 
+
+	//totales
+	$html.="<tr class=\"footer\"> <td style=\"text-align:center;\">Totales</td> <td style=\"text-align:right;\" >$t_importe</td>  </tr>";
+
+	$html.="</tbody> </table> ";
+	/********* */
+
+	$tituloDocumento= "Retencion-".date("d")."-".date("m")."-".date("yy");
+ 
+		$pdf = new PDF(); 
+		$Cliente= session("id");
+		$RUCCLIENTE= (new Usuario_model())->where("regnro", $Cliente)->first();
+		$TITULO_DOCUMENTO=  "RUC:". $RUCCLIENTE->ruc."-".$RUCCLIENTE->dv." (RETENCIONES)";
+		$pdf->prepararPdf("$tituloDocumento.pdf",  $TITULO_DOCUMENTO , ""); 
+		$pdf->generarHtml( $html);
+		$pdf->generar();
+}
+
 
 
 

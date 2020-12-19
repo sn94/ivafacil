@@ -1,6 +1,18 @@
 <?= $this->extend("layouts/index_cliente") ?>
-<?= $this->section("titulo") ?>
-Bienvenido
+<?= $this->section("estilos") ?>
+<?php 
+$estilo= <<<EOF
+<style>
+
+h5{
+    color: #404040; 
+    font-weight: 600;
+}
+</style>
+EOF;
+echo $estilo;
+
+?>
 <?= $this->endSection() ?>
 
 <?= $this->section("contenido") ?>
@@ -12,9 +24,12 @@ Bienvenido
 <input type="hidden" id="info-retencion" value="<?= base_url("retencion/index/N") ?>">
 
 <!-- Menu de Usuario -->
+
+
+
 <div class="row">
 
-    <div class="col-12 col-md-4">
+    <div class="col-12 col-md-12">
 
         <h5  class="text-center">VENTAS</h5>
         <div id="tabla-ventas">
@@ -48,7 +63,7 @@ Bienvenido
         </div>
     </div>
 
-    <div class="col-12 col-md-4">
+    <div class="col-12 col-md-12">
 
         <h5  class="text-center">COMPRA</h5>
         <div id="tabla-compras">
@@ -82,7 +97,7 @@ Bienvenido
         </div>
     </div>
 
-    <div class="col-12 col-md-4">
+    <div class="col-12 col-md-12">
 
         <h5 class="text-center">RETENCIONES</h5>
       <div id="tabla-retencion">
@@ -111,18 +126,19 @@ Bienvenido
     </div>
 
     <div class="col-12">
+
         <dl class="row">
-            <dt class="col-12 col-md-3">SALDO A FAVOR DEL CONTRIBUYENTE </dt>
-            <dd class="col-12 col-md-3" id="SALDO-CONTRI"> 0 </dd>
-            <dt class="col-12 col-md-3">SALDO A FAVOR DEL FISCO </dt>
-            <dd class="col-12 col-md-3" id="SALDO-FISCO">0 </dd>
+            <dt class="col-12 col-md-6" style="border-bottom: 1px solid #555;" >SALDO A FAVOR DEL CONTRIBUYENTE </dt>
+            <dd class="col-12 col-md-6" id="SALDO-CONTRI"> 0 </dd>
+            <dt class="col-12 col-md-6" style="border-bottom: 1px solid #555;">SALDO A FAVOR DEL FISCO </dt>
+            <dd class="col-12 col-md-6 " id="SALDO-FISCO">0 </dd>
         </dl>
 
 
     </div>
 
     <div class="col-12">
-        <button type="button" onclick="window.location.reload();" class="btn btn-dark mt-3 ">ACTUALIZAR</button>
+        <button type="button" onclick="cargar_tablas()" class="btn btn-dark mt-3 ">ACTUALIZAR</button>
         <a href="<?= base_url("/") ?>" class="btn btn-success mt-3 ">IR A MENÚ</a>
     </div>
 
@@ -186,16 +202,29 @@ Bienvenido
 
 
 
+    async function  cargar_tablas(){
+        await informe_ventas();
+        await informe_compras();
+        await informe_retencion();
+        $("ul.pagination li").addClass("btn btn-dark btn-sm").css("font-weight", "600");
+    }
+
     window.onload= function(){
       
-        informe_ventas();
-        informe_compras();
-        informe_retencion();
+       cargar_tablas();
     };
 </script>
 
 
 
+
+
+<?= $this->endSection() ?>
+
+
+<?= $this->section("scripts") ?>
+<script src="<?=base_url("assets/xls_gen/xls.js")?>"></script> 
+<script src="<?=base_url("assets/xls_gen/xls_ini.js")?>"></script>
 
 
 <?= $this->endSection() ?>

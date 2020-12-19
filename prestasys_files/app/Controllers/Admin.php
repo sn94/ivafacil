@@ -36,7 +36,19 @@ class Admin extends Controller {
 	}
 
 	  
+	public function list(){
+		
+		$adminis= (new Admin_model());
+		$lista_m= $adminis->paginate(10);
+		$pager=  $adminis->pager;
+
+		if(  $this->request->isAJAX()){
+			return view("admin/admin/list",  ['adminis'=>  $lista_m, "pager"=>$pager] );
+		}else{
+			return view("admin/admin/index",  ['adminis'=>  $lista_m, "pager"=>$pager] );
+		}
 	
+	}
 
 
 
@@ -53,9 +65,9 @@ class Admin extends Controller {
 		if (isset($_COOKIE['ivafacil_admin_nick']) && isset($_COOKIE['ivafacil_admin_pa']) ) {
 
 			$nick= $_COOKIE['ivafacil_admin_nick'];
-			$pass=$_COOKIE['ivafacil_user_pa'];
+			$pass=$_COOKIE['ivafacil_admin_pa'];
 			//comparar passw hasheadas
-			$usuarioCookie = new Usuario_model();
+			$usuarioCookie = new Admin_model();
 			$result_pass_comparison =
 			$usuarioCookie->where("nick",  $nick) 
 			->where("session_id", $pass)->first();
@@ -122,7 +134,7 @@ class Admin extends Controller {
 					setcookie("ivafacil_admin_nick", $nick,  time() + 365 * 24 * 60 * 60, "/ivafacil",  env("DOMINIO"));
 					//Crear cookie para password
 					setcookie("ivafacil_admin_pa", $SESSIONID,  time() + 365 * 24 * 60 * 60,  "/ivafacil",  env("DOMINIO"));
-					return redirect()->to(base_url("/admin"));
+					return redirect()->to(base_url("admin/index"));
 				 
 			
 			} catch (Exception $e) {
@@ -304,10 +316,11 @@ class Admin extends Controller {
 				//Preparar passw 
 				//hash pass
 				$data['pass'] = password_hash($data['pass'],  PASSWORD_BCRYPT); 
-				$id = $usu->insert($data);   
+				$id = $usu->insert($data);  
+				$db->transCommit(); 
 				return $this->response->setJSON( array("data"=>  (new Admin_model())->find( $id) , "code"=> 200) );
 			} catch (Exception $e) {
-			 
+				$db->transRollback();
 				return $this->response->setJSON( array("msj"=> "Error al guardar" , "code"=> 500) );
 			}
 			$db->transComplete();
@@ -323,7 +336,78 @@ class Admin extends Controller {
 
 
 
+	
+	public function update( $id= null)
+	{
+		if( $this->request->getMethod( true) == "GET"){ 
+			$adm= (new Admin_model())->find( $id );
+			if( is_null($adm))
+			return redirect()->to("admin/index");
+			else
+			return view("admin/admin/update", ['administrador'=> $adm, 'OPERACION'=>'M']);
+		}
 
+		$usu = new Admin_model();
+		$data = $this->request->getPost();
+		$usuarioo= (new Admin_model())->find( $data['regnro']);
+	
+ 
+		$validation =  \Config\Services::validation();
+	 
+
+		if ( $this->validate("admins_update") ) {
+
+			//Existe 
+			if( $this->existe_usuario())
+			{	
+				if( $data['nick'] !=  $usuarioo->nick ) 
+				return $this->response->setJSON( array("msj"=> "Ya existe un usuario con ese nick" , "code"=> 500) );
+		  
+			}
+  
+			//transaccion
+			$db= \Config\Database::connect();
+
+			$db->transStart();
+			try {
+				//Preparar passw 
+				//hash pass
+				if( array_key_exists( "pass",  $data ))
+				$data['pass'] = password_hash($data['pass'],  PASSWORD_BCRYPT);
+				 
+				$usu->set($data)
+				->where("regnro", $data['regnro' ]  )
+				->update();  
+
+				$db->transCommit(); 
+				$modeloActual= (new Admin_model())->find( $data['regnro' ] );
+				return $this->response->setJSON( array("data"=>  $modeloActual , "code"=> 200) );
+			} catch (Exception $e) {
+				$db->transRollback();
+				return $this->response->setJSON( array("msj"=> "Error al guardar" , "code"=> 500) );
+			}
+			$db->transComplete();
+			 
+			
+		}
+		//Hubo errores de validacion
+	//	$validation = \Config\Services::validation();
+		return $this->response->setJSON( array("msj"=>   $validation->getErrors() , "code"=> 500) );
+	  
+	}
+
+
+
+
+	public function delete(  $id= null){
+		if( is_null( (new Admin_model())->find( $id ) )  ){
+			return $this->response->setJSON( array("msj"=>  "Registro no existe" , "code"=> 500) );
+		}else{
+			(new Admin_model())->where( "regnro", $id )->delete();
+			return $this->response->setJSON( array("data"=> "Borrado" , "code"=> 200) );
+		}
+			 
+	}
 	
 
 }

@@ -1,6 +1,8 @@
 <?php 
 namespace App\Controllers;
- 
+
+use App\Helpers\Utilidades;
+use App\Libraries\pdf_gen\PDF;
 use App\Models\Monedas_model; 
 use App\Models\Usuario_model;
 use App\Models\Ventas_model; 
@@ -14,6 +16,7 @@ class Venta extends ResourceController {
 	protected $modelName = "App\Models\Ventas_model";
 	protected $format = "json";
 	private $API_MODE= true;
+	private $array_response=  [];
 
 
 	 public function __construct(){
@@ -29,12 +32,15 @@ class Venta extends ResourceController {
 	{
 
 		if ($code == 200) {
+			$this->array_response= array("data" => $data, "code" => $code);
 			if ($this->API_MODE)
-			return $this->respond(array("data" => $data, "code" => $code)); //, 404, "No hay nada"
-			else return array("data" => $data, "code" => $code);
+			return $this->respond( $this->array_response ); //, 404, "No hay nada"
+			else return $this->array_response;
 		} else {
-			if ($this->API_MODE) return $this->respond(array("msj" => $msj, "code" => $code));
-			else return array("msj" => $msj, "code" => $code);
+			$this->array_response=  array("msj" => $msj, "code" => $code);
+			if ($this->API_MODE) return $this->respond(  $this->array_response );
+			else return $this->array_response;
+
 		}
 	}
 
@@ -88,7 +94,7 @@ class Venta extends ResourceController {
 			$lista_co = $lista_co->get()->getResult();
 			return $this->respond(array("data" => $lista_co, "code" => 200));
 		} else {
-			$lista_pagi = $lista_co->paginate(15);
+			$lista_pagi = $lista_co->paginate(10);
 			return view("movimientos/informes/grill_ventas",  ['ventas' =>  $lista_pagi, 'ventas_pager' => $lista_co->pager]);
 		}
 	}
@@ -161,7 +167,9 @@ class Venta extends ResourceController {
 			//Evaluar resultado
 			if ($this->API_MODE) return  $resu;
 			else {
-				if ($resu['code'] == 200) return redirect()->to(base_url("movimiento/index"));
+				if ($resu['code'] == 200) 
+				return $this->response->setJSON( ['data'=>  'Guardado', 'code'=>'200'] );
+				//return redirect()->to(base_url("movimiento/informe_mes"));
 				else  return view("movimientos/comprobantes/f_venta", array("error" => $resu['msj']));
 			}
 		}
@@ -171,7 +179,9 @@ class Venta extends ResourceController {
 		$resultadoValidacion =  $this->genericResponse(null, $validation->getErrors(), 500);
 		if ($this->API_MODE)
 		return $resultadoValidacion;
-		else  return view("movimientos/comprobantes/f_venta", array("error" => $resultadoValidacion['msj']));
+		else 
+		return $this->response->setJSON( ['msj'=>  $resultadoValidacion['msj'], 'code'=>'500'] );
+		// return view("movimientos/comprobantes/f_venta", array("error" => $resultadoValidacion['msj']));
 	}
 
 
@@ -277,6 +287,99 @@ class Venta extends ResourceController {
 	 
 
 
+
+	
+	public function informes( $tipo){
+		try{
+			//parametros
+		$params=  $this->request->getRawInput();
+		$Mes= $params['mes']; 
+		$Anio=  $params['anio'];
+		$Cliente= session("id");
+
+		$lista=	(new Ventas_model())
+		->where("codcliente",   $Cliente)
+		->where("year(fecha)", $Anio)
+		->where(" month( fecha) ",  $Mes)->get()->getResult(); 
+
+		
+		if($tipo== "PDF") return  $this->pdf( $lista);
+		if($tipo == "JSON") return $this->response->setJSON(   $lista ); 
+		}catch( Exception $e)
+		{return $this->response->setJSON(  [] ); }
+}
+
+
+
+public function pdf( $lista){ 
+	 
+	 
+	$html=<<<EOF
+	<style>
+	table.tabla{
+		color: #404040;
+		font-family: Arial;
+		font-size: 8pt;
+		border-left: none; 
+	}
+	
+	tr.header th{ 
+		font-weight: bold;
+		border-bottom: 1px solid black;
+	} 
+	tr.footer td{  
+		font-weight: bold; 
+		border-top: 1px solid black;
+	} 
+	 
+	</style>
+
+	<table class="tabla">
+	<thead >
+	<tr class="header">
+	<th style="text-align:center;">COMPROBANTE</th>
+	<th style="text-align:right;">EXENTA</th>
+	<th style="text-align:right;">5%</th>
+	<th style="text-align:right;">10%</th>
+	</tr>
+	</thead>
+	<tbody>
+	EOF;
+
+	$t_exenta=0; $t_iva5= 0;  $t_iva10= 0;
+
+	foreach( $lista as $row){
+		$comprobante= Utilidades::formato_factura( $row->factura );
+		$exenta= Utilidades::number_f( $row->importe3 );
+		$iva5= Utilidades::number_f( $row->importe2 );
+		$iva10= Utilidades::number_f( $row->importe1 );
+
+		$t_exenta+= intval(  $row->importe3);
+		$t_iva5+= intval(  $row->importe2);
+		$t_iva10+= intval(  $row->importe1);
+
+		$html.="<tr> <td style=\"text-align:center;\">$comprobante</td> <td style=\"text-align:right;\" >$exenta</td> <td style=\"text-align:right;\">$iva5</td><td style=\"text-align:right;\">$iva10</td> </tr>";
+	}
+	$t_exenta= Utilidades::number_f( $t_exenta);
+	$t_iva5= Utilidades::number_f( $t_iva5);
+	$t_iva10= Utilidades::number_f( $t_iva10);
+
+	//totales
+	$html.="<tr class=\"footer\"> <td style=\"text-align:center;\">Totales</td> <td style=\"text-align:right;\" >$t_exenta</td> <td style=\"text-align:right;\">$t_iva5</td><td style=\"text-align:right;\">$t_iva10</td> </tr>";
+
+	$html.="</tbody> </table> ";
+	/********* */
+
+	$tituloDocumento= "IVA_Venta-".date("d")."-".date("m")."-".date("yy");
+ 
+		$pdf = new PDF(); 
+		$Cliente= session("id");
+		$RUCCLIENTE= (new Usuario_model())->where("regnro", $Cliente)->first();
+		$TITULO_DOCUMENTO=  "RUC:". $RUCCLIENTE->ruc."-".$RUCCLIENTE->dv." (VENTAS)";
+		$pdf->prepararPdf("$tituloDocumento.pdf",  $TITULO_DOCUMENTO , ""); 
+		$pdf->generarHtml( $html);
+		$pdf->generar();
+}
 
 
 

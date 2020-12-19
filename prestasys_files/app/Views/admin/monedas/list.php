@@ -46,11 +46,4 @@ $adaptativo= new Mobile_Detect();
 <?=  $pager->links()?>
  
  
-
-<script>
-   
-   window.onload= function(){
-    $("ul.pagination li").addClass("btn btn-dark btn-sm").css("font-weight", "600");
-   };
-
-</script>
+ 

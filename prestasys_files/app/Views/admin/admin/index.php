@@ -70,11 +70,11 @@ Bienvenido
         </div>
     </div>
 
-    <h4 class="text-center mb-2">MONEDAS</h4>
+    <h4 class="text-center mb-2">ADMINISTRADORES</h4>
 
     <button type="button" class="btn btn-dark btn-sm" onclick="cargar_form()">NUEVO</button>
-    <div id="tabla-monedas">
-        <?= view("admin/monedas/list") ?>
+    <div id="tabla-admins">
+        <?= view("admin/admin/list") ?>
     </div>
 
 
@@ -85,14 +85,14 @@ Bienvenido
     //Actualizar tabla
     async function actualizar_grilla() {
         let loader = "<img style='z-index: 400000;position: absolute;top: 50%;left: 50%;'  src='<?= base_url("assets/img/loader.gif") ?>'   />";
-        $("#tabla-monedas").html(loader);
-        let form = await fetch("<?= base_url("admin/monedas") ?>", {
+        $("#tabla-admins").html(loader);
+        let form = await fetch("<?= base_url("admin/list") ?>", {
             headers: {
                 "X-Requested-With": "XMLHttpRequest"
             }
         });
         let form_R = await form.text();
-        $("#tabla-monedas").html(form_R);
+        $("#tabla-admins").html(form_R);
         $("ul.pagination li").addClass("btn btn-dark btn-sm").css("font-weight", "600");
     }
 
@@ -102,7 +102,7 @@ Bienvenido
     // Formulario
     async function cargar_form() { //nuevo
 
-        let form = await fetch("<?= base_url("admin/monedas/create") ?>");
+        let form = await fetch("<?= base_url("admin/create") ?>");
         let form_R = await form.text();
         $("#message-modal-content").html(form_R);
         $("#message-modal").modal("show");
@@ -122,8 +122,10 @@ Bienvenido
         if( !confirm("Borrar?") )  return;
         let form = await fetch( ev.currentTarget);
         let _R = await form.json();
-        if(  "data" in  _R ) 
-        actualizar_grilla();
+        if(  "data" in  _R ) {
+           // alert(  _R.data);
+            actualizar_grilla();
+        }
         else   alert(  _R.msj);
     }
 

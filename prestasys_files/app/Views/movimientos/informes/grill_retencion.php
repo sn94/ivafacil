@@ -1,10 +1,55 @@
 <?php
 
 use App\Helpers\Utilidades;
-
- 
 $retencion_t= 0;
 ?>
+
+
+
+<!--   GENERACION DE INFORME  --->
+
+
+<script>
+    function descarga_archivo_retencion(ev) {
+        let valor = ev.target.value;
+        if (valor == "PDF") $('#retencion-reports').submit();
+        if (valor == "EXCEL") {
+            let res_xls = "<?= base_url("retencion/informes/JSON") ?>";
+            callToXlsGen_post_url(res_xls, 'RETENCIONES', '#retencion-reports');
+        }
+    }
+</script>
+<form id="retencion-reports" method="POST" action="<?= base_url("retencion/informes/PDF") ?>" target="_blank">
+    <!--cargar anios -->
+    <select onchange="$('#download-3').val('')"   name="anio" style="font-size: 11px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
+        <?php
+        for ($m = 2020; $m <= date("Y"); $m++) {
+            echo "<option value='$m'>$m</option>";
+        }
+        ?>
+    </select>
+
+    <!--cargar meses -->
+    <select onchange="$('#download-3').val('')" name="mes" style="font-size: 11px; border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
+        <?php
+        for ($m = 1; $m <= 12; $m++) {
+            $nom_mes = Utilidades::monthDescr($m);
+            echo "<option value='$m'>$nom_mes</option>";
+        }
+        ?>
+    </select>
+
+    <button type="submit" style="display: none;"></button>
+
+    <select id="download-3" onchange="descarga_archivo_retencion(event)"  style="font-size: 11px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
+        <option value="">Descargar como..</option>
+        <option value="PDF"> PDF</option>
+        <option value="EXCEL">EXCEL</option>
+    </select>
+
+</form>
+
+
 
 <table style="font-size: 12.5px;font-weight: 600 !important;" class="table table-bordered table-striped table-secondary ">
     <thead>
@@ -27,7 +72,7 @@ $retencion_t= 0;
         endforeach; ?>
     </tbody>
     <tfoot>
-        <tr>
+        <tr class="bg-dark text-light">
             <td>TOTALES</td> 
             <td  class="text-right" id="retencion-total">  <?=Utilidades::number_f(  $retencion_t )?>  </td>    
         </tr>
@@ -35,6 +80,6 @@ $retencion_t= 0;
     </tfoot>
 </table>
 
-<?php echo sizeof($retencion) == 0 ? "SIN REGISTROS" : "" ;?>
+<p style="color:black; font-weight: 600;font-size:11.5px;">Página(s)</p>
     <?= (sizeof($retencion) > 1) ? $retencion_pager->links() : '' ?>
  

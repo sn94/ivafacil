@@ -13,10 +13,12 @@ Bienvenido
 <div class="row mt-3">
 
 
-<div class="col-12">
-    <?= view("plantillas/message") ?>
+    <div class="col-12" id="loaderplace">
+    </div>
+    <div class="col-12">
+        <?= view("plantillas/message") ?>
 
-</div>
+    </div>
 
     <div class="col-12  offset-md-3 col-md-6 ">
         <div class="container p-0">
@@ -117,10 +119,30 @@ Bienvenido
     }
 
 
+
+
+    async function obtener_cambio(ev) {
+
+        let id = ev.target.value;
+
+        let req = await fetch("<?= base_url("monedas/show") ?>/" + id);
+        let json_r = await req.json();
+        if ("data" in json_r) {
+            let cambio = json_r.data.tcambio;
+            try {
+                cambio = parseInt(cambio);
+            } catch (err) {
+                cambio = 0;
+            }
+            $("input[name=tcambio]").val(dar_formato_millares(cambio));
+        }
+    }
+
     function cargar_cambio(ev) {
         if (parseInt(ev.target.value) != 1)
             $("#cambio1,#cambio2").removeClass("d-none");
         else $("#cambio1,#cambio2").addClass("d-none");
+        obtener_cambio(ev);
     }
 
 
@@ -133,26 +155,63 @@ Bienvenido
 
         let req = await fetch("<?= base_url("auxiliar/monedas") ?>");
         let json_r = await req.json();
-
         json_r.forEach(function(obj) {
             $("select[name=moneda]").append("<option value='" + obj.regnro + "'>" + obj.moneda + " (" + obj.prefijo + ")" + "</option>");
         });
+    }
 
+
+
+
+    function procesar_errores(err) {
+        if (typeof err == "object") {
+            let errs = Object.keys(err);
+            let concat_errs = errs.map(function(it) {
+                return err[it];
+            }).join("<br>");
+            console.log(concat_errs);
+            return concat_errs;
+        }
+        return err;
     }
 
 
 
 
 
+    function show_loader() {
+        let loader = "<img style='z-index: 400000;position: absolute;top: 50%;left: 50%;'  src='<?= base_url("assets/img/loader.gif") ?>'   />";
+        $("#loaderplace").html(loader);
+    }
+
+    function hide_loader() {
+        $("#loaderplace").html("");
+    }
+
+
 
     //procesar form
 
-    function guardar(ev) {
+   async  function guardar(ev) {
         ev.preventDefault();
 
         //limpiar numericos
         $("input[name=importe]").val($("input[name=importe]").val().replaceAll(new RegExp(/\.+/g), ""));
-        ev.target.submit();
+        show_loader();
+        let req = await fetch(ev.target.action, {
+            "method": "POST",
+            headers: {
+                // "Content-Type": "application/json"
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: $(ev.target).serialize()
+        });
+        let resp = await req.json();
+        hide_loader();
+        if ("data" in resp) alert(resp.data);
+        else alert(procesar_errores(resp.msj));
+
+        window.location.reload();
     }
 
 

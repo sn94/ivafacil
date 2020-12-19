@@ -330,10 +330,10 @@ Bienvenido
                     alert("Por favor repita su contraseña");
                     return false;
                 }
-                if (!($("input[name=pass]").prop("disabled")) && ($("input[name=pass]").val() != $("#pass2").val())) {
+               /* if (!($("input[name=pass]").prop("disabled")) && ($("input[name=pass]").val() != $("#pass2").val())) {
                     alert("Ambas contraseñas no coinciden");
                     return false;
-                }
+                }**/
                 return true;
             }
 

@@ -3,7 +3,7 @@
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9" lang=""> <![endif]-->
 <!--[if gt IE 8]><!-->
-<html class="no-js" lang="en">
+<html class="no-js" lang="en" style="height: 100% !important; background-size: cover; background-image: url(<?= base_url("assets/img/spring-wallpaper.jpg") ?>);">
 <!--<![endif]-->
 
 <head>
@@ -33,24 +33,34 @@
             border: none;
             border-bottom: 1px solid #0f0;
         }
+
+        body {
+            line-height: unset;
+            height: 100%;
+        }
+
+        .login-form {
+
+            border-radius: 25px;
+        }
     </style>
 
 
 </head>
 
-<body class="bg-dark">
+<body style="background: #060606c9;">
 
 
-    <div class="sufee-login d-flex align-content-center flex-wrap bg-dark">
+    <div class="sufee-login d-flex align-content-center flex-wrap">
         <div class="container">
             <div class="login-content">
 
 
 
-                <div class="login-form pt-0  bg-light " >
+                <div class="login-form pt-0  bg-light ">
 
                     <?php echo view("plantillas/message");  ?>
-                    <form   class="pt-0 pr-0 m-0 bg-light pb-2" action="<?= base_url('admin/sign-in') ?>" method="POST">
+                    <form class="pt-0 pr-0 m-0 bg-light pb-2" action="<?= base_url('admin/sign-in') ?>" method="POST">
 
                         <div class="row m-0 " style="background-color: #dfe8df;">
                             <div class="col-12 col-md-6">

@@ -1,5 +1,6 @@
 <?php namespace Config;
 
+use App\Filters\AdminUser;
 use App\Filters\LoggedUser;
 use App\Filters\RightAccess;
 use CodeIgniter\Config\BaseConfig;
@@ -13,6 +14,7 @@ class Filters extends BaseConfig
 		'toolbar'  => \CodeIgniter\Filters\DebugToolbar::class,
 		'honeypot' => \CodeIgniter\Filters\Honeypot::class,
 		'logged_user'=> LoggedUser::class,
+		'admin_user'=> AdminUser::class
 		//'right_access'=> RightAccess::class
 	];
 
@@ -22,12 +24,16 @@ class Filters extends BaseConfig
 			//'honeypot'
 			// 'csrf',
 			'logged_user' =>
-			 ['except' => [
-				 'usuario/create', 'usuario/sign-in','usuario/sign_in', 'api/user/sign-in', 'api/user/create', 
-				 'auxiliar/*','api/cities','api/plans', 'api/currencies',
-				 'admin',  'admin/*', 'home', 'welcome/publico'
-				 ]]
-			//'right_access'
+			['except' => [
+				'usuario/create', 'usuario/sign-in', 'usuario/sign_in', 'api/user/sign-in', 'api/user/create',
+				'auxiliar/*', 'api/cities', 'api/plans', 'api/currencies',
+				'admin',  'admin/*', 'home', 'welcome/publico'
+			]],
+			'admin_user' =>
+			['except' => [ 
+				'admin/sign-in', 'home', 'welcome/publico', 
+				
+			]]
 		],
 		'after'  => [
 			'toolbar',
@@ -44,7 +50,19 @@ class Filters extends BaseConfig
 	// that they should run on, like:
 	//    'isLoggedIn' => ['before' => ['account/*', 'profiles/*']],
 	public $filters = [
-		'logged_user'=> ['before'=> [ "/", "api/purchase/*", "compra/*", 'venta/*', 'retencion/*',  'movimiento/*' ]
+		'logged_user'=> 
+		['before'=> [ 
+			"/", "api/purchase/*", "compra/*", 'venta/*', 'retencion/*',  'movimiento/*'
+			 ]
+		],
+
+		'admin_user'=> 
+		['before'=> [ 
+			"/", "admin/create",  "admin/update",  "admin/delete",
+			"admin/parametros/create", "admin/planes/*", "admin/monedas"
+			 ]
 		 ]
+
+
 	];
 }

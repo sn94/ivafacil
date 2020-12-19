@@ -73,7 +73,7 @@
 
                     use App\Helpers\Utilidades;
 
-                    echo  form_open("admin/create",  ['id' => 'user-form', 'class' => 'container', 'onsubmit' => 'registro(event)']); ?>
+                    echo  form_open("admin/update",  ['id' => 'user-form', 'class' => 'container', 'onsubmit' => 'registro(event)']); ?>
 
 
                  <div class="card">
@@ -95,7 +95,7 @@
                      </div>
                      <div class="card-footer">
                          <button style="font-size: 12px;font-weight: 600;width:100%;" type="submit" class="btn btn-success btn-sm">
-                             <i class="fa fa-dot-circle-o"></i> GUARDAR
+                             <i class="fa fa-dot-circle-o"></i> ACTUALIZAR
                          </button>
                      </div>
 
@@ -211,27 +211,22 @@
                      $("input[name=email]").addClass("empty-field");
                      $("#email").text("Campo obligatorio");
                  }
-                 if ($("input[name=pass]").val() == "") {
+                 if ( !($("input[name=pass]").prop("disabled")) &&   $("input[name=pass]").val() == "") {
                      $("input[name=pass]").addClass("empty-field");
                      $("#pass").text("Campo obligatorio");
                  }
-                 return ($("input[name=nick]").val() == "") || ($("input[name=email]").val() == "") || ($("input[name=pass]").val() == "");
+                 return ($("input[name=nick]").val() == "") ||
+                  ($("input[name=email]").val() == "") ||
+                   ( !($("input[name=pass]").prop("disabled")) &&     $("input[name=pass]").val() == "");
              }
 
              function claves_validas() {
-                 if ($("input[name=pass]").val() == "") {
+                 if ( !($("input[name=pass]").prop("disabled")) && $("input[name=pass]").val() == "") {
                      alert("Proporcione una contraseña");
                      return false;
                  }
-                 if ($("#pass2").val() == "") {
-                     $("#pass2").addClass("empty-field");
-                     alert("Por favor repita su contraseña");
-                     return false;
-                 }
-                 if ($("input[name=pass]").val() != $("#pass2").val()) {
-                     alert("Ambas contraseñas no coinciden");
-                     return false;
-                 }
+                 
+                 
                  return true;
              }
 
