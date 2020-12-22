@@ -23,18 +23,16 @@ class Monedas extends Controller {
 
 
 
-	public function index(){
-		
-		$monedas= (new Monedas_model());
-		$lista_m= $monedas->paginate(10);
-		$pager=  $monedas->pager;
-
-		if(  $this->request->isAJAX()){
-			return view("admin/monedas/list",  ['monedas'=>  $lista_m, "pager"=>$pager] );
-		}else{
-			return view("admin/monedas/index",  ['monedas'=>  $lista_m, "pager"=>$pager] );
+	public function index()
+	{
+		$monedas = (new Monedas_model());
+		$lista_m = $monedas->paginate(10);
+		$pager =  $monedas->pager;
+		if ($this->request->isAJAX()) {
+			return view("admin/monedas/list",  ['monedas' =>  $lista_m, "pager" => $pager]);
+		} else {
+			return view("admin/monedas/index",  ['monedas' =>  $lista_m, "pager" => $pager]);
 		}
-	
 	}
  
 

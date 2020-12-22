@@ -23,19 +23,25 @@ $compras_t = 0;
 </script>
 <form id="compras-reports" method="POST" action="<?= base_url("compra/informes/PDF") ?>" target="_blank">
     <!--cargar anios -->
-    <select onchange="$('#download-2').val('')"   name="anio" style="font-size: 11px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
+    <select onchange="$('#download-2').val('');informe_compras();"   name="year" style="font-size: 11px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
         <?php
-        for ($m = 2020; $m <= date("Y"); $m++) {
+        for ($m = 2019; $m <= date("Y"); $m++) {
+            if( $year ==  $m)
+            echo "<option selected value='$m'>$m</option>";
+            else
             echo "<option value='$m'>$m</option>";
         }
         ?>
     </select>
 
     <!--cargar meses -->
-    <select onchange="$('#download-2').val('')" name="mes" style="font-size: 11px; border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
+    <select onchange="$('#download-2').val('');informe_compras();" name="month" style="font-size: 11px; border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
         <?php
         for ($m = 1; $m <= 12; $m++) {
             $nom_mes = Utilidades::monthDescr($m);
+            if( $month ==  $m)
+            echo "<option selected value='$m'>$nom_mes</option>";
+            else
             echo "<option value='$m'>$nom_mes</option>";
         }
         ?>
@@ -87,7 +93,7 @@ $compras_t = 0;
         endforeach; ?>
     </tbody>
     <tfoot>
-        <tr>
+        <tr class="bg-dark text-light" >
             <td>TOTALES</td>
             <td class="text-right" id="compra-total-ex"> <?= $compras_total_ex ?> </td>
             <td class="text-right" id="compra-total-5"> <?= $compras_total_5 ?> </td>

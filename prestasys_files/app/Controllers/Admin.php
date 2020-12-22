@@ -41,7 +41,7 @@ class Admin extends Controller {
 		$adminis= (new Admin_model());
 		$lista_m= $adminis->paginate(10);
 		$pager=  $adminis->pager;
-
+ 
 		if(  $this->request->isAJAX()){
 			return view("admin/admin/list",  ['adminis'=>  $lista_m, "pager"=>$pager] );
 		}else{
@@ -343,8 +343,13 @@ class Admin extends Controller {
 			$adm= (new Admin_model())->find( $id );
 			if( is_null($adm))
 			return redirect()->to("admin/index");
-			else
-			return view("admin/admin/update", ['administrador'=> $adm, 'OPERACION'=>'M']);
+			else{
+				if( $this->request->isAJAX())
+				return view("admin/admin/update_ajax", ['administrador'=> $adm, 'OPERACION'=>'M']);
+				else
+				return view("admin/admin/update", ['administrador'=> $adm, 'OPERACION'=>'M']);
+			}
+			
 		}
 
 		$usu = new Admin_model();

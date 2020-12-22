@@ -61,9 +61,6 @@ class Compra extends ResourceController {
  public function index(){
 
 	$this->API_MODE=  $this->isAPI();
-	$response= \Config\Services::response();
-
-  
 
 	$compras= (new Compras_model());
 
@@ -87,7 +84,19 @@ class Compra extends ResourceController {
 			->where("codcliente", session("id"));
 		}
 
+		//Segun los parametros
+		//Parametros: mes y anio
+		$parametros = [];
+		$year = date("Y");
+		$month = date("m");
 
+		if ($this->request->getMethod(true) == "POST") {
+			$parametros = $this->request->getRawInput();
+			$month = isset( $parametros['month'])  ? $parametros['month'] : $month;
+			$year =  isset(  $parametros['year']) ? $parametros['year'] : $year;
+		}
+		$lista_co = $lista_co->where("year(fecha)", $year)
+		->where("month(fecha)", $month);
 
 
 	if ($this->API_MODE) {
@@ -95,10 +104,116 @@ class Compra extends ResourceController {
 		return $this->respond(array("data" => $lista_co, "code" => 200));
 	} else {
 		$lista_pagi = $lista_co->paginate(10);
-		return view("movimientos/informes/grill_compras",  ['compras' =>  $lista_pagi, 'compras_pager'=> $lista_co->pager]);
+		return view("movimientos/informes/grill_compras", 
+		 ['compras' =>  $lista_pagi, 
+		 'compras_pager'=> $lista_co->pager,
+		 'year'=> $year,
+		 'month'=> $month]
+		);
 	}
 	 
 }
+
+
+
+
+public  function  total( $inArray= false  ){
+	$request = \Config\Services::request();
+	$this->API_MODE=  $this->isAPI();
+	$compras= (new Compras_model());
+
+	$lista_co=[];
+
+		if ($this->API_MODE) {
+			
+			$sesion = is_null($request->getHeader('Ivasession')) ? "" :  $request->getHeader('Ivasession')->getValue();
+			//idS de usuario
+			$usunow= (new Usuario_model())->where( "session_id", $sesion)->first();
+			$ruc=  $usunow->ruc;
+			$dv=  $usunow->dv;
+			$codcliente=  $usunow->regnro;
+			//**********/ 
+			$lista_co = $compras->where("dv", $dv)
+			->where("ruc", $ruc) 
+			->where("codcliente", $codcliente)  ;
+		} else {
+			$lista_co = $compras->where("ruc", session("ruc"))
+			->where("dv", session("dv"))
+			->where("codcliente", session("id"));
+		}
+		//Segun los parametros
+		//Parametros: mes y anio
+		$parametros = [];
+		$year = date("Y");
+		$month = date("m");
+
+		 
+		if ($request->getMethod(true) == "POST") {
+			$parametros = $this->request->getRawInput();
+			$month = isset( $parametros['month'])  ? $parametros['month'] : $month;
+			$year =  isset(  $parametros['year']) ? $parametros['year'] : $year;
+		}
+		$lista_co = $lista_co->where("year(fecha)", $year)
+		->where("month(fecha)", $month)
+		->select('if( sum(iva1) is null, 0,  sum(iva1) ) as iva1, if( sum(iva2) is null, 0,  sum(iva2) ) as iva2, if( sum(iva3) is null, 0,  sum(iva3) ) as iva3 ')
+	 
+		->first();
+		$response=  \Config\Services::response();
+		if( $inArray)
+		return $lista_co;
+		else
+		return $response->setJSON(   $lista_co);
+}
+
+
+
+public  function  total_anio( $inArray= false  ){
+	$request = \Config\Services::request();
+	$this->API_MODE=  $this->isAPI();
+	$compras= (new Compras_model());
+
+	$lista_co=[];
+
+		if ($this->API_MODE) {
+			
+			$sesion = is_null($request->getHeader('Ivasession')) ? "" :  $request->getHeader('Ivasession')->getValue();
+			//idS de usuario
+			$usunow= (new Usuario_model())->where( "session_id", $sesion)->first();
+			$ruc=  $usunow->ruc;
+			$dv=  $usunow->dv;
+			$codcliente=  $usunow->regnro;
+			//**********/ 
+			$lista_co = $compras->where("dv", $dv)
+			->where("ruc", $ruc) 
+			->where("codcliente", $codcliente)  ;
+		} else {
+			$lista_co = $compras->where("ruc", session("ruc"))
+			->where("dv", session("dv"))
+			->where("codcliente", session("id"));
+		}
+		//Segun los parametros
+		//Parametros: mes y anio
+		$parametros = [];
+		$year = date("Y"); 
+
+		 
+		if ($request->getMethod(true) == "POST") {
+			$parametros = $this->request->getRawInput(); 
+			$year =  isset(  $parametros['year']) ? $parametros['year'] : $year;
+		}
+		$lista_co = $lista_co->where("year(fecha)", $year) 
+		->select('if( sum(iva1) is null, 0,  sum(iva1) ) as iva1, if( sum(iva2) is null, 0,  sum(iva2) ) as iva2, if( sum(iva3) is null, 0,  sum(iva3) ) as iva3 ')
+	 
+		->first();
+		$response=  \Config\Services::response();
+		if( $inArray)
+		return $lista_co;
+		else
+		return $response->setJSON(   $lista_co);
+}
+
+
+
 
 
 	public function create(){
@@ -215,15 +330,29 @@ class Compra extends ResourceController {
 			$resu = []; //Resultado de la operacion
 			try {
 				if ($this->API_MODE)  $data['origen'] = "A"; //ORIGEN Aplicacion
-
-				$ruc= $data['ruc'];
-				$dv= $data['dv'];
-				$cod_cliente= $data['codcliente'];
  
-				//$usu->where("ruc", $ruc)
-				//->where("dv", $dv)
-				//->where("codcliente", $cod_cliente)
-				$usu->set(  $data)
+				//Convertir a guaranies
+				if( $moneda != 1){
+					$cambio = $data['tcambio'];
+					$im1= $data['importe1'];
+					$im2= $data['importe2'];
+					$im3= $data['importe3'];
+					$iva1= $data['iva1'];
+					$iva2= $data['iva2'];
+					$iva3= $data['iva3'];
+					$data['importe1'] =  intval( $cambio) * intval( $im1);
+					$data['importe2'] =  intval( $cambio) * intval( $im2);
+					$data['importe3'] =  intval( $cambio) * intval( $im3);
+					$data['iva1'] =  intval( $cambio) * intval( $iva1);
+					$data['iva2'] =  intval( $cambio) * intval( $iva2);
+					$data['iva3'] =  intval( $cambio) * intval( $iva3);
+					$data["total"] =  $data['importe1']  + $data['importe2']  + $data['importe3']  ;
+					 
+				}
+				
+				$cod_cliente= $data['codcliente'];
+				$usu->where("codcliente", $cod_cliente)
+				->set(  $data)
 				->update( $cod_compra);
 
 				 
@@ -293,8 +422,8 @@ class Compra extends ResourceController {
 			try{
 				//parametros
 			$params=  $this->request->getRawInput();
-			$Mes= $params['mes']; 
-			$Anio=  $params['anio'];
+			$Mes= $params['month']; 
+			$Anio=  $params['year'];
 			$Cliente= session("id");
 	
 			$lista=	(new Compras_model())

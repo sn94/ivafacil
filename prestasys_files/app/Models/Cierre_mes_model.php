@@ -4,16 +4,16 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class Pago_model extends Model {
+class Cierre_mes_model extends Model {
 
 
 
-   protected $table      = 'pagos';
+   protected $table      = 'cierre_mes';
    protected $returnType= "object";
    protected $primaryKey = 'regnro';
    protected $useTimestamps = true;
    protected $allowedFields = [
-      'comprobante','fecha','validez',  'plan', 'concepto', 'precio', 'cliente', 'estado'
+      'codcliente', 'mes','anio','estado',  't_i_compras',  't_i_ventas', 't_retencion', 'saldo'
    ];
 
     

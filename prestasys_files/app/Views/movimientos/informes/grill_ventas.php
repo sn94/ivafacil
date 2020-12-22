@@ -23,19 +23,25 @@ $ventas_t= 0;
 </script>
 <form id="ventas-reports" method="POST" action="<?= base_url("venta/informes/PDF") ?>" target="_blank">
     <!--cargar anios -->
-    <select onchange="$('#download-1').val('')"   name="anio" style="font-size: 11px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
+    <select onchange="$('#download-1').val('');informe_ventas();"   name="year" style="font-size: 11px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
         <?php
-        for ($m = 2020; $m <= date("Y"); $m++) {
+        for ($m = 2019; $m <= date("Y"); $m++) {
+            if( $year ==  $m)
+            echo "<option selected value='$m'>$m</option>";
+            else
             echo "<option value='$m'>$m</option>";
         }
         ?>
     </select>
 
     <!--cargar meses -->
-    <select onchange="$('#download-1').val('')" name="mes" style="font-size: 11px; border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
+    <select onchange="$('#download-1').val('');informe_ventas();" name="month" style="font-size: 11px; border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
         <?php
         for ($m = 1; $m <= 12; $m++) {
             $nom_mes = Utilidades::monthDescr($m);
+            if( $month ==  $m)
+            echo "<option selected value='$m'>$nom_mes</option>";
+            else
             echo "<option value='$m'>$nom_mes</option>";
         }
         ?>
@@ -83,7 +89,7 @@ $ventas_t= 0;
         endforeach; ?>
     </tbody>
     <tfoot>
-        <tr>
+        <tr class="bg-dark text-light">
             <td>TOTALES</td>
             <td  class="text-right" id="venta-total-ex" > <?= $ventas_total_ex?> </td>
             <td   class="text-right" id="venta-total-5"> <?= $ventas_total_5?> </td> 
@@ -96,3 +102,11 @@ $ventas_t= 0;
 <p style="color:black; font-weight: 600;font-size:11.5px;">Página(s)</p>
     <?= (sizeof($ventas) > 1) ? $ventas_pager->links() : '' ?>
  
+<script>
+
+    async  function filtrar_ventas(){
+
+    }
+
+    
+</script>

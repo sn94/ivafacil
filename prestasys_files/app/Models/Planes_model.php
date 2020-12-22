@@ -17,7 +17,7 @@ class Planes_model extends Model {
    protected $useTimestamps = true;
    protected $allowedFields = 
   [ 
-   'descr','precio','nombre'
+   'descr','precio','nombre', 'dias'
   ];
     
   

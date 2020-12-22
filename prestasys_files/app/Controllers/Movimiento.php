@@ -29,30 +29,28 @@ class Movimiento extends Controller {
 
 	 
 
-	 
-	private function genericResponse($data, $msj, $code)
-	{
+	  
+ 
 
-		$response= \Config\Services::response();
+ 
 
-		if ($code == 200) {
-			if ($this->API_MODE)
-			return $response->setJSON(array("data" => $data, "code" => $code)); //, 404, "No hay nada"
-			else return array("data" => $data, "code" => $code);
-		} else {
-			if ($this->API_MODE) return $response->setJSON(array("msj" => $msj, "code" => $code));
-			else return array("msj" => $msj, "code" => $code);
-		}
+
+//vista general de informes de movimiento
+//resumen de compra
+//de venta
+//de retencion 
+//en el mes
+	public function informe_mes(){
+		return view("movimientos/informes/index");
 	}
+	 
+	 
+
+
+
 
 
 	
- 
-	public function index(){  
-		return view("movimientos/comprobantes/index"  ); 
-	}
-
- 
 	public function r_cierre(){
 		return view("movimientos/cierre");
 	}
@@ -68,14 +66,6 @@ class Movimiento extends Controller {
 	public function resumen_anio(){
 		return view("movimientos/resumen_anio");
 	}
-
-
-//vista general de informes de movimiento
-	public function informe_mes(){
-		return view("movimientos/informes/index");
-	}
-	 
-	 
      
 	  
 }

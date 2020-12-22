@@ -3,14 +3,12 @@
 
 use App\Helpers\Utilidades;
 use App\Libraries\Correo;
-use App\Libraries\pdf_gen\PDF;
+use App\Models\Cierre_mes_model;
 use App\Models\Ciudades_model;
 use App\Models\Pago_model;
 use App\Models\Planes_model;
 use App\Models\Rubro_model;
-use App\Models\Usuario_model;
-use CodeIgniter\HTTP\Request;
-use CodeIgniter\HTTP\Response;
+use App\Models\Usuario_model; 
 use CodeIgniter\RESTful\ResourceController;
 use CodeIgniter\Session\Session;
 use Exception;
@@ -35,10 +33,9 @@ class Usuario extends ResourceController {
 		helper("form");
 	}
 
+	 
 
-	public function t(){
-		return view("home");
-	}
+
 
 	private function isAPI(){
 
@@ -49,6 +46,24 @@ class Usuario extends ResourceController {
         } return false; 
     }
  
+
+
+	private function getClienteId(){
+		$usu= new Usuario_model();
+        $request = \Config\Services::request();
+        $IVASESSION= is_null($request->getHeader("Ivasession")) ? "" :  $request->getHeader("Ivasession")->getValue();
+        $res= $usu->where( "session_id",  $IVASESSION )->first();
+     
+		if( is_null( $res) ) return "false";
+		else{
+			 return $res->regnro; 
+		}
+	}
+	private function isAdminView(){
+		$request = \Config\Services::request();
+		$uri = $request->uri; 
+		return (   sizeof($uri->getSegments()) > 0  && $uri->getSegment(1) == "admin"  );
+	}
 
 	private function genericResponse($data, $msj, $code)
 	{
@@ -79,6 +94,39 @@ class Usuario extends ResourceController {
 		}
 	
 	}
+
+
+	
+	public function list(){
+
+		/**Parametros POST */
+		$argumento= "";
+		if(  $this->request->getMethod( true )  ==  "POST"){
+			$data=  $this->request->getRawInput();
+			$argumento=  $data['argumento'];
+		}
+	
+		/******* */
+		$usu= (new Usuario_model());
+		//fILTRAR
+		if( $argumento !=  "" ){
+			$usu= 	$usu->like('ruc', $argumento)
+		->orLike( 'cedula', $argumento )
+		->orLike( 'cliente', $argumento); 
+		} 
+	
+ 
+
+		$lista_m = $usu->paginate(10);
+		$pager =  $usu->pager;
+		if( $this->request->isAJAX())
+		return view("admin/clientes/list", ['clientes'=>  $lista_m, 'pager'=> $pager ]);
+		else 
+		return view("admin/clientes/index", ['clientes'=> $lista_m, 'pager'=> $pager   ]);
+	 }
+
+
+
 
 	public function show( $id = null)
 	{
@@ -172,8 +220,13 @@ class Usuario extends ResourceController {
 
 	public function create()
 	{
-		if( $this->request->getMethod( true) == "GET") return view("usuario/create");
-
+		if ($this->request->getMethod(true) == "GET") {
+ 
+			if( $this->isAdminView()  )
+			return view("admin/clientes/create");
+			else
+			return view("usuario/create");
+		}
 
 
 		$this->API_MODE=  $this->isAPI();
@@ -265,7 +318,11 @@ class Usuario extends ResourceController {
 		if ($this->request->getMethod(true) == "GET") {
 			$us = new Usuario_model();
 			$usua = $us->find($id);
-			return view("usuario/update",  ['usuario' =>   $usua, "OPERACION"=> "M"]);
+
+			if ($this->isAdminView()) { 
+				return view("admin/clientes/update",  ['usuario' =>   $usua, "OPERACION" => "M"]);
+			} else
+			return view("usuario/update",  ['usuario' =>   $usua, "OPERACION" => "M"]);
 		}
 
 		$this->API_MODE=  $this->isAPI();
@@ -335,7 +392,10 @@ class Usuario extends ResourceController {
 		return $this->genericResponse(null, "Usuario $id no existe",  404);
 		else {
 			$this->model->where( "regnro", $id)->delete();
+			if( $this->API_MODE)
 			return $this->genericResponse("Usuario eliminado", null,  200);
+			else 
+			return $this->response->setJSON( ['data'=>"USUARIO ELIMINADO", "code"=> "200"] );
 		}
 	}
 
@@ -669,83 +729,243 @@ dv
 
 	}
 
-	 
- 
-
- 
-
- 
-	  
-  
-
-	 
-	/**
-	 * Reportes
-	 */
 
 
 
-	public function informes(){
-		$dts= (new Usuario_model())->list(); 
-		return view( "usuario/informes", array("list"=> $dts)  );
-	}
+	public function list_pagos($id)
+	{
+		$pagos =	(new Pago_model())->where("cliente",  $id)
+			->select(" pagos.regnro, pagos.comprobante, pagos.fecha, pagos.created_at, planes.descr as plan")
+			->join(
+				"planes",
+				"planes.regnro=pagos.plan"
+			);
+		$lista_m = $pagos->paginate(10);
+		$pager =  $pagos->pager;
 
+		return view("admin/clientes/grill_pagos",  ['pagos' =>  $lista_m, "pager" =>  $pager]);
+	}	
 
-	public function generarPdf( $opc= "0"){ 
-		$usersList=	(new Usuario_model())->list($opc); 
+	public function pagar(  $id= null){
 
-		$html=<<<EOF
-		<style>
-		table.tabla{
-			color: #003300;
-			font-family: helvetica;
-			font-size: 8pt;
-			border-left: 3px solid #777777;
-			border-right: 3px solid #777777;
-			border-top: 3px solid #777777;
-			border-bottom: 3px solid #777777;
-			background-color: #ddddff;
-		}
+		if( $this->request->getMethod( true) == "GET")
+		return view( "admin/clientes/pagos", ['CLIENTE'=>  $id]);
+		else 
+		{
+			$data_req = $this->request->getRawInput();
+			$Cliente_cod = $data_req['cliente'];
+			$Cliente_datos = (new Usuario_model())->find($Cliente_cod);
+			$PlanDatos= (new Planes_model())->find(  $Cliente_datos->tipoplan);
+			//CALCULO DE FECHA CADUCIDAD PRUEBA GRATIS
+			$DIASPLAN = $PlanDatos->dias;
+			$validez = date("Y-m-d H:i:s",  strtotime(date("Y-m-d H:i:s") . " + $DIASPLAN days"));
+			$datos_plus = [
+			 
+				"validez" =>  $validez,
+				"plan" => $Cliente_datos->tipoplan, 
+				"precio" => $PlanDatos->precio,
+			];
+			$datos= array_merge( $data_req, $datos_plus );
+			$pago = new Pago_model();
+			//transaccion
+			$db = \Config\Database::connect();
+
+			$db->transStart();
+			try {
+				$pago->insert($datos);
+				$db->transCommit();
+				return $this->response->setJSON(['data' => "REGISTRADO",  'code' => "200"]);
+			} catch (Exception $ex) {
+				$db->transRollback();
+				return $this->response->setJSON(['msj' => "$ex",  'code' => "500"]);
+			}
+			$db->transComplete();
 		
-		tr.header{
-			background-color: #ccccff; 
-			font-weight: bold;
-		} 
-		tr{
-			background-color: #ddeeff;
-			border-bottom: 1px solid #000000; 
+
 		}
-		</style>
-
-		<table class="tabla">
-		<thead >
-		<tr class="header">
-		<td>Cedula</td>
-		<td>Nombres</td>
-		<td>Usuario</td>
-		</tr>
-		</thead>
-		<tbody>
-		EOF;
-		foreach( $usersList as $row){
-			$html.="<tr> <td>{$row->cedula}</td> <td>{$row->nombres}</td> <td>{$row->usuario}</td> </tr>";
-		}
-		$html.="</tbody> </table> ";
-		/********* */
-
-		$tituloDocumento= "Usuarios-".date("d")."-".date("m")."-".date("yy");
-
-			$this->load->library("PDF"); 	
-			$pdf = new PDF(); 
-			$pdf->prepararPdf("$tituloDocumento.pdf", $tituloDocumento, ""); 
-			$pdf->generarHtml( $html);
-			$pdf->generar();
 	}
-	
+ 
 
+	   
 	 
 
 
 	
+
+	public function totales(){
+		$cf=  (new Compra())->total( true );
+		$df= (new Venta())->total(   true);
+		$reten= (new Retencion())->total( true );
+	 
+		 //A favor del contribuyente
+		$s_contri=  intval(  $cf->iva1) +  intval($cf->iva2) + intval(  $reten->importe );
+		 //A favor de hacienda
+		 $s_fisco=  intval(  $df->iva1) +  intval($df->iva2 );
+		 //Saldo
+		 $saldo=  $s_contri -  $s_fisco;
+		 $response=  \Config\Services::response();
+		
+		 return  $response->setJSON(  
+			[
+				'compras' => (intval($cf->iva1) +  intval($cf->iva2)),
+				'ventas' => $s_fisco,
+				'retencion' => (intval($reten->importe)),
+				'saldo' => $saldo
+			]
+		  );
+	}
+
+
+
+	private function __saldo_anterior(){
+		$this->API_MODE = $this->isAPI();
+
+		$CODCLIENTE =  $this->API_MODE ?  $this->getClienteId() :    session("id");
+
+		 
+		$ANTERIOR_S=(new Cierre_mes_model())->where("codcliente", $CODCLIENTE)->orderBy("created_at", "DESC")->first();
+		//Aun no hay cierres
+		if( is_null(  $ANTERIOR_S) ){
+			$SALDO_INI= (new Usuario_model())->find( $CODCLIENTE);
+			$inicial=  $SALDO_INI->saldo_IVA;
+			return   $inicial;
+		}else 
+		return   $ANTERIOR_S->saldo;
+	}
+
+	public function saldo_anterior( ){
+
+		$sa=  $this->__saldo_anterior();
+		return $this->response->setJSON(['data' => $sa,  'code' => "200"]);
+	}
+
+
+
+
+	public function view_cierre_mes(){
+		return view("movimientos/cierre");
+	}
+
+	public function  cierre_mes()
+	{
+
+		$this->API_MODE = $this->isAPI();
+
+		$CODCLIENTE =  $this->API_MODE ?  $this->getClienteId() :    session("id");
+
+
+		//no cerrar si no se esta al dia con el pago
+		if (!$this->servicio_habilitado($CODCLIENTE))
+			return $this->response->setJSON(['msj' => "Operación no disponible. Revise su estado de pago",  'code' => "500"]);
+		//no cerrar un mes dos veces
+		$cerrado = (new Cierre_mes_model())->where("codcliente", $CODCLIENTE)->where("mes", date("m"))->first();
+		if (!is_null($cerrado)) {
+			$nom_mes = Utilidades::monthDescr(date("m"));
+			return $this->response->setJSON(['msj' => "No permitido. El Mes de $nom_mes ya está cerrado.",  'code' => "500"]);
+		}
+
+			$cierre =  new Cierre_mes_model();
+			//numeros
+			$cf =  (new Compra())->total(true);
+			$df = (new Venta())->total(true);
+			$reten = (new Retencion())->total(true);
+
+			//A favor del contribuyente
+			$s_contri =  intval($cf->iva1) +  intval($cf->iva2) + intval($reten->importe);
+			//A favor de hacienda
+			$s_fisco =  intval($df->iva1) +  intval($df->iva2);
+			//Saldo
+			$saldo_ante= $this->__saldo_anterior();
+			$saldo = ( $s_contri + intval($saldo_ante)  ) -  $s_fisco;
+			$mes = date("m");
+			$anio = date("Y");
+			$DATOS = [
+				'codcliente' => $CODCLIENTE,
+				'mes' => $mes,
+				'anio' => $anio,
+				't_i_compras' => (intval($cf->iva1) +  intval($cf->iva2)),
+				't_i_ventas' => $s_fisco,
+				't_retencion' => (intval($reten->importe)),
+				'saldo' => $saldo
+			];
+
+			try {
+				$cierre->insert($DATOS);
+				//Notificar
+				// ....
+				return $this->response->setJSON(['data' => "Se ha registrado el cierre del mes ",  'code' => "200"]);
+			} catch (Exception $ex) {
+				return $this->response->setJSON(['msj' => "Comunique este error a su proveedor de servicios: $ex",  'code' => "500"]);
+			}
+		
+	}
+
+
+
+
+
+	/*
+
+	*RESUMEN DE ANIO
+	*/
+
+
+
+	public function view_cierre_anio(){
+		return view("movimientos/resumen_anio");
+	}
+
+
+
+
+	private function __saldo_anterior_anio(){
+		$this->API_MODE = $this->isAPI();
+
+		$CODCLIENTE =  $this->API_MODE ?  $this->getClienteId() :    session("id");
+
+		 
+		$ANTERIOR_S=(new Cierre_mes_model())->where("codcliente", $CODCLIENTE)
+		->where("anio",  date("Y")-1)
+		->orderBy("created_at", "DESC")->first();
+		//Aun no hay cierres
+		if( is_null(  $ANTERIOR_S) ){
+			$SALDO_INI= (new Usuario_model())->find( $CODCLIENTE);
+			$inicial=  $SALDO_INI->saldo_IVA;
+			return   $inicial;
+		}else 
+		return   $ANTERIOR_S->saldo;
+	}
+	
+
+	public function saldo_anterior_anio( ){
+
+		$sa=  $this->__saldo_anterior_anio();
+		return $this->response->setJSON(['data' => $sa,  'code' => "200"]);
+	}
+
+	public function totales_anio(){
+		$cf=  (new Compra())->total_anio( true );
+		$df= (new Venta())->total_anio(   true);
+		$reten= (new Retencion())->total_anio( true );
+	 
+		 //A favor del contribuyente
+		 $saldo_ante_anio= $this->__saldo_anterior_anio();// NO
+		$s_contri=  intval(  $cf->iva1) +  intval($cf->iva2) + intval(  $reten->importe );
+		 //A favor de hacienda
+		 $s_fisco=  intval(  $df->iva1) +  intval($df->iva2 );
+		 //Saldo
+		 $saldo=  $s_contri -  $s_fisco;
+		 $response=  \Config\Services::response();
+		
+		 return  $response->setJSON(  
+			[
+				'compras' => (intval($cf->iva1) +  intval($cf->iva2)),
+				'ventas' => $s_fisco,
+				'retencion' => (intval($reten->importe)),
+				'saldo' => $saldo
+			]
+		  );
+	}
+
 
 }

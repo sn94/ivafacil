@@ -1,4 +1,4 @@
-<?= $this->extend("layouts/index_cliente") ?>
+<?= $this->extend("admin/layout/index") ?>
 <?= $this->section("titulo") ?>
 Bienvenido
 <?= $this->endSection() ?>
@@ -88,7 +88,7 @@ Bienvenido
 
 
                 <div class="container" style="border-radius: 15px 15px 0px 0px; background-color: #d1d1d1;">
-                    <h4 class="text-center">Mis datos</h4>
+                    <h4 class="text-center">INFORMACIÓN DE CLIENTE</h4>
                 </div>
 
                 <div class="container pt-1" style="border: 1px solid #d1d1d1;">
@@ -96,7 +96,7 @@ Bienvenido
 
                     use App\Helpers\Utilidades;
 
-                    echo  form_open("usuario/update",  ['id' => 'user-form', 'class' => 'container', 'onsubmit' => 'registro(event)']); ?>
+                    echo  form_open("admin/clientes/update",  ['id' => 'user-form', 'class' => 'container', 'onsubmit' => 'registro(event)']); ?>
 
                     <input type="hidden" name="_method" value="PUT" />
                     <?= view("usuario/form") ?>
@@ -372,9 +372,8 @@ Bienvenido
                 ev.preventDefault();
                 if (campos_vacios() || !claves_validas()) return;
 
-                clean_number($("input[name=cedula]"));
-                clean_number($("input[name=saldo_IVA]"));
-
+                clean_number(  $("input[name=cedula]"));
+                clean_number(  $("input[name=saldo_IVA]"));
                 let datos = $("#user-form").serialize();
                 show_loader();
                 let req = await fetch($("#user-form").attr("action"), {
@@ -388,12 +387,11 @@ Bienvenido
                 let respuesta = await req.json();
                 hide_loader();
                 if (("data" in respuesta) && parseInt(respuesta.code) == 200) {
-
                     alert("ACTUALIZADO");
                     window.location.reload();
 
-                    //$("#message-modal-content").html(procesar_errores(respuesta.data));
-                  //  $("#message-modal").modal("show");
+//                    $("#message-modal-content").html(procesar_errores(respuesta.data));
+  //                  $("#message-modal").modal("show");
                 } else {
                     $("#message-modal-content").html(procesar_errores(respuesta.msj));
                     $("#message-modal").modal("show");

@@ -8,6 +8,22 @@ Bienvenido
 
 
 <style>
+
+ 
+
+h4.text-center {
+  /* color: #272727; */
+  color: #646464;
+  font-weight: 600;
+}
+
+
+
+.offset-md-3 > div:nth-child(1) > div:nth-child(1) {
+  background-color: #d1d1d1;
+}
+
+
     .wrong-factura {
         border: 2px solid #ed2328;
         background-color: #ff9595;
@@ -25,7 +41,7 @@ Bienvenido
     <div class="col-12  offset-md-3 col-md-6 ">
         <div class="container p-0">
             <div class="container" style="border-radius: 15px 15px 0px 0px; background-color: #e4e4e4; border-bottom: 1px solid #cecece;border-right: 1px solid #cecece; border-left: 1px solid #cecece;">
-                <h4 style="color: #272727;" class="text-center">Registro de factura de compra</h4>
+                <h4   class="text-center">Factura de compra</h4>
             </div>
 
             <form onsubmit="guardar_factura( event )" action="<?= base_url("compra/create") ?>" method="post" class="pt-2 bg-light" style="border: 1px solid #cecece;border-radius: 0px 0px 15px 15px ;">
@@ -112,7 +128,7 @@ Bienvenido
                         <div class="col-12 col-md-6">
                             <div class="container-fluid p-0" style="border-bottom: 1px solid #cecece;border-right: 1px solid #cecece; border-left: 1px solid #cecece;border-radius: 20px;">
 
-                                <h6 class="text-center" style="border: 1px solid #cecece;background-color: #a5df99;border-radius: 10px 10px 0px 0px;">Total IVA</h6>
+                                <h6 class="text-center"   style="color: #515050;font-weight: 600;border: 1px solid #cecece;background-color: #b7b3b3;border-radius: 10px 10px 0px 0px;">Total IVA</h6>
                                 <div class="row form-group">
                                     <div class="col-3" style="font-size: 12px;">
                                         10%

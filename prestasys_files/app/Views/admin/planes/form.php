@@ -5,6 +5,7 @@ use App\Helpers\Utilidades;
 $regnro = isset($planes) ? $planes->regnro : '';
 $descr = isset($planes) ? $planes->descr : '';
 $precio = isset($planes) ? Utilidades::number_f($planes->precio) : '0';
+$dias = isset($planes) ? $planes->dias : ''; 
 ?>
 
 <div class="container-fluid">
@@ -34,6 +35,13 @@ $precio = isset($planes) ? Utilidades::number_f($planes->precio) : '0';
                         </div>
                         <div class="col-12 col-md-8 pl-0 ">
                             <input onfocus="if(this.value=='0') this.value='';" onblur="if(this.value=='') this.value='0';"   oninput="formatear_entero( event)"  value="<?= $precio ?>" maxlength="14" type="text" name="precio" class=" form-control form-control-sm ">
+
+                        </div>
+                        <div class="col-12 col-md-4 pl-md-3 pl-0">
+                            <label for="nf-password">Días de validez:</label>
+                        </div>
+                        <div class="col-12 col-md-8 pl-0 ">
+                            <input onfocus="if(this.value=='0') this.value='';" onblur="if(this.value=='') this.value='0';"   oninput="formatear_entero( event)"  value="<?= $dias ?>" maxlength="3" type="text" name="dias" class=" form-control form-control-sm ">
 
                         </div>
 

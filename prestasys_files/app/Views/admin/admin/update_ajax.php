@@ -1,9 +1,4 @@
-<?= $this->extend("admin/layout/index") ?>
-<?= $this->section("titulo") ?>
-Bienvenido
-<?= $this->endSection() ?>
-
-<?= $this->section("contenido") ?>
+ 
 <style>
      .card-header {
          background-color: #d1d1d1;
@@ -71,8 +66,8 @@ Bienvenido
              <div class="col-12">
                  <?= view("plantillas/message") ?>
 
-             </div>
-             <div class="col-12 offset-md-3  col-md-6 ">
+             </div> 
+             <div class="col-12  col-md-12 p-0 ">
 
 
                  <?php
@@ -300,4 +295,3 @@ Bienvenido
  </div><!-- /#right-panel -->
 
  
-<?= $this->endSection() ?>

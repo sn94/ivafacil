@@ -56,6 +56,8 @@
 
 <body>
 
+<?= $this->renderSection("estilos") ?>
+
 
     <!-- Left Panel-->
 
@@ -76,12 +78,20 @@
                     <h3 class="menu-title">Principal</h3>
                     
                     <li class="menu-item-has-children dropdown">
+                        <a  href="<?=base_url("admin/clientes")?>"  aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Clientes</a>
+                    </li>
+
+                    
+
+
+                    <!--
+                    <li class="menu-item-has-children dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-table"></i>Clientes</a>
                         <ul class="sub-menu children dropdown-menu">
                             <li><i class="fa fa-table"></i><a href="tables-basic.html">Basic Table</a></li>
                             <li><i class="fa fa-table"></i><a href="tables-data.html">Data Table</a></li>
                         </ul>
-                    </li>
+                    </li> -->
                     
                     <h3 class="menu-title">Configuración</h3> 
 
@@ -127,19 +137,11 @@
 
                 <div class="col-sm-5">
                     <div class="user-area dropdown float-right">
-                        <a style="color: black; text-transform: uppercase;" href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fa fa-user"></i> <?= session("nick")?>
+                        <a style="color: black; text-transform: uppercase;" href="<?=base_url("admin/update/".session("id"))?>"   aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-user"></i> MIS DATOS
                         </a>
 
-                        <div class="user-menu dropdown-menu">
-                            <a class="nav-link" href="#"><i class="fa fa-user"></i> Cuenta</a>
-
-                            <a class="nav-link" href="#"><i class="fa fa-user"></i> Notificaciones <span class="count">13</span></a>
-
-                            <a class="nav-link" href="#"><i class="fa fa-cog"></i> Settings</a>
-
-                            <a class="nav-link" href="<?= base_url("admin/sign-out")?>"><i class="fa fa-power-off"></i> Cerrar sesión</a>
-                        </div>
+                      
                     </div>
 
                    

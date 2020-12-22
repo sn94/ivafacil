@@ -20,7 +20,7 @@ class AdminUser implements FilterInterface
 
         $uri = $request->uri; 
         $principal= sizeof($uri->getSegments()) ==0  ; 
-        if (!$session->has('nick')  ){
+        if (!$session->has('nick')  &&   ! $session->has('ruc')  ){
             if(  $principal )
             return redirect()->to(base_url("welcome/publico"));
             else

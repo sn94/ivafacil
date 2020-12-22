@@ -109,7 +109,7 @@
                 </div>
                 <div class="col-12 offset-md-1 col-md-10 p-0">
 
-                    <div class="card text-light" style="background-color: #000000e0;">
+                    <div class="card text-light" style="background-color: #0a2602e0;">
 
 
                         <div class="card-header">

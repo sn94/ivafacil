@@ -2,11 +2,7 @@
 
  <?= $this->section("estilos") ?>
 
- <?php
-
-    use App\Libraries\Mobile_Detect;
-
-if( ! (new Mobile_Detect())->isMobile()) :?>
+ 
  <style>
 
 #right-panel{
@@ -14,8 +10,16 @@ if( ! (new Mobile_Detect())->isMobile()) :?>
          background-repeat: no-repeat;
          background-size: cover;
      }
- </style>
- <?php  endif; ?>
+     
+     html {
+         line-height: unset !important;
+         height: 100% !important;
+         background-image: url(<?= base_url('assets/img/papers.jpg') ?>) !important;
+         background-repeat: no-repeat;
+         background-size: cover;
+     }
+ 
+ </style> 
 
 <?= $this->endSection() ?>
 

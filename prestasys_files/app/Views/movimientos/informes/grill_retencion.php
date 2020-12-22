@@ -21,19 +21,25 @@ $retencion_t= 0;
 </script>
 <form id="retencion-reports" method="POST" action="<?= base_url("retencion/informes/PDF") ?>" target="_blank">
     <!--cargar anios -->
-    <select onchange="$('#download-3').val('')"   name="anio" style="font-size: 11px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
+    <select onchange="$('#download-3').val('');informe_retencion()"   name="year" style="font-size: 11px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
         <?php
-        for ($m = 2020; $m <= date("Y"); $m++) {
+        for ($m = 2019; $m <= date("Y"); $m++) {
+            if( $year ==  $m)
+            echo "<option selected value='$m'>$m</option>";
+            else
             echo "<option value='$m'>$m</option>";
         }
         ?>
     </select>
 
     <!--cargar meses -->
-    <select onchange="$('#download-3').val('')" name="mes" style="font-size: 11px; border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
+    <select onchange="$('#download-3').val('');informe_retencion();" name="month" style="font-size: 11px; border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
         <?php
         for ($m = 1; $m <= 12; $m++) {
             $nom_mes = Utilidades::monthDescr($m);
+            if( $month ==  $m)
+            echo "<option selected value='$m'>$nom_mes</option>";
+            else
             echo "<option value='$m'>$nom_mes</option>";
         }
         ?>

@@ -15,6 +15,7 @@ $adaptativo= new Mobile_Detect();
         <th></th>
         <th>DESCRIPCIÓN</th>
         <th>PRECIO</th> 
+        <th>VÁLIDEZ</th>
         <th>CREADO</th>
         <th>ACTUALIZADO</th>
     </thead>
@@ -31,6 +32,7 @@ $adaptativo= new Mobile_Detect();
                 <td class="pb-0"> <a onclick="cargar_form_edit(event)" href="<?=base_url("admin/planes/update/".$mo->regnro)?>"><i class="fa fa-pencil"></i></a> </td>
                 <td class="pb-0"><?= $mo->descr ?></td>
                 <td class="pb-0"><?= Utilidades::number_f(  $mo->precio ) ?></td> 
+                <td class="pb-0"><?=  $mo->dias. " dias." ?></td> 
                 <td class="pb-0"><?= Utilidades::fecha_f($mo->created_at) ?></td>
                 <td class="pb-0"><?= Utilidades::fecha_f($mo->updated_at) ?></td>
             </tr>

@@ -59,6 +59,7 @@ class LoggedUser implements FilterInterface
             $principal= sizeof($uri->getSegments()) ==0  ;
  
             //&&   $no_acceso_a_login && $auxi  &&  $creacion_usuario
+     
         if (!$session->has('ruc')  ){
             if(  $principal )
             return redirect()->to(base_url("welcome/publico"));

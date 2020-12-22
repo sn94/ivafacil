@@ -78,17 +78,134 @@ class Retencion extends ResourceController {
 			->where("codcliente", session("id") );
 		}
 	
+		//Segun los parametros
+		//Parametros: mes y anio
+		$parametros = [];
+		$year = date("Y");
+		$month = date("m");
+
+		if ($this->request->getMethod(true) == "POST") {
+			$parametros = $this->request->getRawInput();
+			$month = isset( $parametros['month'])  ? $parametros['month'] : $month;
+			$year =  isset(  $parametros['year']) ? $parametros['year'] : $year;
+		}
+		$lista_co = $lista_co->where("year(fecha)", $year)
+		->where("month(fecha)", $month);
+
+		
 		if ($this->API_MODE) {
 			$lista_co = $lista_co->get()->getResult();
 			return $this->respond(array("data" => $lista_co, "code" => 200));
 		} else {
 			$lista_pagi = $lista_co->paginate(15);
 			 
-			return view("movimientos/informes/grill_retencion",  ['retencion' =>  $lista_pagi, 'retencion_pager'=> $lista_co->pager]);
+			return view("movimientos/informes/grill_retencion", 
+			 ['retencion' =>  $lista_pagi, 'retencion_pager'=> $lista_co->pager,
+			 'year'=> $year,  'month'=> $month]);
 		}
 		 
 	}
 	 
+
+
+
+	public  function  total(  $inArray= false){
+		$request = \Config\Services::request();
+		$this->API_MODE=  $this->isAPI();
+	
+		$compras= (new Retencion_model());
+	
+		$lista_co=[];
+	
+			if ($this->API_MODE) {
+				
+				$sesion = is_null($request->getHeader('Ivasession')) ? "" :  $request->getHeader('Ivasession')->getValue();
+				//idS de usuario
+				$usunow= (new Usuario_model())->where( "session_id", $sesion)->first();
+				$ruc=  $usunow->ruc;
+				$dv=  $usunow->dv;
+				$codcliente=  $usunow->regnro;
+				//**********/ 
+				$lista_co = $compras->where("dv", $dv)
+				->where("ruc", $ruc) 
+				->where("codcliente", $codcliente)  ;
+			} else {
+				$lista_co = $compras->where("ruc", session("ruc"))
+				->where("dv", session("dv"))
+				->where("codcliente", session("id"));
+			}
+			//Segun los parametros
+			//Parametros: mes y anio
+			$parametros = [];
+			$year = date("Y");
+			$month = date("m");
+	
+		 
+			if ($request->getMethod(true) == "POST") {
+				$parametros = $this->request->getRawInput();
+				$month = isset( $parametros['month'])  ? $parametros['month'] : $month;
+				$year =  isset(  $parametros['year']) ? $parametros['year'] : $year;
+			}
+			$lista_co = $lista_co->where("year(fecha)", $year)
+			->where("month(fecha)", $month)
+			->select('if(  sum(importe) is null, 0,   sum(importe)  ) as importe') 
+			->first();
+			$response=  \Config\Services::response();
+			if( $inArray)
+			return $lista_co;
+			else
+			return $response->setJSON(   $lista_co);
+	}
+
+
+
+
+
+	
+	public  function  total_anio(  $inArray= false){
+		$request = \Config\Services::request();
+		$this->API_MODE=  $this->isAPI();
+	
+		$compras= (new Retencion_model());
+	
+		$lista_co=[];
+	
+			if ($this->API_MODE) {
+				
+				$sesion = is_null($request->getHeader('Ivasession')) ? "" :  $request->getHeader('Ivasession')->getValue();
+				//idS de usuario
+				$usunow= (new Usuario_model())->where( "session_id", $sesion)->first();
+				$ruc=  $usunow->ruc;
+				$dv=  $usunow->dv;
+				$codcliente=  $usunow->regnro;
+				//**********/ 
+				$lista_co = $compras->where("dv", $dv)
+				->where("ruc", $ruc) 
+				->where("codcliente", $codcliente)  ;
+			} else {
+				$lista_co = $compras->where("ruc", session("ruc"))
+				->where("dv", session("dv"))
+				->where("codcliente", session("id"));
+			}
+			//Segun los parametros
+			//Parametros: mes y anio
+			$parametros = [];
+			$year = date("Y"); 
+	
+		 
+			if ($request->getMethod(true) == "POST") {
+				$parametros = $this->request->getRawInput(); 
+				$year =  isset(  $parametros['year']) ? $parametros['year'] : $year;
+			}
+			$lista_co = $lista_co->where("year(fecha)", $year) 
+			->select('if(  sum(importe) is null, 0,   sum(importe)  ) as importe') 
+			->first();
+			$response=  \Config\Services::response();
+			if( $inArray)
+			return $lista_co;
+			else
+			return $response->setJSON(   $lista_co);
+	}
 
 
 
@@ -128,6 +245,12 @@ class Retencion extends ResourceController {
 			$resu = []; //Resultado de la operacion
 			try {
 				if ($this->API_MODE)  $data['origen'] = "A"; //ORIGEN Aplicacion
+				//convertir
+				if( $moneda != 1){
+					$cambio = $data['tcambio'];
+					$im1= $data['importe'];
+					$data['importe']=  intval($im1 ) * intval($cambio);
+				}
 				$id = $usu->insert($data);
 				$resu = $this->genericResponse($this->model->find($id), null, 200);
 			} catch (Exception $e) {
@@ -195,6 +318,13 @@ class Retencion extends ResourceController {
 			$resu = []; //Resultado de la operacion
 			try {
 				if ($this->API_MODE)  $data['origen'] = "A"; //ORIGEN Aplicacion
+				//convertir
+				if( $moneda != 1){
+					$cambio = $data['tcambio'];
+					$im1= $data['importe'];
+					$data['importe']=  intval($im1 ) * intval($cambio);
+				}
+				
 				$retencionObj= new Retencion_model();
 				$retencionObj->set( $data)
 				->update(  $cod_retencion);
@@ -269,8 +399,8 @@ class Retencion extends ResourceController {
 		try{
 			//parametros
 		$params=  $this->request->getRawInput();
-		$Mes= $params['mes']; 
-		$Anio=  $params['anio'];
+		$Mes= $params['month']; 
+		$Anio=  $params['year'];
 		$Cliente= session("id");
 
 		$lista=	(new Retencion_model())

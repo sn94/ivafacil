@@ -39,12 +39,130 @@
             height: 100%;
         }
 
-        .login-form {
 
-            border-radius: 25px;
+
+        /* style.css | http://localhost/ivafacil/assets/template/assets/css/style.css */
+
+        .login-form {
+            /* background: #ffffff; */
+            background: #5491320f !important;
+            border-radius: 25px !important;
+        }
+
+        /* bootstrap.min.css | http://localhost/ivafacil/assets/template/vendors/bootstrap/dist/css/bootstrap.min.css */
+
+        .bg-light {
+            /* background-color: #f8f9fa !important; */
+            background-color: none !important;
+        }
+
+        /* Elemento | http://localhost/ivafacil/admin/sign-in */
+
+        div.row:nth-child(1) {
+            /* background-color: #dfe8df; */
+            background-color: #18594d00 !important;
+        }
+
+        /* Elemento | http://localhost/ivafacil/admin/sign-in */
+
+        form.pt-0 {
+            background-color: #2cff0000 !important;
+        }
+
+        /* Elemento | http://localhost/ivafacil/admin/sign-in */
+
+        div.row:nth-child(2)>div:nth-child(1)>label:nth-child(1) {
+            /* color: #555555; */
+            color: #fff !important;
+        }
+
+        /* Elemento | http://localhost/ivafacil/admin/sign-in */
+
+        .form-group>label:nth-child(1) {
+            /* color: #555555; */
+            color: #fff !important;
+        }
+
+        /* Elemento | http://localhost/ivafacil/admin/sign-in */
+
+        .checkbox>label:nth-child(1)>span:nth-child(2) {
+            /* color: #555555; */
+            color: #fff !important;
+        }
+
+        /* Elemento | http://localhost/ivafacil/admin/sign-in */
+
+        .pull-right>a:nth-child(1) {
+            /* color: #fd4040; */
+            color: #ffe140 !important;
+        }
+
+        /* Elemento | http://localhost/ivafacil/admin/sign-in */
+
+        div.col-md-6:nth-child(2)>h4:nth-child(1) {
+            /* color: #428e20; */
+            color: #69a44e !important;
+        }
+
+        /* Elemento | http://localhost/ivafacil/admin/sign-in */
+
+        input.form-control:nth-child(1) {
+            border-radius: 15px 15px 0px 0px !important;
+        }
+
+        /* Elemento | http://localhost/ivafacil/admin/sign-in */
+
+        input.form-control:nth-child(2) {
+            border-radius: 15px 15px 0px 0px !important;
+        }
+
+        /* Elemento | http://localhost/ivafacil/admin/sign-in */
+
+        .btn {
+            color: #d9d9d9 !important;
+            font-size: 16px !important;
+            font-weight: 600 !important;
         }
     </style>
 
+
+
+    <?php
+
+    use App\Libraries\Mobile_Detect;
+
+    $adaptativo = new Mobile_Detect();
+    if ($adaptativo->isMobile()) :
+    ?>
+
+<style>
+  html{
+    height: 100% !important; 
+     background-size: cover; 
+     background-image: url(<?= base_url("assets/img/spring-wallpaper.jpg") ?>);
+     background-position: 100% 50%;
+    }
+
+</style>
+
+    <?php
+    else : ?>
+
+<style>
+    
+    html{
+    height: 100% !important; 
+     background-size: cover; 
+     background-image: url(<?= base_url("assets/img/spring-wallpaper.jpg") ?>);
+    }
+
+</style>
+
+
+
+    <?php
+    endif;
+    ?>
 
 </head>
 

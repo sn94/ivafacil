@@ -25,6 +25,7 @@ class Filters extends BaseConfig
 			// 'csrf',
 			'logged_user' =>
 			['except' => [
+				"/",
 				'usuario/create', 'usuario/sign-in', 'usuario/sign_in', 'api/user/sign-in', 'api/user/create',
 				'auxiliar/*', 'api/cities', 'api/plans', 'api/currencies',
 				'admin',  'admin/*', 'home', 'welcome/publico'
@@ -32,6 +33,8 @@ class Filters extends BaseConfig
 			'admin_user' =>
 			['except' => [ 
 				'admin/sign-in', 'home', 'welcome/publico', 
+				'usuario/create', 'usuario/sign-in', 'usuario/sign_in', 'api/user/sign-in', 'api/user/create',
+				'auxiliar/*', 'api/cities', 'api/plans', 'api/currencies'
 				
 			]]
 		],
@@ -59,6 +62,7 @@ class Filters extends BaseConfig
 		'admin_user'=> 
 		['before'=> [ 
 			"/", "admin/create",  "admin/update",  "admin/delete",
+			"admin/clientes",
 			"admin/parametros/create", "admin/planes/*", "admin/monedas"
 			 ]
 		 ]

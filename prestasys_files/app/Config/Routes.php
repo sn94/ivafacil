@@ -95,6 +95,16 @@ $routes->post('/admin/planes/update', 'Planes::update');
 $routes->get('/admin/planes/delete/(:num)', 'Planes::delete/$1'); 
 
 
+$routes->get('/admin/clientes', 'Usuario::list'); 
+$routes->post('/admin/clientes', 'Usuario::list'); 
+$routes->get('/admin/clientes/create', 'Usuario::create'); 
+$routes->post('/admin/clientes/create', 'Usuario::create'); 
+$routes->get('/admin/clientes/update/(:num)', 'Usuario::update/$1');
+$routes->put('/admin/clientes/update', 'Usuario::update');
+$routes->get('/admin/clientes/delete/(:num)', 'Usuario::delete/$1'); 
+$routes->get('/admin/clientes/pagos/(:num)', 'Usuario::pagar/$1'); 
+$routes->post('/admin/clientes/pagos', 'Usuario::pagar'); 
+$routes->get("/admin/clientes/list-pagos/(:num)",  'Usuario::list_pagos/$1');
 /**
  * --------------------------------------------------------------------
  * Additional Routing
