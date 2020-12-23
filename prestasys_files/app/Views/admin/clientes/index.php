@@ -185,3 +185,12 @@ Bienvenido
 
 
 <?= $this->endSection() ?>
+
+
+
+<?= $this->section("scripts") ?>
+<script src="<?= base_url("assets/xls_gen/xls.js") ?>"></script>
+<script src="<?= base_url("assets/xls_gen/xls_ini.js") ?>"></script>
+
+
+<?= $this->endSection() ?>

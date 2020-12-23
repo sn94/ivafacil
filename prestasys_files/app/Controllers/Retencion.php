@@ -55,6 +55,24 @@ class Retencion extends ResourceController {
 
 	
 
+	private function getClienteId(){
+		$usu= new Usuario_model();
+        $request = \Config\Services::request();
+        $IVASESSION= is_null($request->getHeader("Ivasession")) ? "" :  $request->getHeader("Ivasession")->getValue();
+        $res= $usu->where( "session_id",  $IVASESSION )->first();
+
+		if ($this->isAPI()) {
+			if (is_null($res)) {
+				return "false";
+			} else {
+				return $res->regnro;
+			}
+		}else{      return session("id"); }
+		
+	}
+
+
+
 
 	
 	public function index( ){
@@ -105,56 +123,47 @@ class Retencion extends ResourceController {
 		}
 		 
 	}
-	 
 
 
 
-	public  function  total(  $inArray= false){
+
+
+
+	public  function  total_($cod_cliente)
+	{
 		$request = \Config\Services::request();
-		$this->API_MODE=  $this->isAPI();
-	
-		$compras= (new Retencion_model());
-	
-		$lista_co=[];
-	
-			if ($this->API_MODE) {
-				
-				$sesion = is_null($request->getHeader('Ivasession')) ? "" :  $request->getHeader('Ivasession')->getValue();
-				//idS de usuario
-				$usunow= (new Usuario_model())->where( "session_id", $sesion)->first();
-				$ruc=  $usunow->ruc;
-				$dv=  $usunow->dv;
-				$codcliente=  $usunow->regnro;
-				//**********/ 
-				$lista_co = $compras->where("dv", $dv)
-				->where("ruc", $ruc) 
-				->where("codcliente", $codcliente)  ;
-			} else {
-				$lista_co = $compras->where("ruc", session("ruc"))
-				->where("dv", session("dv"))
-				->where("codcliente", session("id"));
-			}
-			//Segun los parametros
-			//Parametros: mes y anio
-			$parametros = [];
-			$year = date("Y");
-			$month = date("m");
-	
-		 
-			if ($request->getMethod(true) == "POST") {
-				$parametros = $this->request->getRawInput();
-				$month = isset( $parametros['month'])  ? $parametros['month'] : $month;
-				$year =  isset(  $parametros['year']) ? $parametros['year'] : $year;
-			}
-			$lista_co = $lista_co->where("year(fecha)", $year)
-			->where("month(fecha)", $month)
-			->select('if(  sum(importe) is null, 0,   sum(importe)  ) as importe') 
-			->first();
-			$response=  \Config\Services::response();
-			if( $inArray)
-			return $lista_co;
-			else
-			return $response->setJSON(   $lista_co);
+		$this->API_MODE =  $this->isAPI();
+		$reten = (new Retencion_model())->where("codcliente", $cod_cliente);
+		$lista_co = [];
+
+		//Segun los parametros
+		//Parametros: mes y anio
+		$parametros = [];
+		$year = date("Y");
+		$month = date("m");
+		if ($request->getMethod(true) == "POST") {
+			$parametros = $this->request->getRawInput();
+			$month = isset($parametros['month'])  ? $parametros['month'] : $month;
+			$year =  isset($parametros['year']) ? $parametros['year'] : $year;
+		}
+		$lista_co = $reten->where("year(fecha)", $year)
+		->where("month(fecha)", $month)
+		->select('if(  sum(importe) is null, 0,   sum(importe)  ) as importe')
+		->first();
+		return $lista_co;
+	}
+
+
+
+
+
+	public  function  total()
+	{
+		$response = \Config\Services::response();
+		$this->API_MODE =  $this->isAPI();
+		$cod_cliente = $this->getClienteId();
+		$lista_co =  $this->total_($cod_cliente);
+		return $response->setJSON($lista_co);
 	}
 
 
@@ -224,6 +233,11 @@ class Retencion extends ResourceController {
 		$usu = new Retencion_model();
 		$data = $this->request->getRawInput();
 
+		//Verificar si el periodo-ejercicio esta cerrado o fuera de rango
+		//$Operacion_fecha_invalida = (new Cierres())->fecha_operacion_invalida($data['fecha']);
+		//if (!is_null($Operacion_fecha_invalida))  return $Operacion_fecha_invalida;
+		//***** Fin check tiempo*/
+			
 		if( $this->API_MODE)  $data['origen']= "A";
 
 
@@ -251,6 +265,9 @@ class Retencion extends ResourceController {
 					$im1= $data['importe'];
 					$data['importe']=  intval($im1 ) * intval($cambio);
 				}
+					//Crear nuevo registro de ejercicio si es necesario
+					(new Cierres())->crear_ejercicio();
+					
 				$id = $usu->insert($data);
 				$resu = $this->genericResponse($this->model->find($id), null, 200);
 			} catch (Exception $e) {

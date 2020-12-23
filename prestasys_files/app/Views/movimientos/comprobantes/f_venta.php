@@ -403,10 +403,14 @@ Validaciones
         });
         let resp = await req.json();
         hide_loader();
-        if ("data" in resp) alert(resp.data);
+        if ("data" in resp)
+        {
+            alert(resp.data);
+            window.location.reload();
+        }
         else alert(procesar_errores(resp.msj));
 
-        window.location.reload();
+       
     }
 
 

@@ -4,6 +4,7 @@ namespace App\Controllers;
 use App\Helpers\Utilidades;
 use App\Libraries\pdf_gen\PDF;
 use App\Models\Compras_model;
+use App\Models\Estado_anio_model;
 use App\Models\Monedas_model; 
 use App\Models\Usuario_model;
 use CodeIgniter\API\ResponseTrait;
@@ -45,6 +46,25 @@ class Compra extends ResourceController {
 
 
 	
+
+
+	private function getClienteId(){
+		$usu= new Usuario_model();
+        $request = \Config\Services::request();
+        $IVASESSION= is_null($request->getHeader("Ivasession")) ? "" :  $request->getHeader("Ivasession")->getValue();
+        $res= $usu->where( "session_id",  $IVASESSION )->first();
+
+		if ($this->isAPI()) {
+			if (is_null($res)) {
+				return "false";
+			} else {
+				return $res->regnro;
+			}
+		}else{      return session("id"); }
+		
+	}
+
+
 
 	private function isAPI(){
 
@@ -116,53 +136,38 @@ class Compra extends ResourceController {
 
 
 
-
-public  function  total( $inArray= false  ){
-	$request = \Config\Services::request();
-	$this->API_MODE=  $this->isAPI();
-	$compras= (new Compras_model());
-
-	$lista_co=[];
-
-		if ($this->API_MODE) {
-			
-			$sesion = is_null($request->getHeader('Ivasession')) ? "" :  $request->getHeader('Ivasession')->getValue();
-			//idS de usuario
-			$usunow= (new Usuario_model())->where( "session_id", $sesion)->first();
-			$ruc=  $usunow->ruc;
-			$dv=  $usunow->dv;
-			$codcliente=  $usunow->regnro;
-			//**********/ 
-			$lista_co = $compras->where("dv", $dv)
-			->where("ruc", $ruc) 
-			->where("codcliente", $codcliente)  ;
-		} else {
-			$lista_co = $compras->where("ruc", session("ruc"))
-			->where("dv", session("dv"))
-			->where("codcliente", session("id"));
-		}
+	public function total_($cod_cliente)
+	{
+		$request = \Config\Services::request();
+		$compras = (new Compras_model());
+		$lista_co = $compras->where("codcliente", $cod_cliente);
 		//Segun los parametros
 		//Parametros: mes y anio
 		$parametros = [];
 		$year = date("Y");
 		$month = date("m");
 
-		 
+
 		if ($request->getMethod(true) == "POST") {
 			$parametros = $this->request->getRawInput();
-			$month = isset( $parametros['month'])  ? $parametros['month'] : $month;
-			$year =  isset(  $parametros['year']) ? $parametros['year'] : $year;
+			$month = isset($parametros['month'])  ? $parametros['month'] : $month;
+			$year =  isset($parametros['year']) ? $parametros['year'] : $year;
 		}
 		$lista_co = $lista_co->where("year(fecha)", $year)
 		->where("month(fecha)", $month)
 		->select('if( sum(iva1) is null, 0,  sum(iva1) ) as iva1, if( sum(iva2) is null, 0,  sum(iva2) ) as iva2, if( sum(iva3) is null, 0,  sum(iva3) ) as iva3 ')
-	 
 		->first();
-		$response=  \Config\Services::response();
-		if( $inArray)
-		return $lista_co;
-		else
-		return $response->setJSON(   $lista_co);
+		return  $lista_co;
+	}
+
+
+public  function  total( ){
+	$request = \Config\Services::request();
+	$this->API_MODE=  $this->isAPI(); 
+	$codcliente= $this->getClienteId();
+	$lista_co=  $this->total_(  $codcliente);
+	$response=  \Config\Services::response();
+	return $response->setJSON(   $lista_co);
 }
 
 
@@ -215,6 +220,7 @@ public  function  total_anio( $inArray= false  ){
 
 
 
+ 
 
 	public function create(){
 		
@@ -227,6 +233,11 @@ public  function  total_anio( $inArray= false  ){
 		$usu = new Compras_model();
 
 		$data = $this->request->getRawInput();
+
+		//Verificar si el periodo-ejercicio esta cerrado o fuera de rango
+		//$Operacion_fecha_invalida= (new Cierres())->fecha_operacion_invalida(  $data['fecha'] );
+		//if (  !is_null($Operacion_fecha_invalida))  return $Operacion_fecha_invalida;
+		//***** Fin check tiempo*/
 
 		if( $this->API_MODE)  $data['origen']= "A";
 		
@@ -246,6 +257,10 @@ public  function  total_anio( $inArray= false  ){
 				return $this->genericResponse(null,  "Indique el monto para cambio de moneda", 500);
 			}
 			$resu = []; //Resultado de la operacion
+			//Inicio de transaccion
+			$db= \Config\Database::connect();
+
+			$db->transStart();
 			try {
 				if ($this->API_MODE)  $data['origen'] = "A"; //ORIGEN Aplicacion
 				//Convertir a guaranies
@@ -266,13 +281,16 @@ public  function  total_anio( $inArray= false  ){
 					$data["total"] =  $data['importe1']  + $data['importe2']  + $data['importe3']  ;
 					 
 				}
-
-
+				//Crear nuevo registro de ejercicio si es necesario
+				(new Cierres())->crear_ejercicio();
 				$id = $usu->insert($data);
 				$resu = $this->genericResponse( (new Compras_model())->find($id), null, 200);
+				$db->transCommit();
 			} catch (Exception $e) {
+				$db->transRollback();
 				$resu = $this->genericResponse(null, "Hubo un error al registrar ($e)", 500);
 			}
+		$db->transComplete();
 			//Evaluar resultado
 			if ($this->API_MODE) return  $resu;
 			else {

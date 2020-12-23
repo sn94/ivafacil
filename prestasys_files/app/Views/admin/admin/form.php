@@ -22,7 +22,7 @@ $email = isset($administrador) ?  $administrador->email : "";
     <label for="nf-password" class=" form-control-label form-control-sm -label">Email:</label>
 </div>
 <div class="col-9 col-md-9">
-    <input oninput="control_campo_vacio(event)" value="<?= $email ?>" maxlength="80" type="text" name="email" class=" form-control form-control-label form-control-sm ">
+    <input oninput="control_campo_vacio(event)" value="<?= $email ?>" maxlength="120" type="text" name="email" class=" form-control form-control-label form-control-sm ">
     <p id="email" style="font-size: 11px; color:red; font-weight: 600;"></p>
 </div>
 

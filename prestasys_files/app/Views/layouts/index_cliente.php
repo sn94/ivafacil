@@ -98,11 +98,11 @@
 
 
                     <li class="menu-item-has-children dropdown">
-                        <a href="<?=base_url("usuario/view-cierre-mes")?>"    aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Cierre del mes</a>
+                        <a href="<?=base_url("cierres/view-cierre-mes")?>"    aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Cierre del mes</a>
                         
                     </li>
                     <li class="menu-item-has-children dropdown">
-                        <a href="<?=base_url("usuario/view-cierre-anio")?>"      aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Resumen del año</a>
+                        <a href="<?=base_url("cierres/view-cierre-anio")?>"      aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Resumen del año</a>
                         
                     </li>
                     <li class="menu-item-has-children dropdown">

@@ -9,6 +9,7 @@ class Correo{
     private $asunto= "";
     private $mensaje="";
 
+    private $parametros= [];//datos para la vista
 
 public function __construct(){
 
@@ -32,6 +33,12 @@ public function __construct(){
         $this->mensaje = $ar;
     }
 
+    public function setParametros( $para){
+        $this->parametros=  $para;
+    }
+
+
+
 public function enviar(){
     $email_co= \Config\Services::email();
     $imagelogo=  base_url("assets/img/Logo.jpg");
@@ -40,7 +47,7 @@ public function enviar(){
  
     $email_co->setTo( $this->destinatario);
     $email_co->setSubject( $this->asunto);
-    $email_co->setMessage( view( $this->mensaje,  ["cid"=>  $cid]));
+    $email_co->setMessage( view( $this->mensaje, $this->parametros  )    );
     $email_co->send();
  
     //Visualizamos el estado de las cabeceras despues de enviar, verificamos tambien si todo ha ido bien

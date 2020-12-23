@@ -96,10 +96,10 @@ class Validation
 		],
 		'email'     => 
 		[
-            'rules'  => 'required|max_length[80]|valid_email',
+            'rules'  => 'required|max_length[120]|valid_email',
             'errors' => [
 				'required'=>'Proporcione su email',
-				'max_length'=>'La longitud maxima del valor para campo "email" es de 80 caracteres',
+				'max_length'=>'La longitud maxima del valor para campo "email" es de 120 caracteres',
 				'valid_email'=>'El email proporcionado no es valido'
             ]
 		],
@@ -213,10 +213,10 @@ class Validation
 		],
 		'email'     => 
 		[
-            'rules'  => 'required|max_length[80]|valid_email',
+            'rules'  => 'required|max_length[120]|valid_email',
             'errors' => [
 				'required'=>'Proporcione su email',
-				'max_length'=>'La longitud maxima del valor para campo "email" es de 80 caracteres',
+				'max_length'=>'La longitud maxima del valor para campo "email" es de 120 caracteres',
 				'valid_email'=>'El email proporcionado no es valido'
             ]
 		],
@@ -571,10 +571,10 @@ class Validation
 		],
 		'email'     => 
 		[
-            'rules'  => 'required|max_length[80]|valid_email',
+            'rules'  => 'required|max_length[120]|valid_email',
             'errors' => [
 				'required'=>'Proporcione su email',
-				'max_length'=>'La longitud maxima del valor para campo "email" es de 80 caracteres',
+				'max_length'=>'La longitud maxima del valor para campo "email" es de 120 caracteres',
 				'valid_email'=>'El email proporcionado no es valido'
             ]
 		],
@@ -599,10 +599,10 @@ class Validation
 		],
 		'email'     =>
 		[
-			'rules'  => 'required|max_length[80]|valid_email',
+			'rules'  => 'required|max_length[120]|valid_email',
 			'errors' => [
 				'required' => 'Proporcione su email',
-				'max_length' => 'La longitud maxima del valor para campo "email" es de 80 caracteres',
+				'max_length' => 'La longitud maxima del valor para campo "email" es de 120 caracteres',
 				'valid_email' => 'El email proporcionado no es valido'
 			]
 		],
@@ -621,9 +621,9 @@ class Validation
 	public $parametros = [
 		'EMAIL'     =>
 		[
-			'rules'  => 'if_exist|max_length[80]|valid_email',
+			'rules'  => 'if_exist|max_length[120]|valid_email',
 			'errors' => [
-				'max_length' => 'La longitud máxima permitida para el email es de 80 caracteres',
+				'max_length' => 'La longitud máxima permitida para el email es de 120 caracteres',
 				'valid_email' => 'El email proporcionado no es válido'
 			]
 		],

@@ -3,9 +3,13 @@
 
 use App\Helpers\Utilidades;
 use App\Libraries\Correo;
+use App\Models\Cierre_anio_model;
 use App\Models\Cierre_mes_model;
 use App\Models\Ciudades_model;
+use App\Models\Estado_anio_model;
+use App\Models\Estado_mes_model;
 use App\Models\Pago_model;
+use App\Models\Parametros_model;
 use App\Models\Planes_model;
 use App\Models\Rubro_model;
 use App\Models\Usuario_model; 
@@ -53,11 +57,15 @@ class Usuario extends ResourceController {
         $request = \Config\Services::request();
         $IVASESSION= is_null($request->getHeader("Ivasession")) ? "" :  $request->getHeader("Ivasession")->getValue();
         $res= $usu->where( "session_id",  $IVASESSION )->first();
-     
-		if( is_null( $res) ) return "false";
-		else{
-			 return $res->regnro; 
-		}
+
+		if ($this->isAPI()) {
+			if (is_null($res)) {
+				return "false";
+			} else {
+				return $res->regnro;
+			}
+		}else{      return session("id"); }
+		
 	}
 	private function isAdminView(){
 		$request = \Config\Services::request();
@@ -107,7 +115,24 @@ class Usuario extends ResourceController {
 		}
 	
 		/******* */
-		$usu= (new Usuario_model());
+		$usu= (new Usuario_model())
+		->select(
+			"
+			usuarios.*, 
+			if(
+			(select DATEDIFF( CURRENT_TIMESTAMP  , pagos.validez) from pagos where 
+			 pagos.ruc = usuarios.ruc and pagos.dv=usuarios.dv order by pagos.fecha DESC limit 1) >=0,
+			 1, 0) as vencido,
+	
+			IF(  (select estado_mes.regnro  from estado_mes where estado_mes.codcliente= usuarios.regnro and estado_mes.estado='C' 
+			order by created_at desc limit 1) IS NULL, 0 , 1)  AS novedad_c_mes,
+
+			IF(  (select estado_anio.regnro  from estado_anio where estado_anio.codcliente= usuarios.regnro and estado_anio.estado='C' 
+			order by created_at desc limit 1) IS NULL, 0 , 1)  AS novedad_c_anio
+
+			 
+			"
+		);
 		//fILTRAR
 		if( $argumento !=  "" ){
 			$usu= 	$usu->like('ruc', $argumento)
@@ -204,6 +229,8 @@ class Usuario extends ResourceController {
 		//CALCULO DE FECHA CADUCIDAD PRUEBA GRATIS
 		$validez= date("Y-m-d H:i:s",  strtotime( date("Y-m-d H:i:s")." + $DIASPLAN days"  )  );
 		$datos = [
+			'ruc'=> $data['ruc'],
+			'dv'=> $data['dv'],
 			'fecha' => date("Y-m-d H:i:s"),
 			"validez"=>  $validez,
 			"plan" => $data['tipoplan'],
@@ -264,7 +291,21 @@ class Usuario extends ResourceController {
 				$data['pass'] = password_hash($data['pass'],  PASSWORD_BCRYPT);
 				if( $this->API_MODE )  $data['origen']= "A";//ORIGEN Aplicacion
 
-				$id = $usu->insert($data);
+				$id = $usu->insert($data);//id usuario
+				//Registrar ejercicio
+				$nuevo_ejercicio = [
+					'codcliente' => $id, 
+					'ruc'=> $data['ruc'],
+					'dv'=> $data['dv'],
+					'anio' => date("Y"),
+					't_i_compras' => 0,
+					't_i_ventas' => 0,
+					't_retencion' => 0 ,
+					'saldo'=> 0,
+					'saldo_inicial' => $data['saldo_IVA']
+				];
+				(new Estado_anio_model())->insert(   $nuevo_ejercicio);
+			/************/
 				$this->prueba_gratuita(   $id );
 				//Email bienvenida
 				if(! $this->API_MODE ) 
@@ -608,7 +649,7 @@ dv
 		}
 	}
 
-	private function servicio_habilitado(  $CODCLIENTE){
+	public function servicio_habilitado(  $CODCLIENTE){
 	 
 		$usuarioObject = (new Usuario_model())->find( $CODCLIENTE);
 	 
@@ -653,13 +694,13 @@ dv
 			$usuario_refere= $usuario__check['data'];
 
 			//Servicio habilitado , al dia?
-			$check_habilitado =  $this->servicio_habilitado($usuario_refere->regnro);
+			/*$check_habilitado =  $this->servicio_habilitado($usuario_refere->regnro);
 			if ($check_habilitado['code'] != 200) {
 				if ($this->API_MODE)
 				return $this->response->setJSON($check_habilitado);
 				else
 				return view("usuario/login", array("error" => $check_habilitado['msj']));
-			}
+			}*/
 
 			//Password correcta
 			$check_pass= $this->verify_password(  $usuario_refere->regnro);
@@ -732,6 +773,28 @@ dv
 
 
 
+
+
+
+
+	public function actualizar_saldo( $saldo){
+
+		//obtener codigo de cliente
+		$id= $this->getClienteId();
+		$response = \Config\Services::response();
+
+		try{
+			(new Estado_anio_model())->where( "codcliente",  $id )
+			->where("anio", date("Y"))
+			->where("estado", "P")
+			->set(['saldo_inicial'=>  $saldo] )->update();
+			return	$response->setJSON( ['data'=> "Saldo inicial actualizado",  'code'=> "200" ]);
+		}catch( Exception $x){
+		 return	$response->setJSON( ['msj'=>  $x,  'code'=> "500" ]);
+		}
+
+	}
+
 	public function list_pagos($id)
 	{
 		$pagos =	(new Pago_model())->where("cliente",  $id)
@@ -790,182 +853,32 @@ dv
 	 
 
 
-	
-
-	public function totales(){
-		$cf=  (new Compra())->total( true );
-		$df= (new Venta())->total(   true);
-		$reten= (new Retencion())->total( true );
-	 
-		 //A favor del contribuyente
-		$s_contri=  intval(  $cf->iva1) +  intval($cf->iva2) + intval(  $reten->importe );
-		 //A favor de hacienda
-		 $s_fisco=  intval(  $df->iva1) +  intval($df->iva2 );
-		 //Saldo
-		 $saldo=  $s_contri -  $s_fisco;
-		 $response=  \Config\Services::response();
+	/**
+	 * recordatorio de pago
+	 */
+	public function email_recordar_pago( $CODCLIENTE= NULL){
+		/*******Envio de correo */
+		$Cliente= (new Usuario_model())->find( $CODCLIENTE);
 		
-		 return  $response->setJSON(  
-			[
-				'compras' => (intval($cf->iva1) +  intval($cf->iva2)),
-				'ventas' => $s_fisco,
-				'retencion' => (intval($reten->importe)),
-				'saldo' => $saldo
-			]
-		  );
+		$destinatario=  $Cliente->email;
+
+		//obtener fecha de vencimiento del plan segun ultimo pago
+		$ultimopago= (new Pago_model())->where("cliente", $CODCLIENTE)->orderBy("created_at", "DESC")->first();
+		$vencimiento=  $ultimopago->validez;
+		$dest=  $destinatario == "" ? $this->request->getRawInput("email") :  $destinatario;
+		//parametro
+		$parametros= ['vencimiento'=>  $vencimiento ];
+		$correo= new Correo();
+		$correo->setDestinatario( $dest);
+		$correo->setAsunto("Recordatorio de pago");
+		$correo->setParametros( $parametros );
+		$correo->setMensaje(   "usuario/recordatorio_email" );
+		$correo->enviar();
+		/********* */
 	}
 
 
 
-	private function __saldo_anterior(){
-		$this->API_MODE = $this->isAPI();
-
-		$CODCLIENTE =  $this->API_MODE ?  $this->getClienteId() :    session("id");
-
-		 
-		$ANTERIOR_S=(new Cierre_mes_model())->where("codcliente", $CODCLIENTE)->orderBy("created_at", "DESC")->first();
-		//Aun no hay cierres
-		if( is_null(  $ANTERIOR_S) ){
-			$SALDO_INI= (new Usuario_model())->find( $CODCLIENTE);
-			$inicial=  $SALDO_INI->saldo_IVA;
-			return   $inicial;
-		}else 
-		return   $ANTERIOR_S->saldo;
-	}
-
-	public function saldo_anterior( ){
-
-		$sa=  $this->__saldo_anterior();
-		return $this->response->setJSON(['data' => $sa,  'code' => "200"]);
-	}
-
-
-
-
-	public function view_cierre_mes(){
-		return view("movimientos/cierre");
-	}
-
-	public function  cierre_mes()
-	{
-
-		$this->API_MODE = $this->isAPI();
-
-		$CODCLIENTE =  $this->API_MODE ?  $this->getClienteId() :    session("id");
-
-
-		//no cerrar si no se esta al dia con el pago
-		if (!$this->servicio_habilitado($CODCLIENTE))
-			return $this->response->setJSON(['msj' => "Operación no disponible. Revise su estado de pago",  'code' => "500"]);
-		//no cerrar un mes dos veces
-		$cerrado = (new Cierre_mes_model())->where("codcliente", $CODCLIENTE)->where("mes", date("m"))->first();
-		if (!is_null($cerrado)) {
-			$nom_mes = Utilidades::monthDescr(date("m"));
-			return $this->response->setJSON(['msj' => "No permitido. El Mes de $nom_mes ya está cerrado.",  'code' => "500"]);
-		}
-
-			$cierre =  new Cierre_mes_model();
-			//numeros
-			$cf =  (new Compra())->total(true);
-			$df = (new Venta())->total(true);
-			$reten = (new Retencion())->total(true);
-
-			//A favor del contribuyente
-			$s_contri =  intval($cf->iva1) +  intval($cf->iva2) + intval($reten->importe);
-			//A favor de hacienda
-			$s_fisco =  intval($df->iva1) +  intval($df->iva2);
-			//Saldo
-			$saldo_ante= $this->__saldo_anterior();
-			$saldo = ( $s_contri + intval($saldo_ante)  ) -  $s_fisco;
-			$mes = date("m");
-			$anio = date("Y");
-			$DATOS = [
-				'codcliente' => $CODCLIENTE,
-				'mes' => $mes,
-				'anio' => $anio,
-				't_i_compras' => (intval($cf->iva1) +  intval($cf->iva2)),
-				't_i_ventas' => $s_fisco,
-				't_retencion' => (intval($reten->importe)),
-				'saldo' => $saldo
-			];
-
-			try {
-				$cierre->insert($DATOS);
-				//Notificar
-				// ....
-				return $this->response->setJSON(['data' => "Se ha registrado el cierre del mes ",  'code' => "200"]);
-			} catch (Exception $ex) {
-				return $this->response->setJSON(['msj' => "Comunique este error a su proveedor de servicios: $ex",  'code' => "500"]);
-			}
-		
-	}
-
-
-
-
-
-	/*
-
-	*RESUMEN DE ANIO
-	*/
-
-
-
-	public function view_cierre_anio(){
-		return view("movimientos/resumen_anio");
-	}
-
-
-
-
-	private function __saldo_anterior_anio(){
-		$this->API_MODE = $this->isAPI();
-
-		$CODCLIENTE =  $this->API_MODE ?  $this->getClienteId() :    session("id");
-
-		 
-		$ANTERIOR_S=(new Cierre_mes_model())->where("codcliente", $CODCLIENTE)
-		->where("anio",  date("Y")-1)
-		->orderBy("created_at", "DESC")->first();
-		//Aun no hay cierres
-		if( is_null(  $ANTERIOR_S) ){
-			$SALDO_INI= (new Usuario_model())->find( $CODCLIENTE);
-			$inicial=  $SALDO_INI->saldo_IVA;
-			return   $inicial;
-		}else 
-		return   $ANTERIOR_S->saldo;
-	}
-	
-
-	public function saldo_anterior_anio( ){
-
-		$sa=  $this->__saldo_anterior_anio();
-		return $this->response->setJSON(['data' => $sa,  'code' => "200"]);
-	}
-
-	public function totales_anio(){
-		$cf=  (new Compra())->total_anio( true );
-		$df= (new Venta())->total_anio(   true);
-		$reten= (new Retencion())->total_anio( true );
-	 
-		 //A favor del contribuyente
-		 $saldo_ante_anio= $this->__saldo_anterior_anio();// NO
-		$s_contri=  intval(  $cf->iva1) +  intval($cf->iva2) + intval(  $reten->importe );
-		 //A favor de hacienda
-		 $s_fisco=  intval(  $df->iva1) +  intval($df->iva2 );
-		 //Saldo
-		 $saldo=  $s_contri -  $s_fisco;
-		 $response=  \Config\Services::response();
-		
-		 return  $response->setJSON(  
-			[
-				'compras' => (intval($cf->iva1) +  intval($cf->iva2)),
-				'ventas' => $s_fisco,
-				'retencion' => (intval($reten->importe)),
-				'saldo' => $saldo
-			]
-		  );
-	}
 
 
 }

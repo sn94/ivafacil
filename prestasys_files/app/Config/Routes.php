@@ -77,6 +77,7 @@ $routes->post('/api/email-user-registered', 'Usuario::email_bienvenida');
 
 
 //Administrativo 
+
 $routes->get('/admin/parametros/create', 'Parametros::create'); 
 $routes->post('/admin/parametros/create', 'Parametros::create'); 
 
@@ -105,6 +106,14 @@ $routes->get('/admin/clientes/delete/(:num)', 'Usuario::delete/$1');
 $routes->get('/admin/clientes/pagos/(:num)', 'Usuario::pagar/$1'); 
 $routes->post('/admin/clientes/pagos', 'Usuario::pagar'); 
 $routes->get("/admin/clientes/list-pagos/(:num)",  'Usuario::list_pagos/$1');
+
+
+$routes->get('/admin/cierre-mes/(:num)', 'Cierres::info_mes_cierre/$1'); 
+$routes->get('/admin/cierre-mes/(:num)/(:num)/(:num)', 'Cierres::info_mes_cierre/$1/$2/$3'); 
+$routes->get('/admin/cierre-anio/(:num)', 'Cierres::info_anio_cierre/$1'); 
+
+$routes->get('/admin/recordar-pago/(:num)', 'Usuario::email_recordar_pago/$1'); 
+
 /**
  * --------------------------------------------------------------------
  * Additional Routing

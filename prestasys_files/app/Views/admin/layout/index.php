@@ -189,6 +189,7 @@
     <script src="<?= $base_url_for_resources ?>vendors/bootstrap/dist/js/bootstrap.min.js"></script>
    
 
+    <?= $this->renderSection("scripts") ?>
      
     
  

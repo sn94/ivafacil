@@ -46,6 +46,25 @@ class Venta extends ResourceController {
 
 
  
+	private function getClienteId(){
+		$usu= new Usuario_model();
+        $request = \Config\Services::request();
+        $IVASESSION= is_null($request->getHeader("Ivasession")) ? "" :  $request->getHeader("Ivasession")->getValue();
+        $res= $usu->where( "session_id",  $IVASESSION )->first();
+
+		if ($this->isAPI()) {
+			if (is_null($res)) {
+				return "false";
+			} else {
+				return $res->regnro;
+			}
+		}else{      return session("id"); }
+		
+	}
+
+
+
+
 
 	
 	private function isAPI(){
@@ -117,54 +136,46 @@ class Venta extends ResourceController {
 	}
 
 
-	 
-  
 
-	public  function  total( $inArray= false){
+
+	public  function  total_($cod_cliente, $mes= NULL, $anio= NULL)
+	{
 		$request = \Config\Services::request();
-		$this->API_MODE=  $this->isAPI();
-		$compras= (new Ventas_model());
-	
-		$lista_co=[];
-	
-			if ($this->API_MODE) {
-			
-				$sesion = is_null($request->getHeader('Ivasession')) ? "" :  $request->getHeader('Ivasession')->getValue();
-				//idS de usuario
-				$usunow= (new Usuario_model())->where( "session_id", $sesion)->first();
-				$ruc=  $usunow->ruc;
-				$dv=  $usunow->dv;
-				$codcliente=  $usunow->regnro;
-				//**********/ 
-				$lista_co = $compras->where("dv", $dv)
-				->where("ruc", $ruc) 
-				->where("codcliente", $codcliente)  ;
-			} else {
-				$lista_co = $compras->where("ruc", session("ruc"))
-				->where("dv", session("dv"))
-				->where("codcliente", session("id"));
-			}
-			//Segun los parametros
-			//Parametros: mes y anio
-			$parametros = [];
-			$year = date("Y");
-			$month = date("m");
-	
-		 
-			if ($request->getMethod(true) == "POST") {
-				$parametros = $this->request->getRawInput();
-				$month = isset( $parametros['month'])  ? $parametros['month'] : $month;
-				$year =  isset(  $parametros['year']) ? $parametros['year'] : $year;
-			}
-			$lista_co = $lista_co->where("year(fecha)", $year)
-			->where("month(fecha)", $month)
-			->select('if( sum(iva1) is null, 0,  sum(iva1) ) as iva1, if( sum(iva2) is null, 0,  sum(iva2) ) as iva2, if( sum(iva3) is null, 0,  sum(iva3) ) as iva3 ')
-			->first();
-			$response=  \Config\Services::response();
-			if(  $inArray)
-			return $lista_co;
-			else
-			return $response->setJSON(   $lista_co);
+		$this->API_MODE =  $this->isAPI();
+
+		$ventas = (new Ventas_model())->where("codcliente", $cod_cliente);
+
+		$lista_co = [];
+
+		//Segun los parametros
+		//Parametros: mes y anio
+		$parametros = [];
+		$year = is_null($anio)?  date("Y") :   $anio;
+		$month = is_null($mes) ? date("m") :  $mes;
+		if ($request->getMethod(true) == "POST") {
+			$parametros = $this->request->getRawInput();
+			$month = isset($parametros['month'])  ? $parametros['month'] : $month;
+			$year =  isset($parametros['year']) ? $parametros['year'] : $year;
+		}
+		$lista_co = $ventas->where("year(fecha)", $year)
+		->where("month(fecha)", $month)
+		->select('if( sum(iva1) is null, 0,  sum(iva1) ) as iva1, if( sum(iva2) is null, 0,  sum(iva2) ) as iva2, if( sum(iva3) is null, 0,  sum(iva3) ) as iva3 ')
+		->first();
+		$response =  \Config\Services::response();
+		return $lista_co;
+	}
+
+
+
+	public  function  total()
+	{
+		$response = \Config\Services::response();
+		$this->API_MODE =  $this->isAPI();
+		$cod_cliente = $this->getClienteId();
+		$compras = (new Ventas_model());
+
+		$lista_co = $this->total_($cod_cliente);
+		return $response->setJSON($lista_co);
 	}
 
 
@@ -232,6 +243,12 @@ class Venta extends ResourceController {
 
 		$data = $this->request->getRawInput();
 
+		//Verificar si el periodo-ejercicio esta cerrado o fuera de rango
+	 
+		//$Operacion_fecha_invalida= (new Cierres())->fecha_operacion_invalida(  $data['fecha'] );
+		//if (  !is_null($Operacion_fecha_invalida))  return $Operacion_fecha_invalida;
+		//***** Fin check tiempo*/
+
 		if( $this->API_MODE)  $data['origen']= "A";
 		
 		if ($this->validate('ventas')) { //Validacion OK
@@ -270,7 +287,8 @@ class Venta extends ResourceController {
 					$data["total"] =  $data['importe1']  + $data['importe2']  + $data['importe3']  ;
 					 
 				}
-
+			//Crear nuevo registro de ejercicio si es necesario
+			(new Cierres())->crear_ejercicio();
 				$id = $usu->insert($data);
 				$resu = $this->genericResponse((new Ventas_model())->find($id), null, 200);
 			} catch (Exception $e) {

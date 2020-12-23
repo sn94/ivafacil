@@ -105,7 +105,7 @@ Bienvenido
                                                 <label for="nf-password" class=" form-control-label form-control-sm -label">Email principal:</label>
                                             </div>
                                             <div class="col-8 col-md-8">
-                                                <input value="<?= $parametros->EMAIL ?>" type="text" maxlength="20" name="EMAIL" class=" form-control form-control-label form-control-sm ">
+                                                <input value="<?= $parametros->EMAIL ?>" type="text" maxlength="120" name="EMAIL" class=" form-control form-control-label form-control-sm ">
 
                                             </div>
                                             <div class="col-4 col-md-4 pl-md-3 pl-0">
