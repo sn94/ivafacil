@@ -50,25 +50,25 @@ $routes->get('/api/currencies', 'Auxiliar::monedas');
 
 $routes->get('/api/purchase', 'Compra::index'); 
 $routes->post('/api/purchase/create', 'Compra::create'); 
-$routes->put('/api/purchase/(:num)', 'Compra::update/$1'); 
+$routes->put('/api/purchase', 'Compra::update'); 
 $routes->get('/api/purchase/(:num)', 'Compra::show/$1'); 
 $routes->delete('/api/purchase/(:num)', 'Compra::delete/$1');
 
 $routes->get('/api/sales', 'Venta::index'); 
 $routes->post('/api/sales/create', 'Venta::create'); 
-$routes->put('/api/sales/(:num)', 'Venta::update/$1'); 
+$routes->put('/api/sales', 'Venta::update'); 
 $routes->get('/api/sales/(:num)', 'Venta::show/$1'); 
 $routes->delete('/api/sales/(:num)', 'Venta::delete/$1');
 
 $routes->get('/api/retention', 'Retencion::index'); 
 $routes->post('/api/retention/create', 'Retencion::create'); 
-$routes->put('/api/retention/(:num)', 'Retencion::update/$1'); 
+$routes->put('/api/retention', 'Retencion::update'); 
 $routes->get('/api/retention/(:num)', 'Retencion::show/$1'); 
 $routes->delete('/api/retention/(:num)', 'Retencion::delete/$1');
 
 $routes->get('/api/user', 'Usuario::index'); 
 $routes->post('/api/user/create', 'Usuario::create'); 
-$routes->put('/api/user/(:num)', 'Usuario::update/$1'); 
+$routes->put('/api/user', 'Usuario::update'); 
 $routes->delete('/api/user/(:num)', 'Usuario::delete/$1'); 
 $routes->get('/api/user/(:num)', 'Usuario::show/$1'); 
 $routes->post('/api/user/sign-in', 'Usuario::sign_in'); 

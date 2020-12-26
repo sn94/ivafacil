@@ -34,7 +34,7 @@ class Venta extends ResourceController {
 		if ($code == 200) {
 			$this->array_response= array("data" => $data, "code" => $code);
 			if ($this->API_MODE)
-			return $this->respond( $this->array_response ); //, 404, "No hay nada"
+			return $this->respond( $this->array_response ); //, 500, "No hay nada"
 			else return $this->array_response;
 		} else {
 			$this->array_response=  array("msj" => $msj, "code" => $code);
@@ -235,7 +235,7 @@ class Venta extends ResourceController {
 		
 		$request = \Config\Services::request();
 		if ($request->getMethod(true) == "GET")
-		return view("movimientos/comprobantes/f_venta");
+		return view("movimientos/comprobantes/venta/create");
 		//Manejo POST
 
 		$this->API_MODE =  $this->isAPI();
@@ -322,8 +322,10 @@ class Venta extends ResourceController {
 	public function update( $cod_venta="" ){
 		
 		$request = \Config\Services::request();
-		if ($request->getMethod(true) == "GET")
-		return view("movimientos/comprobantes/f_compra");
+		if ($request->getMethod(true) == "GET") {
+			$regis =  (new Ventas_model())->find($cod_venta);
+			return view("movimientos/comprobantes/venta/update",  ['venta' => $regis]);
+		}
 		//Manejo POST
 
 		$this->API_MODE =  $this->isAPI();
@@ -373,19 +375,22 @@ class Venta extends ResourceController {
 				
 				$cod_cliente= $data['codcliente']; 
 				$usu->where("codcliente", $cod_cliente)
+				->where("regnro", $data['regnro'] )
 				->set(  $data)
-				->update( $cod_venta);
+				->update( );
 
 				 
-				$resu = $this->genericResponse( (new Ventas_model())->find($cod_venta), null, 200);
+				$resu = $this->genericResponse( (new Ventas_model())->find( $data['regnro'] ), null, 200);
 			} catch (Exception $e) {
 				$resu = $this->genericResponse(null, "Hubo un error al registrar ($e)", 500);
 			}
 			//Evaluar resultado
 			if ($this->API_MODE) return  $resu;
 			else {
-				if ($resu['code'] == 200) return redirect()->to(base_url("movimiento/index"));
-				else  return view("movimientos/comprobantes/f_venta", array("error" => $resu['msj']));
+
+				return $this->response->setJSON(   $resu );
+				//if ($resu['code'] == 200) return redirect()->to(base_url("movimiento/index"));
+				//else  return view("movimientos/comprobantes/f_venta", array("error" => $resu['msj']));
 			}
 		}
 
@@ -394,7 +399,9 @@ class Venta extends ResourceController {
 		$resultadoValidacion =  $this->genericResponse(null, $validation->getErrors(), 500);
 		if ($this->API_MODE)
 		return $resultadoValidacion;
-		else  return view("movimientos/comprobantes/f_venta", array("error" => $resultadoValidacion['msj']));
+		else 
+		return $this->response->setJSON(   $resultadoValidacion );
+		// return view("movimientos/comprobantes/f_venta", array("error" => $resultadoValidacion['msj']));
 	}
 
 
@@ -404,7 +411,7 @@ class Venta extends ResourceController {
 	{
 		$re = (new Ventas_model())->find($id);
 		if (is_null($re))
-		return $this->genericResponse(null, "Este registro de Venta no existe", 404);
+		return $this->genericResponse(null, "Este registro de Venta no existe", 500);
 		else
 		return $this->genericResponse($re, null, 200);
 	}
@@ -415,12 +422,12 @@ class Venta extends ResourceController {
 	
 	public function delete( $id = null)
 	{
-		$this->API_MODE= $this->isAPI();
+		$this->API_MODE= true;
 	 
 		$us= (new Ventas_model())->find(  $id);
  
 		if (is_null( $us))
-		return $this->genericResponse(null, "Venta  no existe",  404);
+		return $this->genericResponse(null, "Venta  no existe",  500);
 		else { 
 			(new Ventas_model())->where("regnro", $id)->delete( $id );
 			return $this->genericResponse("Venta eliminada", null,  200);
@@ -461,7 +468,7 @@ public function pdf( $lista){
 	$html=<<<EOF
 	<style>
 	table.tabla{
-		color: #404040;
+		color: #500040;
 		font-family: Arial;
 		font-size: 8pt;
 		border-left: none; 

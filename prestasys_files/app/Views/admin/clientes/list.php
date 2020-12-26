@@ -43,7 +43,7 @@ $adaptativo = new Mobile_Detect();
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                         <a class="dropdown-item" onclick="borrar(event)" href="<?= base_url("admin/clientes/delete/" . $mo->regnro) ?>"> Eliminar </a>
-                        <a  class="dropdown-item"  onclick="cargar_form_edit(event)" href="<?= base_url("admin/clientes/update/" . $mo->regnro) ?>"> Editar</a> 
+                        <a  class="dropdown-item"   href="<?= base_url("admin/clientes/update/" . $mo->regnro) ?>"> Editar</a> 
                         <a  class="dropdown-item"  href="<?= base_url("admin/clientes/pagos/" . $mo->regnro) ?>">Gestionar Pagos</a>
                         </div>
                     </div>

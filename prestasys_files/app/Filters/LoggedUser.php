@@ -31,13 +31,14 @@ class LoggedUser implements FilterInterface
         $IVASESSION= is_null($request->getHeader("Ivasession")) ? "" :  $request->getHeader("Ivasession")->getValue();
         $res= $usu->where( "session_id",  $IVASESSION )->first();
      
+    
 		if( is_null( $res) ) return false;
 		else{
-			 return true;
+			// return true;
 				//recuperar sesion si es valida
 				$hoy= strtotime(  date(  "Y-m-d H:i:s")  );
 				$expir=  strtotime(  $res->session_expire);
-				return !(  $hoy <  $expir ) ;
+				return (  $hoy <=  $expir ) ;
 			 
 		}
     }

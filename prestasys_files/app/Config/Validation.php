@@ -87,13 +87,13 @@ class Validation
 				'integer'=>'El campo "Tipo plan" debe ser numerico'
             ]
 		],
-		'estado'     => 
+	/*	'estado'     => 
 		[
             'rules'  => 'max_length[1]',
             'errors' => [
 				'max_length'=>'La longitud maxima del valor para campo "estado" es de 1 caracter'
             ]
-		],
+		],*/
 		'email'     => 
 		[
             'rules'  => 'required|max_length[120]|valid_email',
@@ -154,8 +154,8 @@ class Validation
             'errors' => [
 				'integer'=>'El campo "Rubro" debe ser numerico'
             ]
-		],
-		'saldo_IVA'     => 
+		]
+		/*'saldo_IVA'     => 
 		[
             'rules'  => 'max_length[10]|integer',
             'errors' => [
@@ -164,7 +164,7 @@ class Validation
 				'integer'=> 'El campo "saldo IVA" solo permite caracteres numericos'
 
             ]
-		]
+		]*/
          
 		 
 	]; //$validation->run($data, 'usuarios');
@@ -204,16 +204,16 @@ class Validation
 				'integer'=>'El campo "Tipo plan" debe ser numerico'
             ]
 		],
-		'estado'     => 
+	/*	'estado'     => 
 		[
             'rules'  => 'max_length[1]',
             'errors' => [
 				'max_length'=>'La longitud maxima del valor para campo "estado" es de 1 caracter'
             ]
-		],
+		],*/
 		'email'     => 
 		[
-            'rules'  => 'required|max_length[120]|valid_email',
+            'rules'  => 'if_exist|required|max_length[120]|valid_email',
             'errors' => [
 				'required'=>'Proporcione su email',
 				'max_length'=>'La longitud maxima del valor para campo "email" es de 120 caracteres',
@@ -270,16 +270,6 @@ class Validation
             'rules'  => 'integer',
             'errors' => [
 				'integer'=>'El campo "Rubro" debe ser numerico'
-            ]
-		],
-		'saldo_IVA'     => 
-		[
-            'rules'  => 'max_length[10]|integer',
-            'errors' => [
-			 
-				'max_length'=>'La longitud maxima del valor para campo "saldo IVA" es de 10 caracteres' ,	
-				'integer'=> 'El campo "saldo IVA" solo permite caracteres numericos'
-
             ]
 		]
          
@@ -525,7 +515,7 @@ class Validation
 			]
 		],
 
-		'retencion' =>
+		/*'retencion' =>
 		[
 			'rules'  => 'required|max_length[20]|integer',
 			'errors' => [
@@ -534,7 +524,7 @@ class Validation
 				'integer' => 'El número de retención solo admite valores numéricos'
 
 			]
-		],
+		],*/
 		'moneda'  =>
 		[
 			'rules'  => 'required|max_length[2]|integer',

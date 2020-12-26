@@ -78,7 +78,7 @@ class Usuario extends ResourceController {
 
 		if ($code == 200) {
 			if ($this->API_MODE)
-			return $this->respond(array("data" => $data, "code" => $code)); //, 404, "No hay nada"
+			return $this->respond(array("data" => $data, "code" => $code)); //, 500, "No hay nada"
 			else return array("data" => $data, "code" => $code);
 		} else {
 			if ($this->API_MODE) return $this->respond(array("msj" => $msj, "code" => $code));
@@ -95,8 +95,11 @@ class Usuario extends ResourceController {
 		$this->API_MODE= $this->isAPI();
 		if(  $this->API_MODE ){
 			$sesion= $this->request->getHeader('Ivasession');
-			if(  $sesion != "")
-			return $this->genericResponse($this->model->findAll(), null, 200);
+			if(  $sesion != "") {
+				$usu_filter= (new Usuario_model())
+				->select("regnro, ruc, dv, tipoplan, email, cliente, cedula, telefono, celular, domicilio, ciudad, rubro")->get()->getResult();
+				return $this->genericResponse($usu_filter, null, 200);
+			}
 			else 
 			return $this->genericResponse( null, "No está autenticado", 500);
 		}
@@ -156,10 +159,13 @@ class Usuario extends ResourceController {
 	public function show( $id = null)
 	{
 		$this->API_MODE=  $this->isAPI();
-		$us=  $this->model->where("regnro", $id)->first();
+		$us= (new Usuario_model())
+				->select("regnro, ruc, dv, tipoplan, email, cliente, cedula, telefono, celular, domicilio, ciudad, rubro")->
+				where("regnro", $id  )->first();
+		 
 	 
 		if( is_null(  $us))
-		return $this->genericResponse(  null, "Usuario con $id no existe", 404);
+		return $this->genericResponse(  null, "Usuario con $id no existe", 500);
 		else
 		return $this->genericResponse(  $us, null, 200);
 	}
@@ -215,6 +221,7 @@ class Usuario extends ResourceController {
 		$correo->setAsunto("Bienvenido");
 		$correo->setMensaje(   "usuario/welcome_email" );
 		$correo->enviar();
+		return $this->response->setJSON( ["data"=> "Enviado!", "code"=> "200"]   );
 		/********* */
 	}
 
@@ -293,6 +300,7 @@ class Usuario extends ResourceController {
 
 				$id = $usu->insert($data);//id usuario
 				//Registrar ejercicio
+				$saldoinicial= array_key_exists( "saldo_IVA",  $data) ?   $data['saldo_IVA'] : 0;
 				$nuevo_ejercicio = [
 					'codcliente' => $id, 
 					'ruc'=> $data['ruc'],
@@ -302,7 +310,7 @@ class Usuario extends ResourceController {
 					't_i_ventas' => 0,
 					't_retencion' => 0 ,
 					'saldo'=> 0,
-					'saldo_inicial' => $data['saldo_IVA']
+					'saldo_inicial' => $saldoinicial
 				];
 				(new Estado_anio_model())->insert(   $nuevo_ejercicio);
 			/************/
@@ -310,7 +318,10 @@ class Usuario extends ResourceController {
 				//Email bienvenida
 				if(! $this->API_MODE ) 
 				$this->email_bienvenida( $data['email']);
-				$resu = $this->genericResponse($this->model->find($id), null, 200);
+				$usuario_Response= (new Usuario_model())
+				->select("regnro, ruc, dv, tipoplan, email, cliente, cedula, telefono, celular, domicilio, ciudad, rubro")->
+				where("regnro", $id  )->first();
+				$resu = $this->genericResponse($usuario_Response, null, 200);
 				 
 
 			} catch (Exception $e) {
@@ -395,7 +406,10 @@ class Usuario extends ResourceController {
 				$usu->where("regnro",  $data['regnro'])
 				->set($data)
 				->update();
-				$resu=  $this->genericResponse($this->model->find($id), null, 200);
+				$usu_Response= (new Usuario_model())
+				->select("regnro, ruc, dv, tipoplan, email, cliente, cedula, telefono, celular, domicilio, ciudad, rubro")->
+				where("regnro",  $data['regnro'] )->first();
+				$resu=  $this->genericResponse($usu_Response , null, 200);
 			}catch( Exception $e){
 				$resu=  $this->genericResponse( null, "Hubo un error: ($e)", 500);
 			}
@@ -430,7 +444,7 @@ class Usuario extends ResourceController {
 		$us= $this->model->where( "regnro", $id)->first();
  
 		if (is_null( $us))
-		return $this->genericResponse(null, "Usuario $id no existe",  404);
+		return $this->genericResponse(null, "Usuario de ID $id no existe",  500);
 		else {
 			$this->model->where( "regnro", $id)->delete();
 			if( $this->API_MODE)

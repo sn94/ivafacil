@@ -140,7 +140,8 @@
                             <?= view("usuario/form") ?>
                             <div class="row">
                                 <div class="col-12  col-md-6 mb-2">
-                                    <input type="checkbox" name="aceptar-bases" value="S"> He leído y acepto las <a href="#">bases y condiciones</a>
+                                    <input type="checkbox" name="aceptar-bases" value="S"> He leído y acepto las 
+                                    <a href="<?=base_url("bases_condiciones.pdf")?>">bases y condiciones</a>
                                 </div>
                                 <div class="col-12  col-md-6  mb-2 ">
                                     <button style="font-size: 12px;font-weight: 600;width:100%;" type="submit" class="btn btn-success btn-sm">

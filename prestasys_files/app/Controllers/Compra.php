@@ -36,7 +36,7 @@ class Compra extends ResourceController {
 
 		if ($code == 200) {
 			if ($this->API_MODE)
-			return $this->respond(array("data" => $data, "code" => $code)); //, 404, "No hay nada"
+			return $this->respond(array("data" => $data, "code" => $code)); //, 500, "No hay nada"
 			else return array("data" => $data, "code" => $code);
 		} else {
 			if ($this->API_MODE) return $this->respond(array("msj" => $msj, "code" => $code));
@@ -226,7 +226,7 @@ public  function  total_anio( $inArray= false  ){
 		
 		$request = \Config\Services::request();
 		if ($request->getMethod(true) == "GET")
-		return view("movimientos/comprobantes/f_compra");
+		return view("movimientos/comprobantes/compra/create"  );
 		//Manejo POST
 
 		$this->API_MODE =  $this->isAPI();
@@ -316,11 +316,16 @@ public  function  total_anio( $inArray= false  ){
 
 
 	//ruc=14455&dv=23&codcliente=9&fecha=2020-12-11&moneda=1&factura=0020037892222&total=140000000
-	public function update( $cod_compra="" ){
+	public function update( $cod_compra= NULL ){
 		
 		$request = \Config\Services::request();
-		if ($request->getMethod(true) == "GET")
-		return view("movimientos/comprobantes/f_compra");
+		if ($request->getMethod(true) == "GET") {
+			$regis=  (new Compras_model())->find( $cod_compra);
+		
+			return view("movimientos/comprobantes/compra/update", 
+			 [    "compra"=> $regis ]  );
+		}
+		
 		//Manejo POST
 
 		$this->API_MODE =  $this->isAPI();
@@ -370,19 +375,21 @@ public  function  total_anio( $inArray= false  ){
 				
 				$cod_cliente= $data['codcliente'];
 				$usu->where("codcliente", $cod_cliente)
+				->where("regnro", $data['regnro'])
 				->set(  $data)
-				->update( $cod_compra);
+				->update( );
 
 				 
-				$resu = $this->genericResponse( (new Compras_model())->find($cod_compra), null, 200);
+				$resu = $this->genericResponse( (new Compras_model())->find($data['regnro']), null, 200);
 			} catch (Exception $e) {
 				$resu = $this->genericResponse(null, "Hubo un error al registrar ($e)", 500);
 			}
 			//Evaluar resultado
 			if ($this->API_MODE) return  $resu;
 			else {
-				if ($resu['code'] == 200) return redirect()->to(base_url("movimiento/index"));
-				else  return view("movimientos/comprobantes/f_compra", array("error" => $resu['msj']));
+				return $this->response->setJSON( $resu  );
+				//if ($resu['code'] == 200) return redirect()->to(base_url("movimiento/index"));
+				//else  return view("movimientos/comprobantes/f_compra", array("error" => $resu['msj']));
 			}
 		}
 
@@ -391,7 +398,9 @@ public  function  total_anio( $inArray= false  ){
 		$resultadoValidacion =  $this->genericResponse(null, $validation->getErrors(), 500);
 		if ($this->API_MODE)
 		return $resultadoValidacion;
-		else  return view("movimientos/comprobantes/f_compra", array("error" => $resultadoValidacion['msj']));
+		else 
+		return $this->response->setJSON( ['msj'=> $resultadoValidacion['msj'] , "code"=>"500"]  );
+		//return view("movimientos/comprobantes/f_compra", array("error" => $resultadoValidacion['msj']));
 	}
 
 
@@ -399,9 +408,10 @@ public  function  total_anio( $inArray= false  ){
 
 	public function show($id = null)
 	{
+		
 		$re = (new Compras_model())->find($id);
 		if (is_null($re))
-		return $this->genericResponse(null, "Este registro de Compra no existe", 404);
+		return $this->genericResponse(null, "Este registro de Compra no existe", 500);
 		else
 		return $this->genericResponse($re, null, 200);
 	}
@@ -414,12 +424,12 @@ public  function  total_anio( $inArray= false  ){
 	{
 		 
 
-		$this->API_MODE= $this->isAPI();
+		$this->API_MODE=  true;
 	 
 		$us= (new Compras_model())->find(  $id);
  
 		if (is_null( $us))
-		return $this->genericResponse(null, "Compra  no existe",  404);
+		return $this->genericResponse(null, "Compra  no existe",  500);
 		else { 
 			(new Compras_model())->where("regnro", $id)->delete( $id );
 			return $this->genericResponse("Compra eliminada", null,  200);
@@ -464,7 +474,7 @@ public  function  total_anio( $inArray= false  ){
 		$html=<<<EOF
 		<style>
 		table.tabla{
-			color: #404040;
+			color: #500040;
 			font-family: Arial;
 			font-size: 8pt;
 			border-left: none; 

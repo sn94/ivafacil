@@ -44,7 +44,7 @@ class Retencion extends ResourceController {
 
 		if ($code == 200) {
 			if ($this->API_MODE)
-			return $this->respond(array("data" => $data, "code" => $code)); //, 404, "No hay nada"
+			return $this->respond(array("data" => $data, "code" => $code)); //, 500, "No hay nada"
 			else return array("data" => $data, "code" => $code);
 		} else {
 			if ($this->API_MODE) return $this->respond(array("msj" => $msj, "code" => $code));
@@ -228,7 +228,7 @@ class Retencion extends ResourceController {
 		
 		$request = \Config\Services::request();
 		if ($request->getMethod(true) == "GET")
-		return view("movimientos/comprobantes/retencion");
+		return view("movimientos/comprobantes/retencion/create");
 		//Manejo POST
 		$usu = new Retencion_model();
 		$data = $this->request->getRawInput();
@@ -307,8 +307,10 @@ class Retencion extends ResourceController {
 		$this->API_MODE =  $this->isAPI();
 		$request = \Config\Services::request();
 
-		if ($request->getMethod(true) == "GET")
-		return view("movimientos/comprobantes/retencion");
+		if ($request->getMethod(true) == "GET") {
+			$regis =  (new Retencion_model())->find($cod_retencion);
+			return view("movimientos/comprobantes/retencion/update",  ['retencion'=>  $regis ] );
+		}
 
 		//Manejo POST
 		$usu = new Retencion_model();
@@ -344,7 +346,8 @@ class Retencion extends ResourceController {
 				
 				$retencionObj= new Retencion_model();
 				$retencionObj->set( $data)
-				->update(  $cod_retencion);
+				->where("regnro", $data['regnro'])
+				->update( );
 				 
 				$resu = $this->genericResponse($this->model->find($cod_retencion), null, 200);
 			} catch (Exception $e) {
@@ -353,8 +356,9 @@ class Retencion extends ResourceController {
 			//Evaluar resultado
 			if ($this->API_MODE) return  $resu;
 			else {
-				if ($resu['code'] == 200) return redirect()->to(base_url("movimiento/index"));
-				else  return view("movimientos/comprobantes/retencion", array("error" => $resu['msj']));
+				return $this->response->setJSON($resu);
+				//if ($resu['code'] == 200) return redirect()->to(base_url("movimiento/index"));
+				//else  return view("movimientos/comprobantes/retencion", array("error" => $resu['msj']));
 			}
 		}
 
@@ -363,7 +367,9 @@ class Retencion extends ResourceController {
 		$resultadoValidacion =  $this->genericResponse(null, $validation->getErrors(), 500);
 		if ($this->API_MODE)
 		return $resultadoValidacion;
-		else  return view("movimientos/comprobantes/retencion", array("error" => $resultadoValidacion['msj']));
+		else  
+		return $this->response->setJSON($resultadoValidacion);
+		//return view("movimientos/comprobantes/retencion", array("error" => $resultadoValidacion['msj']));
 
 	 
 	}
@@ -376,7 +382,7 @@ class Retencion extends ResourceController {
 	{
 		$re = (new Retencion_model())->find($id);
 		if (is_null($re))
-		return $this->genericResponse(null, "Este registro de retención no existe", 404);
+		return $this->genericResponse(null, "Este registro de retención no existe", 500);
 		else
 		return $this->genericResponse($re, null, 200);
 	}
@@ -387,12 +393,12 @@ class Retencion extends ResourceController {
 	
 	public function delete( $id = null)
 	{
-		$this->API_MODE= $this->isAPI();
+		$this->API_MODE= true;
 	 
 		$us= (new Retencion_model())->find(  $id);
  
 		if (is_null( $us))
-		return $this->genericResponse(null, "Registro de retención no existe",  404);
+		return $this->genericResponse(null, "Registro de retención no existe",  500);
 		else { 
 			(new Retencion_model())->where("regnro", $id)->delete( $id );
 			return $this->genericResponse("Registro de retención eliminado", null,  200);
@@ -440,7 +446,7 @@ public function pdf( $lista){
 	$html=<<<EOF
 	<style>
 	table.tabla{
-		color: #404040;
+		color: #500040;
 		font-family: Arial;
 		font-size: 8pt;
 		border-left: none; 

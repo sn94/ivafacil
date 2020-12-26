@@ -23,13 +23,13 @@ $compras_t = 0;
 </script>
 <form id="compras-reports" method="POST" action="<?= base_url("compra/informes/PDF") ?>" target="_blank">
     <!--cargar anios -->
-    <select onchange="$('#download-2').val('');informe_compras();"   name="year" style="font-size: 11px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
+    <select onchange="$('#download-2').val('');informe_compras();" name="year" style="font-size: 11px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
         <?php
         for ($m = 2019; $m <= date("Y"); $m++) {
-            if( $year ==  $m)
-            echo "<option selected value='$m'>$m</option>";
+            if ($year ==  $m)
+                echo "<option selected value='$m'>$m</option>";
             else
-            echo "<option value='$m'>$m</option>";
+                echo "<option value='$m'>$m</option>";
         }
         ?>
     </select>
@@ -39,24 +39,24 @@ $compras_t = 0;
         <?php
         for ($m = 1; $m <= 12; $m++) {
             $nom_mes = Utilidades::monthDescr($m);
-            if( $month ==  $m)
-            echo "<option selected value='$m'>$nom_mes</option>";
+            if ($month ==  $m)
+                echo "<option selected value='$m'>$nom_mes</option>";
             else
-            echo "<option value='$m'>$nom_mes</option>";
+                echo "<option value='$m'>$nom_mes</option>";
         }
         ?>
     </select>
 
     <button type="submit" style="display: none;"></button>
 
-    <select id="download-2" onchange="descarga_archivo_compras(event)"  style="font-size: 11px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
+    <select id="download-2" onchange="descarga_archivo_compras(event)" style="font-size: 11px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
         <option value="">Descargar como..</option>
         <option value="PDF"> PDF</option>
         <option value="EXCEL">EXCEL</option>
     </select>
-   
 
-    
+
+
 
 </form>
 <!--End generador de informes -->
@@ -67,6 +67,8 @@ $compras_t = 0;
 <table style="font-size: 12.5px;font-weight: 600 !important;" class="table table-bordered table-striped table-secondary ">
     <thead>
         <tr>
+            <th class="p-0 text-center"></th>
+            <th class="p-0 text-center"></th>
             <th class="p-0 text-center">N° COMP.</th>
             <th class="p-0 text-right">EX</th>
             <th class="p-0 text-right">5%</th>
@@ -78,6 +80,9 @@ $compras_t = 0;
     <tbody>
         <?php foreach ($compras as $it) : ?>
             <tr>
+                <td class="pb-0"><a style="color:black;" onclick="borrar_opera(event, informe_compras )" href="<?= base_url("compra/delete/" . $it->regnro) ?>"> <i class="fa fa-trash"></i></a> </td>
+                <td class="pb-0"> <a style="color:black;"   href="<?= base_url("compra/update/" . $it->regnro) ?>"><i class="fa fa-pencil"></i></a> </td>
+
                 <td class="pb-0"> <?= Utilidades::formato_factura($it->factura) ?> </td>
                 <td class="pb-0 text-right"> <?= Utilidades::number_f($it->importe3) ?></td>
                 <td class="pb-0 text-right"> <?= Utilidades::number_f($it->importe2) ?> </td>
@@ -93,7 +98,9 @@ $compras_t = 0;
         endforeach; ?>
     </tbody>
     <tfoot>
-        <tr class="bg-dark text-light" >
+        <tr class="bg-dark text-light">
+        <td></td>
+        <td></td>
             <td>TOTALES</td>
             <td class="text-right" id="compra-total-ex"> <?= $compras_total_ex ?> </td>
             <td class="text-right" id="compra-total-5"> <?= $compras_total_5 ?> </td>
@@ -105,6 +112,7 @@ $compras_t = 0;
 </table>
 <p style="color:black; font-weight: 600;font-size:11.5px;">Página(s)</p>
 <?= (sizeof($compras) > 1) ? $compras_pager->links() : '' ?>
+
 
 
  

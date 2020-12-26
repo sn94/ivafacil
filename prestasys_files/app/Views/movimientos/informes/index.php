@@ -125,6 +125,7 @@ echo $estilo;
         </div>
     </div>
 
+    <!--
     <div class="col-12">
 
         <dl class="row">
@@ -135,7 +136,7 @@ echo $estilo;
         </dl>
 
 
-    </div>
+    </div> -->
 
     <div class="col-12">
         <button type="button" onclick="cargar_tablas()" class="btn btn-dark mt-3 ">ACTUALIZAR</button>
@@ -164,7 +165,7 @@ echo $estilo;
             headers: {
                 "Content-Type": "application/json"
             },
-            body:  params
+            body: params
         });
 
         let resp_html = await req.text();
@@ -187,7 +188,7 @@ echo $estilo;
             headers: {
                 "Content-Type": "application/json"
             },
-            body:  params
+            body: params
         });
 
         let resp_html = await req.text();
@@ -201,17 +202,17 @@ echo $estilo;
 
     }
     async function informe_retencion() {
-         
-       // let req = await fetch($("#info-retencion").val());
-       let params = $("#retencion-reports").serialize();
-       let loader = "<img  src='<?= base_url("assets/img/loader.gif") ?>'   />";
+
+        // let req = await fetch($("#info-retencion").val());
+        let params = $("#retencion-reports").serialize();
+        let loader = "<img  src='<?= base_url("assets/img/loader.gif") ?>'   />";
         $("#tabla-retencion").html(loader);
         let req = await fetch($("#info-retencion").val(), {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body:  params
+            body: params
         });
 
         let resp_html = await req.text();
@@ -237,6 +238,38 @@ echo $estilo;
         await informe_retencion();
         $("ul.pagination li").addClass("btn btn-dark btn-sm").css("font-weight", "600");
     }
+
+
+
+
+
+
+    function procesar_errores(err) {
+                 if (typeof err == "object") {
+                     let errs = Object.keys(err);
+                     let concat_errs = errs.map(function(it) {
+                         return err[it];
+                     }).join("<br>");
+                     console.log(concat_errs);
+                     return concat_errs;
+                 }
+                 return err;
+
+             }
+    async function borrar_opera(ev, action) {
+        ev.preventDefault();
+        if (!confirm("Borrar operación?")) return;
+
+        let req = await fetch(ev.currentTarget.href);
+        let resp = await req.json();
+        if ("data" in resp) {
+            action();
+        } else {
+            alert(  procesar_errores(  data.msj)  ); 
+        }
+    }
+
+
 
     window.onload = function() {
 
