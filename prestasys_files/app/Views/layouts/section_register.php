@@ -1,17 +1,4 @@
-<style>
-    
-
-/* Elemento | http://localhost/ivafacil/welcome/publico */
-
-div.col-sm-12:nth-child(3) > div:nth-child(1) > a:nth-child(1) {
-  background-color: greenyellow;
-  font-weight: 600;
-  font-size: 20px !important;
-  color: #4f4e0f;
-  text-transform: uppercase    ;
-}
-
-</style>
+ 
 <section id="register" class="register">
         <div class="container-fullwidth">
             <div class="row text-center">

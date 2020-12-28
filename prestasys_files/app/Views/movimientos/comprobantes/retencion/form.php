@@ -11,14 +11,14 @@ $fecha = isset($retencion) ?  $retencion->fecha : date("Y-m-d");
 $retencionnro = isset($retencion) ?  $retencion->retencion :  "";
 $moneda = isset($retencion) ?  $retencion->moneda : "";
 $tcambio = isset($retencion) ?  Utilidades::number_f($retencion->tcambio) : "0";
-$importe = isset($retencion) ?  Utilidades::number_f($retencion->importe1) : "0";
+$importe = isset($retencion) ?  Utilidades::number_f($retencion->importe) : "0";
 $origen = isset($retencion) ?  Utilidades::number_f($retencion->origen) : "W";
 
 ?>
 
-<?php  if( isset($retencion)) :?>
- <input type="hidden" name="regnro" value="<?= $regnro ?>">
- <?php endif; ?>
+<?php if (isset($retencion)) : ?>
+    <input type="hidden" name="regnro" value="<?= $regnro ?>">
+<?php endif; ?>
 <input type="hidden" name="ruc" value="<?= $ruc ?>">
 <input type="hidden" name="dv" value="<?= $dv ?>">
 <input type="hidden" name="codcliente" value="<?= $codcliente ?>">
@@ -75,6 +75,41 @@ $origen = isset($retencion) ?  Utilidades::number_f($retencion->origen) : "W";
 
 <script>
     //Validaciones
+
+    function limpiar_numero_para_float(val) {
+        return val.replaceAll(new RegExp(/[.]*/g), "").replaceAll(new RegExp(/[,]{1}/g), ".");
+    }
+
+
+    function formatear_decimal(ev) { //
+
+        if (ev.data == undefined) {
+            ev.target.value = "0";
+            return;
+        }
+        if (ev.data.charCodeAt() < 48 || ev.data.charCodeAt() > 57) {
+            let noEsComa = ev.data.charCodeAt() != 44;
+            let yaHayComa = ev.data.charCodeAt() == 44 && /(,){1}/.test(ev.target.value.substr(0, ev.target.value.length - 2));
+            let comaPrimerLugar = ev.data.charCodeAt() == 44 && ev.target.value.length == 1;
+            let comaDespuesDePunto = ev.data.charCodeAt() == 44 && /\.{1},{1}/.test(ev.target.value);
+            if (noEsComa || (yaHayComa || comaPrimerLugar || comaDespuesDePunto)) {
+                ev.target.value = ev.target.value.substr(0, ev.target.selectionStart - 1) + ev.target.value.substr(ev.target.selectionStart);
+                return;
+            } else return;
+        }
+        //convertir a decimal
+        //dejar solo la coma decimal pero como punto 
+        let solo_decimal = limpiar_numero_para_float(ev.target.value);
+        let noEsComaOpunto = ev.data.charCodeAt() != 44 && ev.data.charCodeAt() != 46;
+        if (noEsComaOpunto) {
+            let float__ = parseFloat(solo_decimal);
+
+            //Formato de millares 
+            let enpuntos = dar_formato_millares(float__);
+            $(ev.target).val(enpuntos);
+        }
+    }
+
     function formatear_entero(ev) {
 
         //       if (ev.data == undefined) return;
@@ -96,9 +131,21 @@ $origen = isset($retencion) ?  Utilidades::number_f($retencion->origen) : "W";
 
 
 
+    function dar_formato_millares(val_float) {
+        return new Intl.NumberFormat("de-DE").format(val_float);
+    }
+
+
+
     async function obtener_cambio(ev) {
 
         let id = ev.target.value;
+
+        if (parseInt(id) == 1) {
+            $("input[name=importe]").attr("oninput", " formatear_entero(event)");
+        } else {
+            $("input[name=importe]").attr("oninput", "formatear_decimal(event)");
+        }
 
         let req = await fetch("<?= base_url("monedas/show") ?>/" + id);
         let json_r = await req.json();
@@ -114,10 +161,17 @@ $origen = isset($retencion) ?  Utilidades::number_f($retencion->origen) : "W";
     }
 
     function cargar_cambio(ev) {
-        if (parseInt(ev.target.value) != 1)
+        if (parseInt(ev.target.value) != 1) {
             $("#cambio1,#cambio2").removeClass("d-none");
-        else $("#cambio1,#cambio2").addClass("d-none");
+        } else {
+            $("#cambio1,#cambio2").addClass("d-none");
+            let fl = parseInt($("input[name=importe]").val().replaceAll(/[\.]/g, "").replaceAll(/[,]/g, "."));
+            $("input[name=importe]").val(fl);
+        }
+
         obtener_cambio(ev);
+
+
     }
 
 
@@ -176,9 +230,14 @@ $origen = isset($retencion) ?  Utilidades::number_f($retencion->origen) : "W";
 
     async function guardar(ev) {
         ev.preventDefault();
-        
+
         //limpiar numericos
-        $("input[name=importe]").val($("input[name=importe]").val().replaceAll(new RegExp(/\.+/g), ""));
+        $("input[name=tcambio]").val(
+            $("input[name=tcambio]").val().replaceAll(new RegExp(/\.+/g), "").replaceAll(new RegExp(/,+/g), ".")
+        );
+        $("input[name=importe]").val(
+            $("input[name=importe]").val().replaceAll(new RegExp(/\.+/g), "").replaceAll(new RegExp(/,+/g), ".")
+        );
         show_loader();
         let req = await fetch(ev.target.action, {
             "method": "POST",
@@ -190,13 +249,15 @@ $origen = isset($retencion) ?  Utilidades::number_f($retencion->origen) : "W";
         });
         let resp = await req.json();
         hide_loader();
-        if ("data" in resp) {
-            alert(resp.data);
-            window.location.reload();
-            }
-        else alert(procesar_errores(resp.msj));
 
-       
+        if ("data" in resp) {
+            alert("GUARDADO");
+            window.location.reload();
+        } else 
+         alert(procesar_errores(resp.msj));
+
+
+
     }
 
 

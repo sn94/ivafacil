@@ -50,7 +50,7 @@ $origen = isset($venta) ?  Utilidades::number_f($venta->origen) : "W";
                     <label for="nf-password" class=" form-control-label form-control-sm -label">N° de factura:</label>
                 </div>
                 <div class="col-9 col-md-9">
-                    <input value="<?= $factura ?>" placeholder="000-000-0000000" maxlength="15" type="text" id="nf-password" name="factura" class=" form-control form-control-label form-control-sm ">
+                    <input oninput="factura_input(event)" value="<?= $factura ?>" placeholder="000-000-0000000" maxlength="15" type="text" id="nf-password" name="factura" class=" form-control form-control-label form-control-sm ">
                     <p style="color:red; font-size: 11px; font-weight: 600;" id="error-factura"></p>
                 </div>
 
@@ -60,10 +60,10 @@ $origen = isset($venta) ?  Utilidades::number_f($venta->origen) : "W";
                 <div class="col-9 col-md-9">
                     <select valor="<?= $moneda ?>" onchange="obtener_cambio( event)" name="moneda" class=" form-control form-control-label form-control-sm "></select>
                 </div>
-                <div class="col-3 col-md-3  pl-md-3 pl-0">
+                <div class="col-3 col-md-3  pl-md-3 pl-0 d-none CAMBIO">
                     <label for="nf-password" class=" form-control-label form-control-sm -label">Tipo de cambio:</label>
                 </div>
-                <div class="col-9 col-md-9">
+                <div class="col-9 col-md-9  d-none CAMBIO">
                     <input value="<?= $tcambio ?>" onfocus="if(this.value=='0') this.value='';" onblur="if(this.value=='') this.value='0';" oninput="formatear_entero(event)" type="text" name="tcambio" class=" form-control form-control-label form-control-sm text-right">
                 </div>
             </div>
@@ -146,6 +146,46 @@ $origen = isset($venta) ?  Utilidades::number_f($venta->origen) : "W";
     /** 
 Validaciones
  */
+
+
+    function factura_input(ev) {
+
+        let cadena = ev.target.value;
+        // if (ev.data != undefined && ev.data != null) 
+
+        if (!(/\d/.test(ev.data)) && (ev.data != undefined && ev.data != null)) {
+            ev.target.value =
+                ev.target.value.substr(0, ev.target.selectionStart - 1) +
+                ev.target.value.substr(ev.target.selectionStart);
+        }
+
+        if (ev.target.selectionStart == 3 || ev.target.selectionStart == 7) {
+            /*  if (!(/\d/.test(cadena.charAt(ev.target.selectionStart - 1)))) {
+                  ev.target.value =
+                      ev.target.value.substr(0, ev.target.selectionStart - 1) +
+                      ev.target.value.substr(ev.target.selectionStart);
+              }*/
+
+            ev.target.value = ev.target.value + "-";
+        }
+        // }
+
+        //moldear
+        let cad = ev.target.value.replaceAll(/\-/g, "");
+        let nuevacadena = "";
+
+        for (let a = 0; a < cad.length; a++) {
+
+            nuevacadena += cad.charAt(a);
+            if ((a == 2 || a == 5))
+                nuevacadena += "-";
+        }
+        ev.target.value = nuevacadena;
+
+
+    }
+
+
 
     function formato_valido_factura(valor) {
         let valido = /(\d{3})-(\d{3})-(\d{7})/.test(valor);
@@ -233,8 +273,11 @@ Validaciones
 
     function totalizar(ev) {
 
+        if (parseInt($("select[name=moneda]").val()) == 1)
+            formatear_entero(ev);
+        else
+            formatear_decimal(ev);
 
-        formatear_entero(ev);
         let monto1 = limpiar_numero_para_float($("input[name=importe1]").val());
         let monto2 = limpiar_numero_para_float($("input[name=importe2]").val());
         let monto3 = limpiar_numero_para_float($("input[name= importe3]").val());
@@ -284,6 +327,11 @@ Validaciones
 
         let id = ev.target.value;
 
+        if (parseInt(id) == 1) {
+            $(".CAMBIO").addClass("d-none");
+        } else {
+            $(".CAMBIO").removeClass("d-none");
+        }
         let req = await fetch("<?= base_url("monedas/show") ?>/" + id);
         let json_r = await req.json();
         if ("data" in json_r) {

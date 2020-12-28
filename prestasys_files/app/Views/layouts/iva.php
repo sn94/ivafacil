@@ -13,10 +13,11 @@ $base_url_for_resources = base_url() . "/assets/ivax/";
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>IVAx</title>
-    <meta name="description" content="">
+    <title>IVA FÁCIL</title>
+    <meta name="description" content="gestion de IVA">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+    <link rel="icon" type="image/png" href="<?= base_url("assets/img/Logo.jpg") ?>" />
 
     <!--<link href='https://fonts.googleapis.com/css?family=Titillium+Web:400,200,300,600,700' rel='stylesheet' type='text/css'>-->
 
@@ -54,6 +55,47 @@ $base_url_for_resources = base_url() . "/assets/ivax/";
             background-color: #0007;
             border: none;
         }
+
+        .sections {
+            margin-top: 50px;
+            margin-top: 0px;
+        }
+
+       
+        .footer {
+            /* background: #2a2a2a; */
+            background: #21220b;
+        }
+
+        .footer a,
+        p {
+            font-weight: 600;
+            font-size: 26px;
+        } 
+
+        .fa-phone {
+            font-weight: 600;
+            font-size: 26px;
+        }
+ 
+
+ 
+ 
+
+.single_slider h2 {
+ 
+color: #7adb84;
+}
+.single_slider p { 
+color: #7adb84;
+}
+
+ 
+.home-overlay-fluid { 
+  background-color: rgba(0, 0, 0, 0.83);
+}
+
+
     </style>
 </head>
 
@@ -64,29 +106,32 @@ $base_url_for_resources = base_url() . "/assets/ivax/";
     <div class='preloader'>
         <div class='loaded'>&nbsp;</div>
     </div>
-    
+
     <?= $this->renderSection("section_menu") ?>
     <?= $this->renderSection("section_presentacion") ?>
-    <?= $this->renderSection("section_register") ?>
+
 
     <?= ""
-    //$this->renderSection("section_plans") ?>
-    <?=  ""
-    //$this->renderSection("section_comments") ?>
+    //$this->renderSection("section_plans") 
+    ?>
+    <?= ""
+    //$this->renderSection("section_comments") 
+    ?>
 
     <?= ""
-    // $this->renderSection("section_services") ?>
-    
+    // $this->renderSection("section_services") 
+    ?>
+
     <?= $this->renderSection("section_footer") ?>
 
 
-  
- 
-  
 
 
 
-    
+
+
+
+
 
 
 

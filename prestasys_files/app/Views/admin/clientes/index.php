@@ -51,7 +51,7 @@ Bienvenido
 
 <!-- Right Panel -->
 
-<div class="container p-0">
+<div class="container p-2 bg-light m-0">
 
 
 

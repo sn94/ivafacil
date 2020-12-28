@@ -1,7 +1,6 @@
 <?php
 
-use App\Helpers\Utilidades;
-use App\Models\Estado_anio_model;
+use App\Helpers\Utilidades; 
 use App\Models\Estado_mes_model;
 
 $cedula = isset($usuario) ? Utilidades::number_f($usuario->cedula)  :  "";
@@ -139,35 +138,129 @@ $rubro =  isset($usuario) ?  $usuario->rubro :  "";
         </div>
     </div>
 
-    <?php if( ! isset($OPERACION)): ?>
-    <div class="col-12">
-        <div class="row form-group">
-            <div class="col-3 col-md-3 pl-md-3 pl-0">
-                <label for="nf-password" class=" form-control-label form-control-sm -label" style="font-weight: 600;">
-                    Saldo Inicial <?= date("Y") ?> : <span></span></label>
+    <?php if (!isset($OPERACION)) : ?>
+        <div class="col-12">
+            <div class="row form-group">
+                <div class="col-3 col-md-3 pl-md-3 pl-0">
+                    <label for="nf-password" class=" form-control-label form-control-sm -label" style="font-weight: 600;">
+                        Saldo Inicial <?= date("Y") ?> : <span></span></label>
+                </div>
+                <div class="col-9 col-md-3">
+
+                    <!--Campo de saldo inicial editable ?  -->
+                    <?php
+
+                    $reg_anio =
+                        (new Estado_mes_model())->where("codcliente", session("id"))->where("anio", date("Y"))->first();
+
+                    $yaestaCerrado =  !is_null($reg_anio) ? (($reg_anio->estado == "P") ? "" : "disabled")  :   "";
+                    ?>
+                    <input <?= $yaestaCerrado ?> onfocus="if(this.value=='0') this.value='';" onblur="if(this.value=='') this.value='0';" value="<?= $saldo_IVA ?>" maxlength="10" oninput="formatear( event)" type="text" name="saldo_IVA" class=" form-control form-control-label form-control-sm ">
+
+
+                </div>
             </div>
-            <div class="col-9 col-md-3">
+        </div>
+    <?php endif; ?>
 
-                <!--Campo de saldo inicial editable ?  -->
-                <?php
 
-                $reg_anio =
-                    (new Estado_mes_model())->where("codcliente", session("id"))->where("anio", date("Y"))->first();
 
-                $yaestaCerrado =  !is_null($reg_anio) ? (($reg_anio->estado == "P") ? "" : "disabled")  :   "";
-                ?>
-                <input <?= $yaestaCerrado ?> onfocus="if(this.value=='0') this.value='';" onblur="if(this.value=='') this.value='0';" value="<?= $saldo_IVA ?>" maxlength="10" oninput="formatear( event)" type="text" name="saldo_IVA" class=" form-control form-control-label form-control-sm ">
+    <!--Eleccion de fondo de pantalla -->
+    <?php if (isset($usuario)) : ?>
+        <div class="col-12">
+            <label style="font-weight: 600;" for="nf-password" class=" form-control-label form-control-sm -label">Fondo de pantalla:</label>
+
+            <div class="card-group">
+
+
+                <div class="card" style="width: 18rem;">
+
+                    <img class="card-img-top" src="" alt="NINGUNO">
+                    <div class="card-body">
+                        <h5 class="card-title"></h5>
+                    </div>
+                    <div class="card-footer">
+                        <input type="radio" name="fondo" value="none">
+                    </div>
+                </div>
+                <div class="card" style="width: 18rem;">
+
+                    <img class="card-img-top" src="<?= base_url("wallpapers/fondo0.jpg") ?>" alt="">
+                    <div class="card-body">
+                        <h5 class="card-title"></h5>
+                    </div>
+                    <div class="card-footer">
+                        <input type="radio" name="fondo" value="<?= base_url("wallpapers/fondo0.jpg") ?>">
+                    </div>
+                </div>
+
+                <div class="card" style="width: 18rem;">
+
+                    <img class="card-img-top" src="<?= base_url("wallpapers/fondo1.jpg") ?>" alt="">
+                    <div class="card-body">
+                        <h5 class="card-title"></h5>
+
+                    </div>
+                    <div class="card-footer">
+                        <input type="radio" name="fondo" value="<?= base_url("wallpapers/fondo1.jpg") ?>">
+                    </div>
+                </div>
+
+                <div class="card" style="width: 18rem;">
+
+                    <img class="card-img-top" src="<?= base_url("wallpapers/fondo2.jpg") ?>" alt="">
+                    <div class="card-body">
+                        <h5 class="card-title"></h5>
+
+                    </div>
+                    <div class="card-footer">
+                        <input type="radio" name="fondo" value="<?= base_url("wallpapers/fondo2.jpg") ?>">
+                    </div>
+                </div>
+
+                <div class="card" style="width: 18rem;">
+
+                    <img class="card-img-top" src="<?= base_url("wallpapers/fondo3.jpg") ?>" alt="">
+                    <div class="card-body">
+                        <h5 class="card-title"></h5>
+                    </div>
+                    <div class="card-footer">
+                        <input type="radio" name="fondo" value="<?= base_url("wallpapers/fondo3.jpg") ?>">
+                    </div>
+                </div>
+
+                <div class="card" style="width: 18rem;">
+
+                    <img class="card-img-top" src="<?= base_url("wallpapers/fondo4.jpg") ?>" alt="">
+                    <div class="card-body">
+                        <h5 class="card-title"></h5>
+                    </div>
+                    <div class="card-footer">
+                        <input type="radio" name="fondo" value="<?= base_url("wallpapers/fondo4.jpg") ?>">
+                    </div>
+                </div>
 
 
             </div>
         </div>
-    </div>
     <?php endif; ?>
-
 
 </div>
 <!--end row form  -->
 <script>
+    function wallpaper() {
+        let selected = Array.prototype.filter.call(document.querySelectorAll("input[name=fondo]"),
+            function(ar) {
+                return $(ar).prop("checked");
+            });
+
+        if (selected.length > 0) return selected[0].value;
+        else return "";
+
+    }
+
+
+
     function editar_pass(ev) {
         if (ev.target.checked) document.getElementById('masterpass').disabled = false;
         else document.getElementById('masterpass').disabled = true;

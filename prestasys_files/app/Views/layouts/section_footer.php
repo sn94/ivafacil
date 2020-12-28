@@ -10,9 +10,9 @@
 
                             <div class="col-sm-12 col-xs-12 col-mf-offset-md-4">
                                 <div class="fo_bottom_socail wow fadeIn" data-wow-duration="2.3s">
-                                    <a href="#"><i class="fa fa-phone"> 0000-0000-0000</i></a>
-                                    <a href=""><i class="fa fa-envelope"></i> informationteam@ghosthost.com</a>
-                                    <p>Lorem Ipsum Street, Lorem Avenue,Lorem Ipsum </p>
+                                    <a   href="#"><i class="fa fa-phone"> (0986) 786 181 </i></a>
+                                    <a href=""><i class="fa fa-envelope"></i> ivafacilpy@gmail.com</a>
+                                    <p>Esperanza Fernandina e Itapúa, Fernando de la Mora </p>
                                 </div>
 
                             </div>

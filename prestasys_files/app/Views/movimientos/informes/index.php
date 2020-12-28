@@ -27,7 +27,7 @@ echo $estilo;
 
 
 
-<div class="row">
+<div class="row ml-1">
 
     <div class="col-12 col-md-12">
 

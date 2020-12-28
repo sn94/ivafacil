@@ -72,7 +72,7 @@ Bienvenido
                  <?= view("plantillas/message") ?>
 
              </div>
-             <div class="col-12 offset-md-3  col-md-6 ">
+             <div class="col-12 offset-md-2  col-md-8 ">
 
 
                  <?php
@@ -288,10 +288,9 @@ Bienvenido
                  hide_loader();
                  if (("data" in respuesta) && parseInt(respuesta.code) == 200) {
 
-                     $("#message").html("REGISTRADO");
-                     $("#message-modal").modal("hide");
+                     alert("ACTUALIZADO"); 
                  } else {
-                     $("#message").html(procesar_errores(respuesta.msj));
+                     alert(procesar_errores(respuesta.msj));
                  }
              }
          </script>

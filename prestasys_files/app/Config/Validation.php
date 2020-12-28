@@ -538,7 +538,7 @@ class Validation
 
 		'importe' => 
 		[
-			'rules'  => 'if_exist|max_length[15]|integer',
+			'rules'  => 'if_exist|max_length[15]|numeric',
 			'errors' => [
 				 
 				'max_length' => 'El importe retenido no debe sobrepasar los 15 dígitos',

@@ -234,8 +234,8 @@ class Retencion extends ResourceController {
 		$data = $this->request->getRawInput();
 
 		//Verificar si el periodo-ejercicio esta cerrado o fuera de rango
-		//$Operacion_fecha_invalida = (new Cierres())->fecha_operacion_invalida($data['fecha']);
-		//if (!is_null($Operacion_fecha_invalida))  return $Operacion_fecha_invalida;
+		$Operacion_fecha_invalida = (new Cierres())->fecha_operacion_invalida($data['fecha']);
+		if (!is_null($Operacion_fecha_invalida))  return $Operacion_fecha_invalida;
 		//***** Fin check tiempo*/
 			
 		if( $this->API_MODE)  $data['origen']= "A";
@@ -263,7 +263,7 @@ class Retencion extends ResourceController {
 				if( $moneda != 1){
 					$cambio = $data['tcambio'];
 					$im1= $data['importe'];
-					$data['importe']=  intval($im1 ) * intval($cambio);
+					$data['importe']= intval(  floatval($im1 ) * intval($cambio)  );
 				}
 					//Crear nuevo registro de ejercicio si es necesario
 					(new Cierres())->crear_ejercicio();
@@ -312,9 +312,14 @@ class Retencion extends ResourceController {
 			return view("movimientos/comprobantes/retencion/update",  ['retencion'=>  $regis ] );
 		}
 
-		//Manejo POST
-		$usu = new Retencion_model();
+		//Manejo POST 
 		$data = $this->request->getRawInput();
+
+		//Verificar si el periodo-ejercicio esta cerrado o fuera de rango
+	 
+		$Operacion_fecha_invalida= (new Cierres())->fecha_operacion_invalida(  $data['fecha'] );
+		if (  !is_null($Operacion_fecha_invalida))  return $Operacion_fecha_invalida;
+		//***** Fin check tiempo*/
 
 		if( $this->API_MODE)  $data['origen']= "A";
 

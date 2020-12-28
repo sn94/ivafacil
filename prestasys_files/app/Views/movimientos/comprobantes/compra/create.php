@@ -39,7 +39,7 @@ h4.text-center {
     </div>
 
     <div class="col-12  offset-md-3 col-md-6 ">
-        <div class="container p-0">
+        <div class="container p-1 p-md-1">
             <div class="container" style="border-radius: 15px 15px 0px 0px; background-color: #e4e4e4; border-bottom: 1px solid #cecece;border-right: 1px solid #cecece; border-left: 1px solid #cecece;">
                 <h4   class="text-center">Factura de compra</h4>
             </div>

@@ -112,7 +112,7 @@ class Cierres extends Controller {
 			//$inicial =  $SALDO_INI->saldo_IVA;//El saldo para comenzar el anio
 			//return   $inicial;
 		} else
-		return   $ANTERIOR_S->saldo;
+		return   (intval($ANTERIOR_S->saldo) + intval( $ANTERIOR_S->saldo_inicial));
 	}
 
 
@@ -610,6 +610,7 @@ class Cierres extends Controller {
 	//lA FECHA DE LA OPERACION NO PUEDE SER DEL PASADO NI DEL FUTURO
 	//no puede registrarse una operacion en un mes ya cerrado  ni en un ejercicio ya finalizado
 	public function fecha_operacion_invalida( $FECHA ){
+		$response= \Config\Services::response();
 		$fecha_comprobante =  explode("-",  $FECHA);
 		$mes =  $fecha_comprobante[1];
 		$anio =  $fecha_comprobante[0]; 
@@ -617,7 +618,7 @@ class Cierres extends Controller {
 		if (  !is_null($fuera_de_tiempo))  return $fuera_de_tiempo;
 
 		$estaCerrado = $this->esta_cerrado($mes, $anio);
-		if ($estaCerrado) return $this->response->setJSON(['msj' => "No puede registrar la transacción para un período ya cerrado", "code" => "500"]);
+		if ($estaCerrado) return $response->setJSON(['msj' => "No puede registrar la transacción para un período ya cerrado", "code" => "500"]);
 		else return  NULL;
 	}
 

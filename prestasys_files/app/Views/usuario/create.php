@@ -141,7 +141,7 @@
                             <div class="row">
                                 <div class="col-12  col-md-6 mb-2">
                                     <input type="checkbox" name="aceptar-bases" value="S"> He leído y acepto las 
-                                    <a href="<?=base_url("bases_condiciones.pdf")?>">bases y condiciones</a>
+                                    <a href="<?=base_url("TyC.pdf")?>">bases y condiciones</a>
                                 </div>
                                 <div class="col-12  col-md-6  mb-2 ">
                                     <button style="font-size: 12px;font-weight: 600;width:100%;" type="submit" class="btn btn-success btn-sm">
@@ -429,7 +429,7 @@
                     if (campos_vacios() || !claves_validas()) return;
 
                     //limpiar numeros
-                    clean_number($("input[name=saldo_IVA]"));
+                 //   clean_number($("input[name=saldo_IVA]"));
                     clean_number($("input[name=cedula]"));
 
                     let datos = $("#user-form").serialize();

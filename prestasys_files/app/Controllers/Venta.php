@@ -245,8 +245,8 @@ class Venta extends ResourceController {
 
 		//Verificar si el periodo-ejercicio esta cerrado o fuera de rango
 	 
-		//$Operacion_fecha_invalida= (new Cierres())->fecha_operacion_invalida(  $data['fecha'] );
-		//if (  !is_null($Operacion_fecha_invalida))  return $Operacion_fecha_invalida;
+		$Operacion_fecha_invalida= (new Cierres())->fecha_operacion_invalida(  $data['fecha'] );
+		if (  !is_null($Operacion_fecha_invalida))  return $Operacion_fecha_invalida;
 		//***** Fin check tiempo*/
 
 		if( $this->API_MODE)  $data['origen']= "A";
@@ -332,6 +332,12 @@ class Venta extends ResourceController {
 		$usu = new Ventas_model();
 
 		$data = $this->request->getRawInput();
+		//Verificar si el periodo-ejercicio esta cerrado o fuera de rango
+	 
+		$Operacion_fecha_invalida= (new Cierres())->fecha_operacion_invalida(  $data['fecha'] );
+		if (  !is_null($Operacion_fecha_invalida))  return $Operacion_fecha_invalida;
+		//***** Fin check tiempo*/
+		
 
 		if( $this->API_MODE)  $data['origen']= "A";
 		

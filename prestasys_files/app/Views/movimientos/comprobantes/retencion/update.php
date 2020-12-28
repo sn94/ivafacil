@@ -46,7 +46,7 @@ h4.text-center {
                 <h4  class="text-center">Retención</h4>
             </div>
 
-            <form action="<?= base_url("retencion/create") ?>" method="post" class="container" onsubmit="guardar(event)">
+            <form action="<?= base_url("retencion/update") ?>" method="post" class="container" onsubmit="guardar(event)">
 
 
             <?= view("movimientos/comprobantes/retencion/form")?>

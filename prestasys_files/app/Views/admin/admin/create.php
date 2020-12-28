@@ -283,10 +283,9 @@
                  hide_loader();
                  if (("data" in respuesta) && parseInt(respuesta.code) == 200) {
 
-                     $("#message").html("REGISTRADO");
-                     $("#message-modal").modal("hide");
+                    alert("REGISTRADO"); 
                  } else {
-                     $("#message").html(procesar_errores(respuesta.msj));
+                    alert(procesar_errores(respuesta.msj));
                  }
              }
          </script>
