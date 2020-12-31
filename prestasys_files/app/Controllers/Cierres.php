@@ -8,6 +8,7 @@ use App\Models\Estado_anio_model;
 use App\Models\Estado_mes_model; 
 use App\Models\Parametros_model; 
 use App\Models\Usuario_model;
+use App\Models\Ventas_model;
 use CodeIgniter\Controller; 
 use Exception;
 
@@ -81,8 +82,19 @@ class Cierres extends Controller {
 		
 		 return  $response->setJSON(  
 			[
-				'compras' => (intval($cf->iva1) +  intval($cf->iva2)),
-				'ventas' => $s_fisco,
+				 
+				'compras_total_10'=> intval($cf->total10) ,
+				'compras_total_5'=> intval($cf->total5) ,
+				'compras_total_exe'=> intval($cf->totalexe) ,
+				'compras_iva10'=> intval($cf->iva1) ,
+				'compras_iva5'=> intval($cf->iva2) ,
+
+				'ventas_total_10'=> intval($df->total10) ,
+				'ventas_total_5'=> intval($df->total5) ,
+				'ventas_total_exe'=> intval($df->totalexe) ,
+				'ventas_iva10'=> intval($df->iva1) ,
+				'ventas_iva5'=> intval($df->iva2) ,
+
 				'retencion' => (intval($reten->importe)),
 				'saldo' => $saldo,
 				'saldo_anterior'=>  $saldo_a
@@ -367,11 +379,20 @@ class Cierres extends Controller {
 		$saldo_ini=   (new Estado_anio_model())->where("codcliente", $this->getClienteId())
 		->where("anio", date("Y"))
 		->first();
-	 
+		
+		//Anulados En venta
+		$fv_anuladas= (new Venta())->anuladas( true );
+		$fv_cant=  $fv_anuladas->cantidad;
+		$fv_tot=  $fv_anuladas->total ;
+		$fv_iva=  $fv_anuladas->total_iva ;
+
 		 return   
 			[
 				'compras' => (intval($cf->iva1) +  intval($cf->iva2)),
 				'ventas' => $s_fisco,
+				'ventas_anuladas_cant'=> $fv_cant,
+				'ventas_anuladas_tot'=> $fv_tot,
+				'ventas_anuladas_iva'=> $fv_iva,
 				'retencion' => (intval($reten->importe)),
 				'saldo' => $saldo,
 				'saldo_inicial'=> $saldo_ini->saldo_inicial
@@ -453,8 +474,6 @@ class Cierres extends Controller {
 			$year = date("Y");
 			return $this->response->setJSON(['msj' => "No permitido. El Año $year ya está cerrado.",  'code' => "500"]);
 		}
-
-			 
 			//numeros
 			$totales_cierre= $this->__totales_anio();
 			$cf =  $totales_cierre['compras'];
@@ -466,7 +485,7 @@ class Cierres extends Controller {
 			//A favor de hacienda
 			$s_fisco =  intval($df) ;
 			//Saldo
-			$saldo_ante= $this->__saldo_anterior();
+			$saldo_ante= $cerrado->saldo_inicial; // $this->__saldo_anterior();
 			$saldo = ( $s_contri   ) -  $s_fisco; 
 			$anio = date("Y");
 			$data_cliente= (new Usuario_model())->find(  $CODCLIENTE );
@@ -481,17 +500,26 @@ class Cierres extends Controller {
 				'saldo' => $saldo,
 				'estado'=> "C"
 			];
+			$db= \Config\Database::connect();
 
-			try {
-				 (new Estado_anio_model())->where("regnro", $cerrado->regnro)->set($DATOS)->update();
-				//Notificar
-				// ....
-				$this->email_cierre_anio(  $cerrado->regnro);
-				return $this->response->setJSON(['data' =>  $cerrado->regnro,  'code' => "200"]);
-			} catch (Exception $ex) {
-				return $this->response->setJSON(['msj' => "Comunique este error a su proveedor de servicios: $ex",  'code' => "500"]);
-			}
-		
+			$db->transStart();
+			$respuesta= [];
+		try {
+			(new Estado_anio_model())->where("regnro", $cerrado->regnro)->set($DATOS)->update();
+			//actualizar en usuario mis datos
+			$anio_a_Cerrar =  intval($saldo) + intval($saldo_ante);
+			(new Usuario_model())->where("regnro", $this->getClienteId())->set(['saldo_IVA' =>  $anio_a_Cerrar])
+				->update();
+			$db->transCommit();
+			//Notificar 
+			$this->email_cierre_anio($cerrado->regnro);
+			$respuesta = $this->response->setJSON(['data' =>  $cerrado->regnro,  'code' => "200"]);
+		} catch (Exception $ex) {
+			$db->transRollback();
+			$respuesta = $this->response->setJSON(['msj' => "Comunique este error a su proveedor de servicios: $ex",  'code' => "500"]);
+		}
+		$db->transComplete();
+		return $respuesta;
 	}
 
 
@@ -633,7 +661,7 @@ class Cierres extends Controller {
 		$Mes= (new Estado_mes_model())->where("codcliente", $cod_cliente)
 		->where("anio", $ANIO)->where("mes", $_mes)->first();
 
-		if(  $Anio->estado != "P")
+		if(  !is_null($Anio)  &&   $Anio->estado != "P")
 		return true;
 		else {
 			if( is_null( $Mes))  return false;

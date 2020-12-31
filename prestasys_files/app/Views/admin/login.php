@@ -29,9 +29,21 @@
 
 
     <style>
+
+
+@import url("<?=base_url('assets/Marvel-Regular.ttf')?>");
+
+@font-face{
+    font-family: "mainfont";
+    src: url("<?=base_url('assets/Marvel-Regular.ttf')?>");
+    
+}
+      
+
+
         .form-control {
             border: none;
-            border-bottom: 1px solid #0f0;
+            border-bottom: 1px solid #aaaaaa;
         }
 
         body {
@@ -46,7 +58,7 @@
         .login-form {
             /* background: #ffffff; */
             background: #5491320f !important;
-            border-radius: 25px !important;
+        
         }
 
         /* bootstrap.min.css | http://localhost/ivafacil/assets/template/vendors/bootstrap/dist/css/bootstrap.min.css */
@@ -104,17 +116,7 @@
             color: #69a44e !important;
         }
 
-        /* Elemento | http://localhost/ivafacil/admin/sign-in */
-
-        input.form-control:nth-child(1) {
-            border-radius: 15px 15px 0px 0px !important;
-        }
-
-        /* Elemento | http://localhost/ivafacil/admin/sign-in */
-
-        input.form-control:nth-child(2) {
-            border-radius: 15px 15px 0px 0px !important;
-        }
+       
 
         /* Elemento | http://localhost/ivafacil/admin/sign-in */
 
@@ -189,7 +191,7 @@
                                 </div>
                             </div>
                             <div class="col-12 col-md-6 align-self-center">
-                                <h4 style="color: #428e20;" class="">ADMINISTRACIÓN</h4>
+                                <h4   style="font-family: mainfont;font-size: 40px;color: #428e20;" class="">ADMINISTRACIÓN</h4>
                             </div>
                         </div>
 
@@ -218,7 +220,7 @@
                                 <input <?= isset($remember) ? 'checked' : '' ?> type="checkbox" name="remember" value="S"> <span style="font-weight: 600;color: #555555;">Recordar contraseña</span>
                             </label>
                             <label class="pull-right">
-                                <a style="color: #fd4040; font-weight: 600;" href="#">Olvidaste tu contraseña?</a>
+                                <a style="color: #fd4040; font-weight: 600;" href="<?=base_url("admin/olvido-password")?>">Olvidaste tu contraseña?</a>
                             </label>
 
                         </div>

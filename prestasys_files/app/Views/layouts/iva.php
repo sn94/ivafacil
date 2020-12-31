@@ -1,5 +1,7 @@
 <?php
 
+use App\Libraries\Mobile_Detect;
+
 $base_url_for_resources = base_url() . "/assets/ivax/";
 ?>
 <!doctype html>
@@ -19,7 +21,9 @@ $base_url_for_resources = base_url() . "/assets/ivax/";
 
     <link rel="icon" type="image/png" href="<?= base_url("assets/img/Logo.jpg") ?>" />
 
-    <!--<link href='https://fonts.googleapis.com/css?family=Titillium+Web:400,200,300,600,700' rel='stylesheet' type='text/css'>-->
+    <link href='<?=base_url("assets/Marvel-Regular.ttf")?>' rel='stylesheet' type='text/css'>
+
+  
 
     <link rel="stylesheet" href="<?= $base_url_for_resources ?>assets/css/fonticons.css">
     <link rel="stylesheet" href="<?= $base_url_for_resources ?>assets/fonts/stylesheet.css">
@@ -42,7 +46,16 @@ $base_url_for_resources = base_url() . "/assets/ivax/";
 
 
     <style>
-        /* style.css | http://localhost/ivafacil/assets/ivax/assets/css/style.css */
+       
+        @import url("<?=base_url('assets/Marvel-Regular.ttf')?>");
+
+@font-face{
+    font-family: "mainfont";
+    src: url("<?=base_url('assets/Marvel-Regular.ttf')?>");
+    
+}
+      
+
 
         .main_menu_bg .navbar-nav>li>a {
             font-weight: 600;
@@ -94,9 +107,22 @@ color: #7adb84;
 .home-overlay-fluid { 
   background-color: rgba(0, 0, 0, 0.83);
 }
-
-
     </style>
+
+<?php
+if( (new Mobile_Detect())->isMobile()  ):
+    $__estilo__ = <<< EOF
+    <style>
+    .home-overlay-fluid { 
+        padding: 100px 0px;
+    }
+    </style>
+    EOF;
+    echo  $__estilo__;
+endif;
+?>
+
+
 </head>
 
 <body data-spy="scroll" data-target="#navmenu">

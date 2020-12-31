@@ -21,6 +21,7 @@ echo $estilo;
 
 <input type="hidden" id="info-compras" value="<?= base_url("compra/index") ?>">
 <input type="hidden" id="info-ventas" value="<?= base_url("venta/index") ?>">
+<input type="hidden" id="info-ventas-a" value="<?= base_url("venta/index/B") ?>">
 <input type="hidden" id="info-retencion" value="<?= base_url("retencion/index") ?>">
 
 <!-- Menu de Usuario -->
@@ -34,66 +35,27 @@ echo $estilo;
         <h5 class="text-center">VENTAS</h5>
         <div id="tabla-ventas">
             <table style="font-size: 11px;" class="table table-bordered ">
-                <thead>
-                    <tr>
-                        <th class="p-0">N° COMP.</th>
-                        <th class="p-0">EX</th>
-                        <th class="p-0">5%</th>
-                        <th class="p-0">10%</th>
-                        <th class="p-0">TOTAL</th>
-                        <th class="p-0">MOD/ELIM</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="6">TOTAL VTA. XXXXXXX</td>
-                    </tr>
-                </tfoot>
+
             </table>
         </div>
     </div>
 
     <div class="col-12 col-md-12">
 
+        <h5 class="text-center">VENTAS ANULADAS</h5>
+        <div id="tabla-ventas-a">
+            <table style="font-size: 11px;" class="table table-bordered ">
+
+            </table>
+        </div>
+    </div>
+
+
+    <div class="col-12 col-md-12">
+
         <h5 class="text-center">COMPRA</h5>
         <div id="tabla-compras">
-            <table style="font-size: 11px;" class="table table-bordered  ">
-                <thead>
-                    <tr>
-                        <th class="p-0">N° COMP.</th>
-                        <th class="p-0">EX</th>
-                        <th class="p-0">5%</th>
-                        <th class="p-0">10%</th>
-                        <th class="p-0">TOTAL</th>
-                        <th class="p-0">MOD/ELIM</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="6">TOTAL CPRA. XXXXXXX</td>
-                    </tr>
-                </tfoot>
-            </table>
+
         </div>
     </div>
 
@@ -102,25 +64,8 @@ echo $estilo;
         <h5 class="text-center">RETENCIONES</h5>
         <div id="tabla-retencion">
             <table style="font-size: 11px;" class="table table-bordered ">
-                <thead>
-                    <tr>
-                        <th class="p-0">N° COMP.</th>
-                        <th class="p-0">IMPORTE</th>
-                        <th class="p-0">MOD/ELIM</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="6">TOTAL RET. XXXXXXX</td>
-                    </tr>
-                </tfoot>
+
+
             </table>
         </div>
     </div>
@@ -140,7 +85,7 @@ echo $estilo;
 
     <div class="col-12">
         <button type="button" onclick="cargar_tablas()" class="btn btn-dark mt-3 ">ACTUALIZAR</button>
-        <a href="<?= base_url("/") ?>" class="btn btn-success mt-3 ">IR A MENÚ</a>
+
     </div>
 
 
@@ -201,6 +146,33 @@ echo $estilo;
         $("#SALDO-FISCO").text(dar_formato_millares(saldo));
 
     }
+
+
+    async function informe_ventas_anuladas() {
+        //Parametros Anio, mes
+        let params = $("#ventas-a-reports").serialize();
+        let loader = "<img  src='<?= base_url("assets/img/loader.gif") ?>'   />";
+        $("#tabla-ventas-a").html(loader);
+        let req = await fetch($("#info-ventas-a").val(), {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: params
+        });
+
+        let resp_html = await req.text();
+        $("#tabla-ventas-a").html(resp_html);
+
+        let saldo = parseInt($("#SALDO-FISCO").text());
+        let s5 = parseInt(limpiar_numero($("#venta-a-total-5").text()));
+        let s10 = parseInt(limpiar_numero($("#venta-a-total-10").text()));
+        saldo += s5 + s10;
+        $("#SALDO-FISCO").text(dar_formato_millares(saldo));
+
+    }
+
+
     async function informe_retencion() {
 
         // let req = await fetch($("#info-retencion").val());
@@ -234,6 +206,7 @@ echo $estilo;
 
     async function cargar_tablas() {
         await informe_ventas();
+        await informe_ventas_anuladas();
         await informe_compras();
         await informe_retencion();
         $("ul.pagination li").addClass("btn btn-dark btn-sm").css("font-weight", "600");
@@ -245,17 +218,17 @@ echo $estilo;
 
 
     function procesar_errores(err) {
-                 if (typeof err == "object") {
-                     let errs = Object.keys(err);
-                     let concat_errs = errs.map(function(it) {
-                         return err[it];
-                     }).join("<br>");
-                     console.log(concat_errs);
-                     return concat_errs;
-                 }
-                 return err;
+        if (typeof err == "object") {
+            let errs = Object.keys(err);
+            let concat_errs = errs.map(function(it) {
+                return err[it];
+            }).join("<br>");
+            console.log(concat_errs);
+            return concat_errs;
+        }
+        return err;
 
-             }
+    }
     async function borrar_opera(ev, action) {
         ev.preventDefault();
         if (!confirm("Borrar operación?")) return;
@@ -265,7 +238,7 @@ echo $estilo;
         if ("data" in resp) {
             action();
         } else {
-            alert(  procesar_errores(  data.msj)  ); 
+            alert(procesar_errores(data.msj));
         }
     }
 

@@ -113,7 +113,7 @@ class Admin extends Controller {
 		
 		 
 
-		//cONDICION PARA PERMITIR RECORDAR PASS PARA CLIENTES DE WEB
+		//cONDICION PARA PERMITIR RECORDAR PASS PARA AdminiS DE WEB
 		$USU_WEB_PIDE_RECORD_PASS= $request->getPost("remember") == "S"  &&  $request->getPost("remember") != NULL;
 		
 		if (    $USU_WEB_PIDE_RECORD_PASS ) {
@@ -124,7 +124,7 @@ class Admin extends Controller {
 				$ID= $usu_->first()->regnro;
 
 				 $fecha_expire_session=     date(  "Y-m-d H:i",   strtotime(date("Y-m-d H:i")." + 10 days")  );
-				 //Para autenticar desde la API, y tambien para recordar sesiones para clientes web
+				 //Para autenticar desde la API, y tambien para recordar sesiones para Adminis web
 				 $SESSIONID=  password_hash( $ID,  PASSWORD_BCRYPT);
 
 				 $usu_->where("regnro", $ID);
@@ -415,4 +415,92 @@ class Admin extends Controller {
 	}
 	
 
+
+
+	/**
+	 * 
+	 * recuperacion de password
+	 * 
+
+*/
+
+
+
+	public function olvido_password()
+	{
+		/*******Envio de correo */
+		if ($this->request->getMethod(true)  == "GET")
+		return view("admin/admin/olvido_password");
+		else {
+			$Params =  $this->request->getRawInput();
+			$email =  $Params['email'];
+			//Obtenr usuario
+			$Admini = (new Admin_model())->where("email", $email)->first();
+			if (!is_null($Admini)) {
+
+				//Generar token de recuperacion
+				$token_recu_raw =  $Admini->regnro.strtotime(date("Y-m-d H:i:s"));
+				$token_recu_hash=  password_hash(  $token_recu_raw, PASSWORD_BCRYPT );
+				//limpieza de slashes
+				$token_recu_hash=   preg_replace("/\\/+|\\\|&|\+/", "$", $token_recu_hash);
+				//Fecha de validez del token (1 dia)
+				$validez=  date("Y-m-d H:i",   strtotime(  date("Y-m-d H:i")." + 1 day"  )  );
+				//gUARDAR el token en registro de usuario
+				(new Admin_model())->where( "regnro",  $Admini->regnro)
+				->set(["token_recu"=>  $token_recu_hash, "token_validez"=> $validez ])->update();
+
+				$correo = new Correo();
+				$correo->setDestinatario($email);
+				$correo->setAsunto("Restauración de contraseña");
+				$parametros=  [ "enlace_recu"=> base_url("admin/recuperar-password/".$token_recu_hash) ]  ;
+				$correo->setParametros($parametros);
+				$correo->setMensaje("admin/admin/recupero_password_email");
+				$correo->enviar();
+				/********* */
+				return $this->response->setJSON(  ['data'=> 'Notificado!', 'code'=> '200'] );
+			} else{
+				return $this->response->setJSON(  ['msj'=> 'Email no registrado en el sistema', 'code'=> '500'] );
+			}
+		}
+	}
+
+	public function recuperar_password( $token_recu_hash= NULL){
+		
+		if ($this->request->getMethod(true) == "GET") {
+			$Admini = (new Admin_model())->where("token_recu", $token_recu_hash)->first();
+		 
+			if (!is_null($Admini)) {
+				//verificar validez de token
+				if( strtotime(  $Admini->token_validez)  <  strtotime( date("Y-m-d") ))
+				return view("admin/admin/recupero_password",
+				 ['usuario' =>  $Admini, 
+				 'error'=> 
+				 "Este link de recuperación ya caducó. Ingrese a <a style='color: black;' href='".base_url("admin/olvido-password") ."' >Solicitar nuevo link</a>" ]);
+				else
+				return view("admin/admin/recupero_password", ['usuario' =>  $Admini]);
+			} else {
+
+				return $this->response->setJSON(['msj' => 'Token de recuperación no válido o inexistente', 'code' => '500']);
+			}
+		} else {
+			$nuevopass =  $this->request->getRawInput();
+			$Admini = (new Admin_model())->where("token_recu", $nuevopass['token_recu'])->first();
+			if( !is_null($Admini) ){
+				$PASS =  $nuevopass['pass'];
+				$PASSHASH= password_hash(   $PASS,  PASSWORD_BCRYPT );
+				
+				(new Admin_model())->where("regnro", $Admini->regnro)->set( ['pass'=> $PASSHASH ] )->update();
+				return redirect()->to(base_url("admin/sign-in"));
+			}else{
+				return $this->response->setJSON(['msj' => 'Token de recuperación no válido o inexistente', 'code' => '500']);
+			}
+			
+
+		}
+	}
+
+
+
+
+	 
 }

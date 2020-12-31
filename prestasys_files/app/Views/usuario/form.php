@@ -1,6 +1,6 @@
 <?php
 
-use App\Helpers\Utilidades; 
+use App\Helpers\Utilidades;
 use App\Models\Estado_mes_model;
 
 $cedula = isset($usuario) ? Utilidades::number_f($usuario->cedula)  :  "";
@@ -16,6 +16,7 @@ $saldo_IVA = isset($usuario) ?  Utilidades::number_f($usuario->saldo_IVA) :  "0"
 $ciudad =  isset($usuario) ?  $usuario->ciudad :  "";
 $tipoplan =  isset($usuario) ?  $usuario->tipoplan :  "";
 $rubro =  isset($usuario) ?  $usuario->rubro :  "";
+$ultimo_nro = isset($usuario) ?     $usuario->ultimo_nro : "";
 ?>
 
 <input type="hidden" name="tipo" value="C"><!-- C= cliente  -->
@@ -138,30 +139,43 @@ $rubro =  isset($usuario) ?  $usuario->rubro :  "";
         </div>
     </div>
 
-    <?php if (!isset($OPERACION)) : ?>
-        <div class="col-12">
-            <div class="row form-group">
-                <div class="col-3 col-md-3 pl-md-3 pl-0">
-                    <label for="nf-password" class=" form-control-label form-control-sm -label" style="font-weight: 600;">
-                        Saldo Inicial <?= date("Y") ?> : <span></span></label>
-                </div>
-                <div class="col-9 col-md-3">
 
-                    <!--Campo de saldo inicial editable ?  -->
-                    <?php
+    <div class="col-12 col-md-6">
+        <div class="row form-group">
+            <div class="col-4 col-md-5 pl-md-3 pl-0">
+                <label for="nf-password" class=" form-control-label form-control-sm -label" style="font-weight: 600;">
+                    Saldo Inicial <?= date("Y") ?> : <span></span></label>
+            </div>
+            <div class="col-8 col-md-7">
 
-                    $reg_anio =
-                        (new Estado_mes_model())->where("codcliente", session("id"))->where("anio", date("Y"))->first();
+                <!--Campo de saldo inicial editable ?  -->
+                <?php
 
-                    $yaestaCerrado =  !is_null($reg_anio) ? (($reg_anio->estado == "P") ? "" : "disabled")  :   "";
-                    ?>
-                    <input <?= $yaestaCerrado ?> onfocus="if(this.value=='0') this.value='';" onblur="if(this.value=='') this.value='0';" value="<?= $saldo_IVA ?>" maxlength="10" oninput="formatear( event)" type="text" name="saldo_IVA" class=" form-control form-control-label form-control-sm ">
+                $reg_anio =
+                    (new Estado_mes_model())->where("codcliente", session("id"))->where("anio", date("Y"))->first();
+
+                $yaestaCerrado =  !is_null($reg_anio) ? (($reg_anio->estado == "P") ? "" : "disabled")  :   "";
+                ?>
+                <input <?= $yaestaCerrado ?> onfocus="if(this.value=='0') this.value='';" onblur="if(this.value=='') this.value='0';" value="<?= $saldo_IVA ?>" maxlength="10" oninput="formatear( event)" type="text" name="saldo_IVA" class=" form-control form-control-label form-control-sm ">
 
 
-                </div>
             </div>
         </div>
-    <?php endif; ?>
+    </div>
+
+
+    <div class="col-12 col-md-6">
+        <div class="row form-group">
+            <div class="col-12 col-md-6 pl-md-3 pl-0">
+                <label for="nf-password" class=" form-control-label form-control-sm -label" style="font-weight: 600;">
+                    Última factura de venta: <span></span></label>
+            </div>
+            <div class="col-12 col-md-6">
+                <input oninput="solo_num_guiones(event)" value="<?= $ultimo_nro ?>"   maxlength="15" type="text" name="ultimo_nro" class=" form-control form-control-label form-control-sm ">
+            </div>
+        </div>
+    </div>
+
 
 
 
@@ -248,6 +262,28 @@ $rubro =  isset($usuario) ?  $usuario->rubro :  "";
 </div>
 <!--end row form  -->
 <script>
+    function clean_number(arg) {
+        try {
+             
+            arg.val(arg.val().replaceAll(/\.|,|\-/g, ""));
+        } catch (er) {}
+    }
+
+
+
+
+
+    function solo_num_guiones(ev) {
+        //0 48   9 57
+        if (ev.data == null) return;
+        if (ev.data.charCodeAt() != 45 && (ev.data.charCodeAt() < 48 || ev.data.charCodeAt() > 57)) {
+            let cad = ev.target.value;
+            let cad_n = cad.substr(0, ev.target.selectionStart - 1) + cad.substr(ev.target.selectionStart + 1);
+            ev.target.value = cad_n;
+        }
+    }
+
+
     function wallpaper() {
         let selected = Array.prototype.filter.call(document.querySelectorAll("input[name=fondo]"),
             function(ar) {

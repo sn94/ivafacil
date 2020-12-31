@@ -53,18 +53,22 @@ $routes->post('/api/compras/create', 'Compra::create');
 $routes->put('/api/compras', 'Compra::update'); 
 $routes->get('/api/compras/(:num)', 'Compra::show/$1'); 
 $routes->delete('/api/compras/(:num)', 'Compra::delete/$1');
+$routes->post('/api/compras/list', 'Compra::index'); 
 
 $routes->get('/api/ventas', 'Venta::index'); 
 $routes->post('/api/ventas/create', 'Venta::create'); 
 $routes->put('/api/ventas', 'Venta::update'); 
 $routes->get('/api/ventas/(:num)', 'Venta::show/$1'); 
 $routes->delete('/api/ventas/(:num)', 'Venta::delete/$1');
+$routes->post('/api/ventas/list', 'Venta::index'); 
 
 $routes->get('/api/retencion', 'Retencion::index'); 
 $routes->post('/api/retencion/create', 'Retencion::create'); 
 $routes->put('/api/retencion', 'Retencion::update'); 
 $routes->get('/api/retencion/(:num)', 'Retencion::show/$1'); 
 $routes->delete('/api/retencion/(:num)', 'Retencion::delete/$1');
+$routes->post('/api/retencion/list', 'Retencion::index'); 
+
 
 $routes->get('/api/usuario', 'Usuario::index'); 
 $routes->post('/api/usuario/create', 'Usuario::create'); 
@@ -73,7 +77,7 @@ $routes->delete('/api/usuario/(:num)', 'Usuario::delete/$1');
 $routes->get('/api/usuario/(:num)', 'Usuario::show/$1'); 
 $routes->post('/api/usuario/sign-in', 'Usuario::sign_in'); 
 $routes->post('/api/email-usuario-registered', 'Usuario::email_bienvenida'); 
-
+$routes->get('/api/usuario/ruc/(:num)', 'Usuario::ruc/$1'); 
 
 
 //Administrativo 

@@ -8,7 +8,7 @@
                           
                             <h2>IVA Fácil</h2>
                             <img  style="margin-bottom: 5px;"  src="<?= base_url("assets/img/Logo.jpg") ?>" alt="Logo">
-                                <p>Bienvenido...</p>
+                                 
                                 <p>le ayudamos a presentar su IVA...</p>
                              
                                 <?= view( "layouts/section_register") ?>

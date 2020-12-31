@@ -46,7 +46,7 @@
                      <label for="nf-password" class=" form-control-label form-control-sm -label">N° de factura:</label>
                  </div>
                  <div class="col-9 col-md-9">
-                     <input oninput="factura_input(event)" value="<?= $factura ?>" placeholder="000-000-0000000" maxlength="15" type="text" id="nf-password" name="factura" class=" form-control form-control-label form-control-sm ">
+                     <input  oninput="solo_numeros(event)"  value="<?= $factura ?>" placeholder="000-000-0000000" maxlength="15" type="text" id="nf-password" name="factura" class=" form-control form-control-label form-control-sm ">
                      <p style="color:red; font-size: 11px; font-weight: 600;" id="error-factura"></p>
                  </div>
 
@@ -141,6 +141,17 @@
      /** 
 Validaciones
  */
+
+
+function solo_numeros(ev) {
+        //0 48   9 57
+        if (ev.data == null) return;
+        if (  (ev.data.charCodeAt() < 48 || ev.data.charCodeAt() > 57)) {
+            let cad = ev.target.value;
+            let cad_n = cad.substr(0, ev.target.selectionStart - 1) + cad.substr(ev.target.selectionStart + 1);
+            ev.target.value = cad_n;
+        }
+    }
 
      function factura_input(ev) {
 
@@ -399,8 +410,8 @@ Validaciones
               return;
           }*/
          //limpiar numero de factura
-         let factu = $("input[name=factura]").val().replaceAll(/-+/g, "");
-         $("input[name=factura]").val(factu);
+        // let factu = $("input[name=factura]").val().replaceAll(/-+/g, "");
+        // $("input[name=factura]").val(factu);
          //reemplazar comas por puntos, eliminar los otros puntos
          $("input[name=importe1]").val(limpiar_numero_para_float($("input[name=importe1]").val()));
          $("input[name=importe2]").val(limpiar_numero_para_float($("input[name=importe2]").val()));

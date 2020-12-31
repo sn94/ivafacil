@@ -155,7 +155,11 @@ class Compra extends ResourceController {
 		}
 		$lista_co = $lista_co->where("year(fecha)", $year)
 		->where("month(fecha)", $month)
-		->select('if( sum(iva1) is null, 0,  sum(iva1) ) as iva1, if( sum(iva2) is null, 0,  sum(iva2) ) as iva2, if( sum(iva3) is null, 0,  sum(iva3) ) as iva3 ')
+		->select('if( sum(iva1) is null, 0,  sum(iva1) ) as iva1, if( sum(iva2) is null, 0,  sum(iva2) ) as iva2, if( sum(iva3) is null, 0,  sum(iva3) ) as iva3 ,
+		if( sum(importe1) is null, 0, sum(importe1) ) as total10, 
+		if( sum(importe2) is null, 0, sum(importe2) ) as total5,
+		if( sum(importe3) is null, 0, sum(importe3) ) as totalexe
+		')
 		->first();
 		return  $lista_co;
 	}
@@ -176,11 +180,8 @@ public  function  total_anio( $inArray= false  ){
 	$request = \Config\Services::request();
 	$this->API_MODE=  $this->isAPI();
 	$compras= (new Compras_model());
-
 	$lista_co=[];
-
-		if ($this->API_MODE) {
-			
+		if ($this->API_MODE) {	
 			$sesion = is_null($request->getHeader('Ivasession')) ? "" :  $request->getHeader('Ivasession')->getValue();
 			//idS de usuario
 			$usunow= (new Usuario_model())->where( "session_id", $sesion)->first();

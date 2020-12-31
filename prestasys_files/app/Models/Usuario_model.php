@@ -14,7 +14,8 @@ class Usuario_model extends Model {
    protected $useTimestamps = true;
    protected $allowedFields = [
       'ruc','dv','pass','tipo','fechainicio','demo','tipoplan','estado','email','cliente','cedula','celular','telefono',
-      'domicilio','rubro','ciudad','pass_anterior', 'origen', 'session_id', 'session_expire', 'remember', 'fondo'
+      'domicilio','rubro','ciudad','pass_anterior', 'origen', 'session_id', 'session_expire', 'remember', 'fondo',
+      'ultimo_nro', 'saldo_IVA', 'token_recu', 'token_validez'
    ];
 
     

@@ -21,7 +21,7 @@ class App extends BaseConfig
 	| environments.
 	|
 	*/
-	public $baseURL = 'http://192.168.0.12/ivafacil/'; 
+	public $baseURL = 'http://192.168.0.11/ivafacil/'; 
 	//'http://192.168.0.11/ivafacil/'; 
 	/*
 	|--------------------------------------------------------------------------

@@ -172,6 +172,21 @@ class Usuario extends ResourceController {
 
 
 
+	public function ruc( $ruc = null)
+	{
+		$this->API_MODE=  $this->isAPI();
+		$us= (new Usuario_model())
+				->select("regnro, ruc, dv, tipoplan, email, cliente, cedula, telefono, celular, domicilio, ciudad, rubro")->
+				where("concat(ruc,dv)", $ruc  )->first();
+		 
+	 
+		if( is_null(  $us))
+		return $this->genericResponse(  null, "Usuario con el RUC: $ruc no existe", 500);
+		else
+		return $this->genericResponse(  $us, null, 200);
+	}
+
+
 
 
 
@@ -271,20 +286,12 @@ class Usuario extends ResourceController {
 		if ($this->validate('usuarios')) {
 
 			//Existe
-			  
 			$EXISTE=  $this->existe_usuario();
-			if( $EXISTE['code'] == 200)
-			{	
-				
-				return $this->response->setJSON(  [ "msj"=> "RUC ya registrado anteriormente", "code"=> 500]);
-			}
-
-			//Ya existe RUC y DV
+			if( $EXISTE['code'] == 200) return $this->response->setJSON(  [ "msj"=> "RUC ya registrado anteriormente", "code"=> 500]);
+			
 			//Los campos referenciales son validos?
 			$resultadoValidacion = $this->campos_referenciales_validos();
-			if (!is_null($resultadoValidacion)) {
-				 return  $resultadoValidacion;	 
-			}
+			if (!is_null($resultadoValidacion))  return  $resultadoValidacion;	 
  
 			$resu = []; //Resultado de la operacion
 
@@ -322,7 +329,6 @@ class Usuario extends ResourceController {
 				->select("regnro, ruc, dv, tipoplan, email, cliente, cedula, telefono, celular, domicilio, ciudad, rubro")->
 				where("regnro", $id  )->first();
 				$resu = $this->genericResponse($usuario_Response, null, 200);
-				 
 
 			} catch (Exception $e) {
 				$resu = $this->genericResponse(null, "Hubo un error al registrar ($e)", 500);
@@ -331,10 +337,11 @@ class Usuario extends ResourceController {
 			//Evaluar resultado
 			if ($this->API_MODE) return  $resu;
 			else {
-				if ($resu['code'] == 200) {
-					return $this->response->setJSON( $resu );
+				return $this->response->setJSON( $resu );
+				//if ($resu['code'] == 200) {
+				//	return $this->response->setJSON( $resu );
 				//	return redirect()->to(base_url("usuario/sign_in"));
-				} else  return view("usuario/create", array("error" => $resu['msj']));
+				//} else  return view("usuario/create", array("error" => $resu['msj']));
 			}
 		}
 		//Hubo errores de validacion
@@ -402,23 +409,37 @@ class Usuario extends ResourceController {
 					return $resu_v;
 				}
 				$resu= [];//resultado de la operacion
+
+				$db= \Config\Database::connect();
+
+				$db->transStart();
 			try{
 				$usu->where("regnro",  $data['regnro'])
 				->set($data)
 				->update();
+
+				//actualizar saldo inicial
+				(new Estado_anio_model())
+				->where( "codcliente",   $data['regnro'] )
+				->where("anio", date("Y"))
+				->set(['saldo_inicial'=>   $data['saldo_IVA']  ]  )
+				->update();
+				$db->transCommit();
+
 				$usu_Response= (new Usuario_model())
 				->select("regnro, ruc, dv, tipoplan, email, cliente, cedula, telefono, celular, domicilio, ciudad, rubro")->
 				where("regnro",  $data['regnro'] )->first();
 				$resu=  $this->genericResponse($usu_Response , null, 200);
 			}catch( Exception $e){
+				$db->transRollback();
 				$resu=  $this->genericResponse( null, "Hubo un error: ($e)", 500);
 			}
-			
+			$db->transComplete();
 				//Evaluar resultado
 			if ($this->API_MODE) return  $resu;
 			else {
 				if ($resu['code'] == 200) return	$this->response->setJSON( ['data'=>"ACTUALIZADO", "code"=>"200"] );
-				else  return view("cliente/update", array("error" => $resu['msj']));
+				else  return view("usuario/update", array("error" => $resu['msj']));
 			}
 			}
 		}
@@ -583,6 +604,8 @@ dv
 				 $usu_->where("regnro", $CODCLIENTE);
 				$usu_->set(["session_id" => $SESSIONID, 'session_expire'=> $fecha_expire_session ,'remember'=>'S' ]);
 				$usu_->update();
+
+
 				//Solo crear cookies para clientes  autenticados deSDE la web
 				if (!$this->API_MODE) {
 					setcookie("ivafacil_user_ruc", $ruc,  time() + 365 * 24 * 60 * 60, "/ivafacil",  env("DOMINIO"));
@@ -636,6 +659,7 @@ dv
 	private function existe_usuario()
 	{
 		$data = $this->request->getRawInput();
+	 
 		$ruc = $data['ruc'];
 		$dv = $data["dv"]; 
 		$pass = $data["pass"]; 
@@ -791,22 +815,25 @@ dv
 
 
 
-	public function actualizar_saldo( $saldo){
-
+	public function actualizar_saldo($saldo)
+	{
 		//obtener codigo de cliente
-		$id= $this->getClienteId();
+		$id = $this->getClienteId();
 		$response = \Config\Services::response();
-
-		try{
-			(new Estado_anio_model())->where( "codcliente",  $id )
+		$db = \Config\Database::connect();
+		$db->transStart();
+		try {
+			(new Estado_anio_model())->where("codcliente",  $id)
 			->where("anio", date("Y"))
 			->where("estado", "P")
-			->set(['saldo_inicial'=>  $saldo] )->update();
-			return	$response->setJSON( ['data'=> "Saldo inicial actualizado",  'code'=> "200" ]);
-		}catch( Exception $x){
-		 return	$response->setJSON( ['msj'=>  $x,  'code'=> "500" ]);
+			->set(['saldo_inicial' =>  $saldo])->update();
+			(new Usuario_model())->where("regnro",  $id)->set(['saldo_IVA' => $saldo])->update();
+			$db->transCommit();
+			return	$response->setJSON(['data' => "Saldo inicial actualizado",  'code' => "200"]);
+		} catch (Exception $x) {
+			$db->transRollback();
+			return	$response->setJSON(['msj' =>  $x,  'code' => "500"]);
 		}
-
 	}
 
 	public function list_pagos($id)
@@ -894,5 +921,97 @@ dv
 
 
 
+/**
+ * 
+ * RECUPERACION DE PASSWORD
+ */
 
+
+	public function olvido_password()
+	{
+		/*******Envio de correo */
+		if ($this->request->getMethod(true)  == "GET")
+		return view("usuario/olvido_password");
+		else {
+			$Params =  $this->request->getRawInput();
+			$email =  $Params['email'];
+			//Obtenr usuario
+			$Cliente = (new Usuario_model())->where("email", $email)->first();
+			if (!is_null($Cliente)) {
+
+				//Generar token de recuperacion
+				$token_recu_raw =  $Cliente->regnro.strtotime(date("Y-m-d H:i:s"));
+				$token_recu_hash=  password_hash(  $token_recu_raw, PASSWORD_BCRYPT );
+				//limpieza de slashes
+				$token_recu_hash=   preg_replace("/\\/+|\\\|&|\+/", "$", $token_recu_hash);
+				//Fecha de validez del token (1 dia)
+				$validez=  date("Y-m-d H:i",   strtotime(  date("Y-m-d H:i")." + 1 day"  )  );
+				//gUARDAR el token en registro de usuario
+				(new Usuario_model())->where( "regnro",  $Cliente->regnro)
+				->set(["token_recu"=>  $token_recu_hash, "token_validez"=> $validez ])->update();
+
+				$correo = new Correo();
+				$correo->setDestinatario($email);
+				$correo->setAsunto("Restauración de contraseña");
+				$parametros=  [ "enlace_recu"=> base_url("usuario/recuperar-password/".$token_recu_hash) ]  ;
+				$correo->setParametros($parametros);
+				$correo->setMensaje("usuario/recupero_password_email");
+				$correo->enviar();
+				/********* */
+				return $this->response->setJSON(  ['data'=> 'Notificado!', 'code'=> '200'] );
+			} else{
+				return $this->response->setJSON(  ['msj'=> 'Email no registrado en el sistema', 'code'=> '500'] );
+			}
+		}
+	}
+
+	public function recuperar_password( $token_recu_hash= NULL){
+		
+		if ($this->request->getMethod(true) == "GET") {
+			$Cliente = (new Usuario_model())->where("token_recu", $token_recu_hash)->first();
+		 
+			if (!is_null($Cliente)) {
+				//verificar validez de token
+				if( strtotime(  $Cliente->token_validez)  <  strtotime( date("Y-m-d") ))
+				return view("usuario/recupero_password",
+				 ['usuario' =>  $Cliente, 
+				 'error'=> 
+				 "Este link de recuperación ya caducó. Ingrese a <a style='color: black;' href='".base_url("usuario/olvido-password") ."' >Solicitar nuevo link</a>" ]);
+				else
+				return view("usuario/recupero_password", ['usuario' =>  $Cliente]);
+			} else {
+
+				return $this->response->setJSON(['msj' => 'Token de recuperación no válido o inexistente', 'code' => '500']);
+			}
+		} else {
+			$nuevopass =  $this->request->getRawInput();
+			$Cliente = (new Usuario_model())->where("token_recu", $nuevopass['token_recu'])->first();
+			if( !is_null($Cliente) ){
+				$PASS =  $nuevopass['pass'];
+				$PASSHASH= password_hash(   $PASS,  PASSWORD_BCRYPT );
+				
+				(new Usuario_model())->where("regnro", $Cliente->regnro)->set( ['pass'=> $PASSHASH ] )->update();
+				if( $this->isAPI())
+				return $this->response->setJSON(['data' => 'Contraseña cambiada', 'code' => '200']);
+				else 	return redirect()->to(base_url("usuario/sign-in"));
+			}else{
+				return $this->response->setJSON(['msj' => 'Token de recuperación no válido o inexistente', 'code' => '500']);
+			}
+			
+
+		}
+	}
+
+
+
+
+
+	public function actualizar_ultimo_nro_fv($numero)
+	{
+		$codcli = $this->getClienteId();
+
+		(new Usuario_model())->where("regnro",  $codcli)
+		->set("ultimo_nro",  $numero)
+		->update();
+	}
 }

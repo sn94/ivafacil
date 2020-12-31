@@ -79,7 +79,7 @@ class Venta extends ResourceController {
 
 
 
-	public function index()
+	public function index(  $estado_ = "A")
 	{
 
 		$this->API_MODE =  $this->isAPI();
@@ -112,25 +112,36 @@ class Venta extends ResourceController {
 		$parametros = [];
 		$year = date("Y");
 		$month = date("m");
+		$estado= "A";
 
 		if ($this->request->getMethod(true) == "POST") {
 			$parametros = $this->request->getRawInput();
-			$month = isset( $parametros['month'])  ? $parametros['month'] : $month;
-			$year =  isset(  $parametros['year']) ? $parametros['year'] : $year;
+			$month = isset($parametros['month'])  ? $parametros['month'] : $month;
+			$year =  isset($parametros['year']) ? $parametros['year'] : $year;
+			if (array_key_exists("anulados",  $parametros))  $estado =  $parametros['anulados'];
+			else 	$estado = $estado_;
+		} else {
+			$estado = $estado_;
 		}
 		$lista_co = $lista_co->where("year(fecha)", $year)
-		->where("month(fecha)", $month);
+		->where("month(fecha)", $month)
+		->where("estado", $estado);
 
 		if ($this->API_MODE) {
 			$lista_co = $lista_co->get()->getResult();
 			return $this->respond(array("data" => $lista_co, "code" => 200));
 		} else {
 			$lista_pagi = $lista_co->paginate(10);
-			return view("movimientos/informes/grill_ventas",
+
+			//Seleccionar vista
+			$LaVista=  "movimientos/informes/grill_ventas";
+			if( $estado_ == "B")  $LaVista=  "movimientos/informes/grill_ventas_anuladas";
+			return view(  $LaVista,
 			  ['ventas' =>  $lista_pagi,
 			   'ventas_pager' => $lista_co->pager,
 			   'year'=> $year,
-			   'month'=> $month]
+			   'month'=> $month,
+			   'estado'=> $estado_]
 			);
 		}
 	}
@@ -159,7 +170,12 @@ class Venta extends ResourceController {
 		}
 		$lista_co = $ventas->where("year(fecha)", $year)
 		->where("month(fecha)", $month)
-		->select('if( sum(iva1) is null, 0,  sum(iva1) ) as iva1, if( sum(iva2) is null, 0,  sum(iva2) ) as iva2, if( sum(iva3) is null, 0,  sum(iva3) ) as iva3 ')
+		->select('if( sum(iva1) is null, 0,  sum(iva1) ) as iva1, if( sum(iva2) is null, 0,  sum(iva2) ) as iva2, if( sum(iva3) is null, 0,  sum(iva3) ) as iva3,
+		if( sum(importe1) is null, 0, sum(importe1) ) as total10, 
+		if( sum(importe2) is null, 0, sum(importe2) ) as total5,
+		if( sum(importe3) is null, 0, sum(importe3) ) as totalexe
+		')
+		->where("estado", "A")
 		->first();
 		$response =  \Config\Services::response();
 		return $lista_co;
@@ -180,7 +196,7 @@ class Venta extends ResourceController {
 
 
 	
-	public  function  total_anio( $inArray= false){
+	public  function  total_anio( $commonObject= false){
 		$request = \Config\Services::request();
 		$this->API_MODE=  $this->isAPI();
 		$compras= (new Ventas_model());
@@ -216,6 +232,46 @@ class Venta extends ResourceController {
 			}
 			$lista_co = $lista_co->where("year(fecha)", $year) 
 			->select('if( sum(iva1) is null, 0,  sum(iva1) ) as iva1, if( sum(iva2) is null, 0,  sum(iva2) ) as iva2, if( sum(iva3) is null, 0,  sum(iva3) ) as iva3 ')
+			->where("estado", "A")
+			->first();
+			$response=  \Config\Services::response();
+			if(  $commonObject)
+			return $lista_co;
+			else
+			return $response->setJSON(   $lista_co);
+	}
+
+
+
+	public  function  anuladas( $inArray= false){
+		$request = \Config\Services::request();
+		$this->API_MODE=  $this->isAPI();
+		$ventas= (new Ventas_model());
+	
+		$lista_co=[];
+	
+			if ($this->API_MODE) {
+			
+				$sesion = is_null($request->getHeader('Ivasession')) ? "" :  $request->getHeader('Ivasession')->getValue();
+				//idS de usuario
+				$usunow= (new Usuario_model())->where( "session_id", $sesion)->first();
+				$ruc=  $usunow->ruc;
+				$dv=  $usunow->dv;
+				$codcliente=  $usunow->regnro;
+				//**********/ 
+				$lista_co = $ventas->where("dv", $dv)
+				->where("ruc", $ruc) 
+				->where("codcliente", $codcliente)  ;
+			} else {
+				$lista_co = $ventas->where("ruc", session("ruc"))
+				->where("dv", session("dv"))
+				->where("codcliente", session("id"));
+			} 
+			$year = date("Y"); 
+	 
+			$lista_co = $lista_co->where("year(fecha)", $year) 
+			->select('count(regnro) as cantidad, sum(total) as total, sum(iva1+iva2+iva3) as total_iva')
+			->where("estado", "B")
 			->first();
 			$response=  \Config\Services::response();
 			if(  $inArray)
@@ -229,18 +285,56 @@ class Venta extends ResourceController {
 
 
 
+	private function generar_numero_factura()
+	{
+		$ultimo_numero = "";
+		$cli_cod = session("id");
+		$cli_obj = (new Usuario_model())->find($cli_cod);
+		if (!is_null($cli_obj)) {
+			try{
+				$ultimo_numero = $cli_obj->ultimo_nro;
 
+				$firs = (new Ventas_model())->where("codcliente", $cli_cod)->orderBy("created_at", "DESC")->first();
+/*
+				if (!is_null($firs)   &&   ($firs->factura) != "")
+					$ultimo_numero = $firs->factura;
+				else $ultimo_numero = $cli_obj->ultimo_nro;
+				*/
+			 
+				$ultimo_numero =  preg_replace( "/-/", "", $ultimo_numero );
+			 
+				//guardar los primeros 3
+				//$fv1 =  intval(substr($ultimo_numero,  0, 3));
+				//$fv2 = intval(substr($ultimo_numero, 3,  3));
+				//obtener los ultimos 7
+				//$ultimo_numero =  substr($ultimo_numero,  6 , 7);
+				$ultimo_numero = intval($ultimo_numero)  + 1;
+				//rellenar con ceros
+				//$ultimo_numero = str_pad($ultimo_numero, 7, "0", STR_PAD_LEFT);
+				//$ultimo_numero = (str_pad($fv1, 3, "0", STR_PAD_LEFT)) . (str_pad($fv2, 3, "0", STR_PAD_LEFT)) . $ultimo_numero;
+				 
+			}catch( Exception $d ){  $ultimo_numero= ""; }
+		} return $ultimo_numero;
+	}
+
+
+	 
 	
 	public function create(){
 		
 		$request = \Config\Services::request();
-		if ($request->getMethod(true) == "GET")
-		return view("movimientos/comprobantes/venta/create");
-		//Manejo POST
+		$db = \Config\Database::connect();
 
+
+		if ($request->getMethod(true) == "GET") {
+
+			//Obtener ultimo numero de factura
+			$ultimo_nro= $this->generar_numero_factura();
+			return view("movimientos/comprobantes/venta/create", ['ultimo_numero'=> $ultimo_nro ]);
+		}
+		//Manejo POST
 		$this->API_MODE =  $this->isAPI();
 		$usu = new Ventas_model();
-
 		$data = $this->request->getRawInput();
 
 		//Verificar si el periodo-ejercicio esta cerrado o fuera de rango
@@ -251,7 +345,10 @@ class Venta extends ResourceController {
 
 		if( $this->API_MODE)  $data['origen']= "A";
 		
-		if ($this->validate('ventas')) { //Validacion OK
+		//Validar factura normal o anulada?
+		$validacion_selectiva= array_key_exists("estado", $data) ? $this->validate("ventas_anuladas")  :  $this->validate("ventas");
+
+		if ($validacion_selectiva) { //Validacion OK
 
 			$cod_cliente =  $data["codcliente"];
 			if (!$cod_cliente && !is_null((new Usuario_model())->find($cod_cliente))) {
@@ -267,6 +364,8 @@ class Venta extends ResourceController {
 				return $this->genericResponse(null,  "Indique el monto para cambio de moneda", 500);
 			}
 			$resu = []; //Resultado de la operacion
+
+			$db->transStart();
 			try {
 				if ($this->API_MODE)  $data['origen'] = "A"; //ORIGEN Aplicacion
 				//Convertir a guaranies
@@ -285,22 +384,31 @@ class Venta extends ResourceController {
 					$data['iva2'] =  intval( $cambio) * intval( $iva2);
 					$data['iva3'] =  intval( $cambio) * intval( $iva3);
 					$data["total"] =  $data['importe1']  + $data['importe2']  + $data['importe3']  ;
+					$data['estado']=  array_key_exists("estado",  $data) ? $data['estado'] : "A";
 					 
 				}
-			//Crear nuevo registro de ejercicio si es necesario
-			(new Cierres())->crear_ejercicio();
+
+				
+				//Crear nuevo registro de ejercicio si es necesario
+				(new Cierres())->crear_ejercicio();
 				$id = $usu->insert($data);
+				(new Usuario())->actualizar_ultimo_nro_fv(  $data['factura'] );
 				$resu = $this->genericResponse((new Ventas_model())->find($id), null, 200);
+				$db->transCommit();
+			 
 			} catch (Exception $e) {
+				$db->transRollback();
 				$resu = $this->genericResponse(null, "Hubo un error al registrar ($e)", 500);
 			}
+			$db->transComplete();
 			//Evaluar resultado
 			if ($this->API_MODE) return  $resu;
 			else {
 				if ($resu['code'] == 200) 
 				return $this->response->setJSON( ['data'=>  'Guardado', 'code'=>'200'] );
+				else 	return $this->response->setJSON( $resu);
 				//return redirect()->to(base_url("movimiento/informe_mes"));
-				else  return view("movimientos/comprobantes/f_venta", array("error" => $resu['msj']));
+			//	else  return view("movimientos/comprobantes/venta/create", array("error" => $resu['msj']));
 			}
 		}
 
@@ -453,11 +561,15 @@ class Venta extends ResourceController {
 		$Mes= $params['month']; 
 		$Anio=  $params['year'];
 		$Cliente= session("id");
+		$estado= "A";
+		if( array_key_exists("anulados",  $params) )  $estado=  $params['anulados'];
 
 		$lista=	(new Ventas_model())
 		->where("codcliente",   $Cliente)
 		->where("year(fecha)", $Anio)
-		->where(" month( fecha) ",  $Mes)->get()->getResult(); 
+		->where(" month( fecha) ",  $Mes)
+		->where("estado", $estado)
+		->get()->getResult(); 
 
 		
 		if($tipo== "PDF") return  $this->pdf( $lista);

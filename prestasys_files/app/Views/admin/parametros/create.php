@@ -83,7 +83,7 @@ Bienvenido
                 <?= view("plantillas/message") ?>
 
             </div>
-            <div class="col-12 offset-md-3 col-md-6 p-0 ">
+            <div class="col-12 offset-md-2 col-md-8 p-0 ">
 
                 <div class="container-fluid m-0 p-0">
                     <?php echo  form_open("admin/parametros/create",  ['id' => 'param-form', 'class' => 'container m-0 p-0', 'onsubmit' => 'registro(event)']); ?>
@@ -124,6 +124,38 @@ Bienvenido
                                                 <input size="3" oninput="solo_numero( event)" value="<?= $parametros->DIASGRATIS ?>" maxlength="3" type="text" name="DIASGRATIS" class=" form-control-inline   form-control-sm ">
                                                 <span style="font-size: 11px;">días</span>
                                             </div>
+
+                                            <div class="col-4 col-md-4 pl-md-3 pl-0">
+                                                <label for="nf-password" class=" form-control-label form-control-sm -label">Mensaje pantalla Registro de usuario:</label>
+                                            </div>
+                                            <div class="col-8 col-md-8">
+                                                <textarea  name="MSJ_PANT_REGISTRO" class="form-control form-control-sm ">
+                                                <?= $parametros->MSJ_PANT_REGISTRO ?>
+                                                </textarea>
+                                                
+                                            </div>
+
+
+                                            <div class="col-4 col-md-4 pl-md-3 pl-0">
+                                                <label for="nf-password" class=" form-control-label form-control-sm -label">Mensaje pantalla Cierre Mes:</label>
+                                            </div>
+                                            <div class="col-8 col-md-8">
+                                                <textarea      name="MSJ_PANT_CIERRE_M" class=" form-control form-control-sm ">
+                                                <?= $parametros->MSJ_PANT_CIERRE_M ?>
+                                                </textarea>
+                                                
+                                            </div>
+
+                                            <div class="col-4 col-md-4 pl-md-3 pl-0">
+                                                <label for="nf-password" class=" form-control-label form-control-sm -label">Mensaje pantalla Cierre Año:</label>
+                                            </div>
+                                            <div class="col-8 col-md-8">
+                                                <textarea  name="MSJ_PANT_CIERRE_A" class="form-control form-control-sm ">
+                                                <?= $parametros->MSJ_PANT_CIERRE_A ?>
+                                                </textarea>
+                                                
+                                            </div>
+
 
 
                                         </div>

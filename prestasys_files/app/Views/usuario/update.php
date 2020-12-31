@@ -272,14 +272,7 @@ Bienvenido
     }
 
 
-    function clean_number(arg) {
-      try{
-        arg.val(arg.val().replaceAll(/(\.|,)/g, ""));
-      }catch( er){
-          alert(   typeof   (arg.val())   );
-      }
-    }
-
+    
 
 
     function clave_no_coincide(ev) {
@@ -394,9 +387,8 @@ Bienvenido
       
         if (campos_vacios() || !claves_validas()) return;
        
-        clean_number($("input[name=cedula]"));
-        // clean_number($("input[name=saldo_IVA]"));
-    
+        clean_number($("input[name=cedula]")); 
+        clean_number($("input[name=saldo_IVA]")); 
         let datos = $("#user-form").serialize(); 
         show_loader();
        

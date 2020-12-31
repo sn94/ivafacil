@@ -83,7 +83,7 @@ $compras_t = 0;
                 <td class="pb-0"><a style="color:black;" onclick="borrar_opera(event, informe_compras )" href="<?= base_url("compra/delete/" . $it->regnro) ?>"> <i class="fa fa-trash"></i></a> </td>
                 <td class="pb-0"> <a style="color:black;"   href="<?= base_url("compra/update/" . $it->regnro) ?>"><i class="fa fa-pencil"></i></a> </td>
 
-                <td class="pb-0"> <?= Utilidades::formato_factura($it->factura) ?> </td>
+                <td class="pb-0"> <?= ($it->factura) ?> </td>
                 <td class="pb-0 text-right"> <?= Utilidades::number_f($it->importe3) ?></td>
                 <td class="pb-0 text-right"> <?= Utilidades::number_f($it->importe2) ?> </td>
                 <td class="pb-0 text-right"> <?= Utilidades::number_f($it->importe1) ?></td>

@@ -233,11 +233,6 @@
                 }
 
 
-                function clean_number(arg) {
-                    arg.val(arg.val().replaceAll(/(\.|,)/g, ""));
-                }
-
-
 
                 function clave_no_coincide(ev) {
                     let rep = ev.target.value;
@@ -429,8 +424,9 @@
                     if (campos_vacios() || !claves_validas()) return;
 
                     //limpiar numeros
-                 //   clean_number($("input[name=saldo_IVA]"));
+                  clean_number($("input[name=ultimo_nro]") );
                     clean_number($("input[name=cedula]"));
+                    clean_number($("input[name=saldo_IVA]")); 
 
                     let datos = $("#user-form").serialize();
                     show_loader();

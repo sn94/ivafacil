@@ -8,7 +8,7 @@ $ruc = isset($venta) ?  $venta->ruc :  session("ruc");
 $dv = isset($venta) ?  $venta->dv :  session("dv");
 $codcliente = isset($venta) ?  $venta->codcliente :  session("id");
 $fecha = isset($venta) ?  $venta->fecha : date("Y-m-d");
-$factura = isset($venta) ?  $venta->factura :  "";
+$factura = isset($ultimo_numero) ?  $ultimo_numero : (isset($venta) ?  $venta->factura :  "");
 $moneda = isset($venta) ?  $venta->moneda : "";
 $tcambio = isset($venta) ?  Utilidades::number_f($venta->tcambio) : "0";
 $importe1 = isset($venta) ?  Utilidades::number_f($venta->importe1) : "0";
@@ -19,6 +19,7 @@ $iva1 = isset($venta) ?  Utilidades::number_f($venta->iva1) : "0";
 $iva2 = isset($venta) ?  Utilidades::number_f($venta->iva2) : "0";
 $iva3 = isset($venta) ?  Utilidades::number_f($venta->iva3) : "0";
 $origen = isset($venta) ?  Utilidades::number_f($venta->origen) : "W";
+$estado=  isset( $venta)  ? ( $venta->estado =="A" ? "" : "checked" )  : "";
 ?>
 
 
@@ -40,19 +41,25 @@ $origen = isset($venta) ?  Utilidades::number_f($venta->origen) : "W";
     <div class="row form-group">
         <div class="col-12 col-md-6">
             <div class="row">
-                <div class="col-3 col-md-3  pl-md-3 pl-0">
+                <div class="col-4 col-md-4  pl-md-3 pl-0">
                     <label for="nf-email" class=" form-control-label form-control-sm -label">Fecha:</label>
                 </div>
-                <div class="col-9 col-md-9">
+                <div class="col-8 col-md-8">
                     <input value="<?= $fecha ?>" type="date" id="nf-email" name="fecha" class="  form-control form-control-label form-control-sm ">
                 </div>
-                <div class="col-3 col-md-3  pl-md-3 pl-0">
-                    <label for="nf-password" class=" form-control-label form-control-sm -label">N° de factura:</label>
+                <div class="col-4 col-md-4  pl-md-3 pl-0 pb-0 mb-0">
+                    <label for="nf-password" class="mb-0 form-control-label form-control-sm -label">Fact. N°:</label>
                 </div>
-                <div class="col-9 col-md-9">
-                    <input oninput="factura_input(event)" value="<?= $factura ?>" placeholder="000-000-0000000" maxlength="15" type="text" id="nf-password" name="factura" class=" form-control form-control-label form-control-sm ">
+                <div class="col-8 col-md-8 pb-0 mb-0">
+                    <input oninput="solo_numeros(event)" value="<?= $factura ?>" placeholder="000-000-0000000" maxlength="15" type="text" id="nf-password" name="factura" class=" form-control form-control-label form-control-sm mb-0 ">
+                  
+                    <span style="font-size: 11px;">
+                        ANULADO <input   <?=$estado?> type="checkbox" name="estado" value="B">
+                    </span>
                     <p style="color:red; font-size: 11px; font-weight: 600;" id="error-factura"></p>
                 </div>
+
+                
 
                 <div class="col-3 col-md-3  pl-md-3 pl-0">
                     <label for="nf-password" class=" form-control-label form-control-sm -label">Moneda:</label>
@@ -123,6 +130,7 @@ $origen = isset($venta) ?  Utilidades::number_f($venta->origen) : "W";
         </div>
         <div class="col-12 col-md-6">
             <div class="row">
+
                 <div class="col-12">
                     <button style="font-size: 12px;font-weight: 600; width: 100%;" type="submit" class="btn btn-success">
                         GUARDAR
@@ -191,6 +199,18 @@ Validaciones
         let valido = /(\d{3})-(\d{3})-(\d{7})/.test(valor);
         return valido;
     }
+
+
+    function solo_numeros(ev) {
+        //0 48   9 57
+        if (ev.data == null) return;
+        if (  (ev.data.charCodeAt() < 48 || ev.data.charCodeAt() > 57)) {
+            let cad = ev.target.value;
+            let cad_n = cad.substr(0, ev.target.selectionStart - 1) + cad.substr(ev.target.selectionStart + 1);
+            ev.target.value = cad_n;
+        }
+    }
+
 
     function factura_format(ev) {
 
@@ -374,6 +394,8 @@ Validaciones
 
 
     function campos_vacios() {
+        if(  $("input[name=estado]").prop("checked") ) return false; 
+        
         if (($("input[name=importe1]").val() == "" || $("input[name=importe1]").val() == "0") &&
             ($("input[name=importe2]").val() == "" || $("input[name=importe2]").val() == "0") &&
             ($("input[name=importe3]").val() == "" || $("input[name=importe3]").val() == "0")) {
@@ -412,8 +434,8 @@ Validaciones
              return;
          }*/
         //limpiar numero de factura
-        let factu = $("input[name=factura]").val().replaceAll(/-+/g, "");
-        $("input[name=factura]").val(factu);
+        //  let factu = $("input[name=factura]").val().replaceAll(/-+/g, "");
+        // $("input[name=factura]").val(factu);
         //reemplazar comas por puntos, eliminar los otros puntos
         $("input[name=importe1]").val(limpiar_numero_para_float($("input[name=importe1]").val()));
         $("input[name=importe2]").val(limpiar_numero_para_float($("input[name=importe2]").val()));

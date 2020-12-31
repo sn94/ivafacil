@@ -13,7 +13,7 @@ class Admin_model extends Model {
    protected $primaryKey = 'regnro';
    protected $useTimestamps = true;
    protected $allowedFields = [
-      'nick', 'pass','estado','email',  'origen', 'session_id', 'session_expire', 'remember', 'fondo'
+      'nick', 'pass','estado','email',  'origen', 'session_id', 'session_expire', 'remember', 'fondo',  'token_recu', 'token_validez'
    ];
 
     

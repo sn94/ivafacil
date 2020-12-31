@@ -337,7 +337,7 @@ class Validation
 
 		'importe1' => /* Monto aplicable a 10 */
 		[
-			'rules'  => 'if_exist|max_length[10]|numeric',
+			'rules'  => 'if_exist|max_length[15]|numeric',
 			'errors' => [
 				 
 				'max_length' => 'El total IVA 10% no debe sobrepasar los 10 dígitos',
@@ -347,7 +347,7 @@ class Validation
 		],
 		'importe2' => /* monto aplicable 5*/
 		[
-			'rules'  => 'if_exist|max_length[10]|numeric',
+			'rules'  => 'if_exist|max_length[15]|numeric',
 			'errors' => [
 				 
 				'max_length' => 'El total IVA 5% no debe sobrepasar los 10 dígitos',
@@ -357,7 +357,7 @@ class Validation
 		],
 		'importe3' => /* monto exento */
 		[
-			'rules'  => 'if_exist|max_length[10]|numeric',
+			'rules'  => 'if_exist|max_length[15]|numeric',
 			'errors' => [
 				 
 				'max_length' => 'El campo "Exenta" no debe sobrepasar los 10 dígitos',
@@ -367,7 +367,7 @@ class Validation
 		],
 		'total' =>
 		[
-			'rules'  => 'required|max_length[10]|numeric',
+			'rules'  => 'required|max_length[15]|numeric',
 			'errors' => [
 				'required' => 'Indique el importe total de la factura',
 				'max_length' => 'El campo "Total" no debe sobrepasar los 10 dígitos',
@@ -476,6 +476,45 @@ class Validation
 			]
 		]
 		 
+	];
+
+
+	public $ventas_anuladas = [
+		'ruc'     =>
+		[
+			'rules'  => 'required|max_length[15]|integer',
+			'errors' => [
+				'required' => 'Proporciona un número de RUC',
+				'max_length' => 'La longitud máxima permitida para el RUC es de 15 caracteres',
+				'integer' => 'El Número de RUC solo admite valores numéricos'
+			]
+		],
+		'dv'     =>
+		[
+			'rules'  => 'required|max_length[2]|integer',
+			'errors' => [
+				'required' => 'El digito verificador es obligatorio',
+				'max_length' => 'La longitud máxima permitida para el digito verificador es de 2 caracteres',
+				'integer' => 'El dígito verificador (DV) solo admite valores numéricos'
+			]
+		],
+		'codcliente'  =>
+		[
+			'rules'  => 'required|max_length[20]|integer',
+			'errors' => [
+				'required' => 'Proporciona el código de cliente',
+				'max_length' => 'La longitud máxima permitida para el RUC es de 15 caracteres',
+				'integer' => 'El código de cliente solo admite valores numéricos'
+			]
+		],
+		'fecha' =>
+		[
+			'rules'  => 'required|valid_date',
+			'errors' => [
+				'required' => 'Proporciona la fecha de factura',
+				'valid_date' => 'Proporcione una fecha válida de factura'
+			]
+		]
 	];
 
 	public $retencion = [

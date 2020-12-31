@@ -2,10 +2,10 @@
 
 use App\Models\Usuario_model;
 
-$NOMBRE_CLIENTE= "";
-$DATA_CLI= (new Usuario_model())->find( $CLIENTE );
-if ( !  is_null( $DATA_CLI  ))
-$NOMBRE_CLIENTE=   $DATA_CLI->cliente." RUC: ".$DATA_CLI->ruc."-".$DATA_CLI->dv; 
+$NOMBRE_CLIENTE = "";
+$DATA_CLI = (new Usuario_model())->find($CLIENTE);
+if (!is_null($DATA_CLI))
+    $NOMBRE_CLIENTE =   $DATA_CLI->cliente . " RUC: " . $DATA_CLI->ruc . "-" . $DATA_CLI->dv;
 ?>
 
 <?= $this->extend("admin/layout/index") ?>
@@ -105,7 +105,7 @@ Bienvenido
                     <div class="card-header" style="border-radius: 15px 15px 0px 0px; background-color: #d1d1d1;">
                         <div class="row">
                             <div class="col-12">
-                                <h4 class="text-center"> PAGOS:  <?=$NOMBRE_CLIENTE?></h4>
+                                <h4 class="text-center"> PAGOS: <?= $NOMBRE_CLIENTE ?></h4>
                             </div>
                         </div>
                     </div>
@@ -123,9 +123,6 @@ Bienvenido
                                 'onsubmit' => 'registro(event)'
                             ]
                         ); ?>
-
-
-                        
 
                         <input type="hidden" name="cliente" value="<?= $CLIENTE ?>">
                         <input type="hidden" name="estado" value="A">
@@ -341,13 +338,14 @@ Bienvenido
             }
 
 
+function limpiar_campos(){
+    $("input[name=comprobante]").val("");
+    $("input[name=concepto]").val("");
+}
             async function registro(ev) {
-
 
                 ev.preventDefault();
                 if (campos_vacios()) return;
-
-
 
                 let datos = $("#user-form").serialize();
                 show_loader();
@@ -362,9 +360,9 @@ Bienvenido
                 hide_loader();
                 if (("data" in respuesta) && parseInt(respuesta.code) == 200) {
 
-                    // $("#message-modal-content").html("REGISTRADO");
-                    //$("#message-modal").modal("show");
+                 
                     alert("REGISTRADO");
+                    limpiar_campos();
                     //actualizar grilla de pagos
                     actualizar_grilla();
                 } else {

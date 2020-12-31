@@ -26,7 +26,7 @@
     <link rel="stylesheet" href="<?= base_url("assets/template/assets/css/style.css") ?>">
 
     <link rel="stylesheet" href="<?= base_url("assets/template/assets/fonts/fuente1.css") ?>">
-   
+
 
     <style>
         .form-control {
@@ -34,21 +34,20 @@
             border-bottom: 1px solid #0f0;
         }
 
- 
-body { 
-  line-height: unset;
-  height: 100%;
-}
 
+        body {
+            line-height: unset;
+            height: 100%;
+        }
     </style>
 
 
 </head>
 
-<body  style="background-color: #000000e0;" >
+<body style="background-color: #000000e0;">
 
 
-    <div class="sufee-login d-flex align-content-center flex-wrap"  >
+    <div class="sufee-login d-flex align-content-center flex-wrap">
         <div class="container">
             <div class="login-content">
                 <div class="login-logo">
@@ -58,45 +57,48 @@ body {
                 </div>
                 <div class="login-form">
 
-                    <?php    echo view("plantillas/message");  ?>
+                    <?php echo view("plantillas/message");  ?>
                     <form action="<?= base_url('usuario/sign-in') ?>" method="POST">
-                        
-                            
-                                <div class="row mb-1">
-                                    <div class="col-1 col-md-1 ">
-                                        <label style="font-weight: 600;color: #555555;">RUC:</label>
-                                    </div>
-                                    <div class="col-6 col-md-8">
-                                        <input value="<?=isset($ruc) ? $ruc : '' ?>" maxlength="15" type="text"  name="ruc" class="  form-control form-control-label   ">
-                                    </div>
-                                 
-                                    <div class="col-1 col-md-1 ml-0 pl-0 ">
-                                        <label style="font-weight: 600;color: #555555;">DV:</label>
-                                    </div>
-                                    <div class="col-3 col-md-2">
-                                        <input value="<?=isset($dv) ? $dv : '' ?>" maxlength="2" oninput="solo_numero(event)" type="text" name="dv" class="  form-control form-control-label  ">
-                                    </div>
-                                </div> 
+
+
+                        <div class="row mb-1">
+                            <div class="col-1 col-md-1 ">
+                                <label style="font-weight: 600;color: #555555;">RUC:</label>
+                            </div>
+                            <div class="col-6 col-md-8">
+                                <input oninput="obtener_dv( event)" value="<?= isset($ruc) ? $ruc : '' ?>" maxlength="15" type="text" name="ruc" class="  form-control form-control-label   ">
+                            </div>
+
+                            <div class="col-1 col-md-1 ml-0 pl-0 ">
+                                <label style="font-weight: 600;color: #555555;">DV:</label>
+                            </div>
+                            <div class="col-3 col-md-2">
+                                <input value="<?= isset($dv) ? $dv : '' ?>" maxlength="2" oninput="solo_numero(event)" type="text" name="dv" class="  form-control form-control-label  ">
+                            </div>
+                        </div>
 
 
 
                         <div class="form-group">
                             <label style="font-weight: 600;color: #555555;">Password</label>
-                            <input value="<?=isset($pass_alt) ? $pass_alt  : '' ?>" type="password" name="pass" class="form-control" placeholder="Password">
+                            <input value="<?= isset($pass_alt) ? $pass_alt  : '' ?>" type="password" name="pass" class="form-control" placeholder="Password">
                         </div>
+
+
+
 
                         <button type="submit" class="btn btn-success btn-flat m-b-30 m-t-30">INGRESAR</button>
                         <div class="checkbox">
                             <label>
-                                <input <?= isset($remember)?'checked':''?> type="checkbox" name="remember" value="S"> <span style="font-weight: 600;color: #555555;">Recordar Número de RUC o contraseña</span>
+                                <input <?= isset($remember) ? 'checked' : '' ?> type="checkbox" name="remember" value="S"> <span style="font-weight: 600;color: #555555;">Recordar Número de RUC o contraseña</span>
                             </label>
                             <label class="pull-right">
-                                <a style="color: #fd4040; font-weight: 600;" href="#">Olvidaste tu contraseña?</a>
+                                <a style="color: #fd4040; font-weight: 600;" href="<?=base_url("usuario/olvido-password")?>">Olvidaste tu contraseña?</a>
                             </label>
 
                         </div>
                         <a href="<?= base_url("usuario/create") ?>" class="btn btn-secondary btn-flat m-b-30 m-t-30">Registrarse</a>
-                        <a href="<?= base_url("home") ?>" class="badge badge-success"  >PÁGINA PRINCIPAL</a>
+                        <a href="<?= base_url("home") ?>" class="badge badge-success">PÁGINA PRINCIPAL</a>
 
                     </form>
                 </div>
@@ -110,7 +112,47 @@ body {
     <script src="<?= base_url("assets/template/vendors/bootstrap/dist/js/bootstrap.min.js") ?>"></script>
     <script src="<?= base_url("assets/template/assets/js/main.js") ?>"></script>
 
+    <script>
+        function obtener_dv(ev) {
+            if (ev.target.value == "") document.querySelector("input[name=dv]").value = "";
 
+            if (ev.data == undefined || ev.data == null) return;
+            let cad = calcular_digito_verificador(ev.target.value, 11);
+            document.querySelector("input[name=dv]").value = cad;
+        }
+
+        function calcular_digito_verificador(tcNumero, tnBaseMax) {
+            let lcNumeroAl, i, lcCaracter, k, lnTotal, lnNumeroAux, lnResto, lnDigito;
+            lcNumeroAl = ""
+
+            for (let i = 0; i < tcNumero.length; i++) {
+                lcCaracter = tcNumero.substr(i, 1).toUpperCase();
+                if (lcCaracter.charCodeAt() < 48 || lcCaracter.charCodeAt() > 57)
+                    lcNumeroAl = lcNumeroAl + String(lcCaracter);
+                else
+                    lcNumeroAl = lcNumeroAl + lcCaracter;
+            }
+            console.log("lcNumeroAL", lcNumeroAl);
+
+            k = 2;
+            lnTotal = 0;
+            for (i = lcNumeroAl.length - 1; i >= 0; i--) {
+                if (k > tnBaseMax)
+                    k = 2;
+
+                lnNumeroAux = parseInt(lcNumeroAl.substr(i, 1)); //VAL
+                lnTotal = lnTotal + (lnNumeroAux * k);
+                k = k + 1
+            }
+            lnResto = lnTotal % 11;
+            if (lnResto > 1)
+                lnDigito = 11 - lnResto;
+            else
+                lnDigito = 0;
+            return lnDigito;
+
+        }
+    </script>
 </body>
 
 </html>

@@ -17,7 +17,8 @@ class Parametros_model extends Model {
    protected $useTimestamps = true;
    protected $allowedFields = 
   [ 
-   'IVA1','IVA2','IVA3','MORA','REDONDEO','DIASVTO', 'DIASGRATIS', 'FACTURA','RECIBO','FECMIN','FECMAX','EMAIL'
+   'IVA1','IVA2','IVA3','MORA','REDONDEO','DIASVTO', 'DIASGRATIS', 'FACTURA','RECIBO','FECMIN','FECMAX','EMAIL',
+   'MSJ_PANT_CIERRE_A', 'MSJ_PANT_CIERRE_M', 'MSJ_PANT_REGISTRO'
   ];
     
   

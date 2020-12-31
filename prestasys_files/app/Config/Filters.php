@@ -26,15 +26,20 @@ class Filters extends BaseConfig
 			'logged_user' =>
 			['except' => [
 				"/",
-				'usuario/create', 'usuario/sign-in', 'usuario/sign_in', 'api/user/sign-in', 'api/user/create',
-				'auxiliar/*', 'api/cities', 'api/plans', 'api/currencies',
-				'admin',  'admin/*', 'home', 'welcome/publico'
+				'usuario/create', 'usuario/sign-in', 'usuario/sign_in', 'api/usuario/sign-in', 'api/usuario/create',
+				'auxiliar/*', 'api/ciudades', 'api/planes', 'api/monedas',
+				'admin',  'admin/*', 'home', 'welcome/publico',
+				'usuario/olvido-password','usuario/recuperar-password', 'usuario/recuperar-password/*',
+				'admin/olvido-password', 'admin/recuperar-password', 'admin/recuperar-password/*'
 			]],
 			'admin_user' =>
 			['except' => [ 
 				'admin/sign-in', 'home', 'welcome/publico', 
-				'usuario/create', 'usuario/sign-in', 'usuario/sign_in', 'api/user/sign-in', 'api/user/create',
-				'auxiliar/*', 'api/cities', 'api/plans', 'api/currencies'
+				'usuario/create', 'usuario/sign-in', 'usuario/sign_in', 'api/usuario/sign-in', 'api/usuario/create',
+				'auxiliar/*', 'api/ciudades', 'api/planes', 'api/monedas',
+				'api/compras', 'api/compras/*',	'api/ventas', 'api/ventas/*','api/retencion', 'api/retencion/*' ,
+				'usuario/olvido-password', 'usuario/recuperar-password', 'usuario/recuperar-password/*',
+				'admin/olvido-password', 'admin/recuperar-password', 'admin/recuperar-password/*'
 				
 			]]
 		],
