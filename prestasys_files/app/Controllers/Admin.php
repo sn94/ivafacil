@@ -112,40 +112,39 @@ class Admin extends Controller {
 		$pass =  $data['pass'];
 		
 		 
-
 		//cONDICION PARA PERMITIR RECORDAR PASS PARA AdminiS DE WEB
 		$USU_WEB_PIDE_RECORD_PASS= $request->getPost("remember") == "S"  &&  $request->getPost("remember") != NULL;
-		
+		$usu_ = new Admin_model();
+		$usu_->where("nick", $nick);
+		$ID = $usu_->first()->regnro;
+
+
 		if (    $USU_WEB_PIDE_RECORD_PASS ) {
 			try {
-				//Guardar sesion 
-				$usu_ = new Admin_model();
-				$usu_->where("nick", $nick);
-				$ID= $usu_->first()->regnro;
+				//Guardar sesion  
+				$fecha_expire_session =     date("Y-m-d H:i",   strtotime(date("Y-m-d H:i") . " + 10 days"));
+				//Para autenticar desde la API, y tambien para recordar sesiones para Adminis web
+				$SESSIONID =  password_hash($ID,  PASSWORD_BCRYPT);
 
-				 $fecha_expire_session=     date(  "Y-m-d H:i",   strtotime(date("Y-m-d H:i")." + 10 days")  );
-				 //Para autenticar desde la API, y tambien para recordar sesiones para Adminis web
-				 $SESSIONID=  password_hash( $ID,  PASSWORD_BCRYPT);
-
-				 $usu_->where("regnro", $ID);
-				$usu_->set(["session_id" => $SESSIONID, 'session_expire'=> $fecha_expire_session ,'remember'=>'S' ]);
+				$usu_->where("regnro", $ID);
+				$usu_->set(["session_id" => $SESSIONID, 'session_expire' => $fecha_expire_session, 'remember' => 'S']);
 				$usu_->update();
 				// crear cookies  
-					setcookie("ivafacil_admin_nick", $nick,  time() + 365 * 24 * 60 * 60, "/ivafacil",  env("DOMINIO"));
-					//Crear cookie para password
-					setcookie("ivafacil_admin_pa", $SESSIONID,  time() + 365 * 24 * 60 * 60,  "/ivafacil",  env("DOMINIO"));
-					return redirect()->to(base_url("admin/index"));
-				 
-			
+				setcookie("ivafacil_admin_nick", $nick,  time() + 365 * 24 * 60 * 60, "/ivafacil",  env("DOMINIO"));
+				//Crear cookie para password
+				setcookie("ivafacil_admin_pa", $SESSIONID,  time() + 365 * 24 * 60 * 60,  "/ivafacil",  env("DOMINIO"));
+				return redirect()->to(base_url("admin/index"));
 			} catch (Exception $e) {
-				 
 				return view("admin/login", array("error" => $e));
 			}
 		} else { //Camino accesible solo para web request
 			// Olvidar sesion
-			try { 
+			try {  
 				//Actualizar campo rememebr
-			 
+				$usu_ = new Admin_model();
+				$usu_->where("regnro", $ID);
+				$usu_->set([  'remember' => 'N']);
+				$usu_->update();
 				return redirect()->to(base_url("admin/index"));
 			} catch (Exception $e) {
 				return view("admin/login", array("error" => $e));
@@ -183,16 +182,19 @@ class Admin extends Controller {
 		} else {
 
 			//Verificar session id?
-			if(    $recordar=="S" && isset( $_COOKIE["ivafacil_admin_pa"] )  ){
+			if ($recordar == "S" && isset($_COOKIE["ivafacil_admin_pa"])) {
 
-				$cookie_session=  $_COOKIE["ivafacil_admin_pa"];
-				if(  $cookie_session ==  $usuarioObject->session_id){
-					return array( "data"=>"Contraseña Correcta", "code"=>  200);
-				}else{
-					return array( "msj"=>"Contraseña incorrecta",  "code"=> 500);
+				$cookie_session =  $_COOKIE["ivafacil_admin_pa"];
+				if ($cookie_session ==  $usuarioObject->session_id) {
+					return array("data" => "Contraseña Correcta", "code" =>  200);
+				} else {
+					return array("msj" => "Contraseña incorrecta",  "code" => 500);
 				}
+			} else {
+				//BORRAR COOKIES 
+				setcookie("ivafacil_admin_nick", NULL, -1,  "/ivafacil", env("DOMINIO")); 
+				setcookie("ivafacil_admin_pa", NULL, -1,  "/ivafacil", env("DOMINIO"));
 			}
-			 
 			// VERIFICACION DE contrasenha correcta
 			if (password_verify($pass, $usuarioObject->pass)) {// Pass entered vs. Pass in BD
 				return array( "data"=>"Contraseña Correcta", "code"=>  200);
@@ -237,15 +239,9 @@ class Admin extends Controller {
 					'nick'  => $nick, 
 					'origen' =>  "W"
 				];
-
 				$session->set($newdata);
-			
-			
-				//Crear cookie
-				//Se pidio recordar contrasenha?
-				 
+				//Crear cookie 
 				return $this->crear_cookie_recordar_sesion();
-			
 			} else { 
 					return view("admin/login", array("error" => $resu['msj']));
 			}

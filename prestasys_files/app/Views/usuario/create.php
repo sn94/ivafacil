@@ -126,7 +126,7 @@
                             <?php
 
                             use App\Helpers\Utilidades;
-
+                            use App\Models\Parametros_model;
 
                             echo  form_open(
                                 "usuario/create",
@@ -140,8 +140,8 @@
                             <?= view("usuario/form") ?>
                             <div class="row">
                                 <div class="col-12  col-md-6 mb-2">
-                                    <input type="checkbox" name="aceptar-bases" value="S"> He leído y acepto las 
-                                    <a href="<?=base_url("TyC.pdf")?>">bases y condiciones</a>
+                                    <input type="checkbox" name="aceptar-bases" value="S"> He leído y acepto las
+                                    <a href="<?= base_url("TyC.pdf") ?>">bases y condiciones</a>
                                 </div>
                                 <div class="col-12  col-md-6  mb-2 ">
                                     <button style="font-size: 12px;font-weight: 600;width:100%;" type="submit" class="btn btn-success btn-sm">
@@ -149,15 +149,23 @@
                                     </button>
                                 </div>
 
-                                <div class="col-12 col-md-12">
 
-                                    <div class="alert alert-warning pb-1 pt-1 mb-1">
-                                        <p class="mt-1 text-center pb-0 mb-0" style="color: red; font-weight: 700;"> PRIMER MES GRATIS</p>
-                                        <p class="mt-0 pt-0" style=" font-weight: 600;">El costo del servicio es de Gs. 30.000 Gs. en el 2do y 3er mes, a
-                                            partir del 4to mes sube 60.000 Gs. y de ahi no sube más! </p>
+                                <?php
+
+                                $Parametro_Mensaje_ = (new Parametros_model())->first();
+                                $MSJ_PANT_REGISTRO =  !(is_null($Parametro_Mensaje_)) ? $Parametro_Mensaje_->MSJ_PANT_REGISTRO :  "";
+                                if ($MSJ_PANT_REGISTRO !=  "") :
+                                ?>
+                                    <div class="col-12 col-md-12">
+
+                                        <div class="alert alert-warning pb-1 pt-1 mb-1">
+                                            <p class="mt-0 pt-0" style=" font-weight: 600;">
+                                            <?=$MSJ_PANT_REGISTRO?>
+                                            </p>
+                                        </div>
+
                                     </div>
-
-                                </div>
+                                <?php endif; ?>
                             </div>
                             </form>
                         </div>
@@ -179,6 +187,49 @@
 
 
             <script>
+
+
+function obtener_dv(ev) {
+            if (ev.target.value == "") document.querySelector("input[name=dv]").value = "";
+
+
+            if (ev.data == undefined || ev.data == null) return;
+            solo_numero(ev);
+            let cad = calcular_digito_verificador(ev.target.value, 11);
+            document.querySelector("input[name=dv]").value = cad;
+        }
+
+        function calcular_digito_verificador(tcNumero, tnBaseMax) {
+            let lcNumeroAl, i, lcCaracter, k, lnTotal, lnNumeroAux, lnResto, lnDigito;
+            lcNumeroAl = ""
+
+            for (let i = 0; i < tcNumero.length; i++) {
+                lcCaracter = tcNumero.substr(i, 1).toUpperCase();
+                if (lcCaracter.charCodeAt() < 48 || lcCaracter.charCodeAt() > 57)
+                    lcNumeroAl = lcNumeroAl + String(lcCaracter);
+                else
+                    lcNumeroAl = lcNumeroAl + lcCaracter;
+            }
+            console.log("lcNumeroAL", lcNumeroAl);
+
+            k = 2;
+            lnTotal = 0;
+            for (i = lcNumeroAl.length - 1; i >= 0; i--) {
+                if (k > tnBaseMax)
+                    k = 2;
+
+                lnNumeroAux = parseInt(lcNumeroAl.substr(i, 1)); //VAL
+                lnTotal = lnTotal + (lnNumeroAux * k);
+                k = k + 1
+            }
+            lnResto = lnTotal % 11;
+            if (lnResto > 1)
+                lnDigito = 11 - lnResto;
+            else
+                lnDigito = 0;
+            return lnDigito;
+
+        }
                 /***
                 Validaciones js
 
@@ -424,9 +475,9 @@
                     if (campos_vacios() || !claves_validas()) return;
 
                     //limpiar numeros
-                  clean_number($("input[name=ultimo_nro]") );
+                    clean_number($("input[name=ultimo_nro]"));
                     clean_number($("input[name=cedula]"));
-                    clean_number($("input[name=saldo_IVA]")); 
+                    clean_number($("input[name=saldo_IVA]"));
 
                     let datos = $("#user-form").serialize();
                     show_loader();

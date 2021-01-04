@@ -1,4 +1,4 @@
-<?= $this->extend("layouts/index_cliente") ?>
+<?= $this->extend("admin/layout/index") ?>
 <?= $this->section("estilos") ?>
 <?php
 $estilo = <<<EOF
@@ -18,11 +18,11 @@ echo $estilo;
 <?= $this->section("contenido") ?>
 
 
-
-<input type="hidden" id="info-compras" value="<?= base_url("compra/index") ?>">
-<input type="hidden" id="info-ventas" value="<?= base_url("venta/index") ?>">
-<input type="hidden" id="info-ventas-a" value="<?= base_url("venta/index/B") ?>">
-<input type="hidden" id="info-retencion" value="<?= base_url("retencion/index") ?>">
+<input type="hidden" id="IDCLIENTE" value="<?= $CLIENTE?>">
+<input type="hidden" id="info-compras" value="<?= base_url("admin/clientes/compras") ?>">
+<input type="hidden" id="info-ventas" value="<?= base_url("admin/clientes/ventas") ?>">
+<input type="hidden" id="info-ventas-a" value="<?= base_url("admin/clientes/ventas") ?>">
+<input type="hidden" id="info-retencion" value="<?= base_url("admin/clientes/retencion") ?>">
 
 <!-- Menu de Usuario -->
 
@@ -97,10 +97,13 @@ echo $estilo;
         total_ex = 0;
 
 
+        function getClienteId(){
+            return $("#IDCLIENTE").val();
+        }
     async function informe_compras() {
         //Obtener el resumen de compras
         //Parametros Anio, mes
-        let params = $("#compras-reports").serialize();
+        let params = $("#compras-reports").serialize()+ "&cliente="+getClienteId();
 
         let loader = "<img  src='<?= base_url("assets/img/loader.gif") ?>'   />";
         $("#tabla-compras").html(loader);
@@ -125,7 +128,7 @@ echo $estilo;
 
     async function informe_ventas() {
         //Parametros Anio, mes
-        let params = $("#ventas-reports").serialize();
+        let params = $("#ventas-reports").serialize()+ "&cliente="+getClienteId();
         let loader = "<img  src='<?= base_url("assets/img/loader.gif") ?>'   />";
         $("#tabla-ventas").html(loader);
         let req = await fetch($("#info-ventas").val(), {
@@ -150,7 +153,7 @@ echo $estilo;
 
     async function informe_ventas_anuladas() {
         //Parametros Anio, mes
-        let params = $("#ventas-a-reports").serialize()+"&anulados=B";
+        let params = $("#ventas-a-reports").serialize()+ "&cliente="+getClienteId()+"&anulados=B";
         let loader = "<img  src='<?= base_url("assets/img/loader.gif") ?>'   />";
         $("#tabla-ventas-a").html(loader);
         let req = await fetch($("#info-ventas-a").val(), {
@@ -176,7 +179,7 @@ echo $estilo;
     async function informe_retencion() {
 
         // let req = await fetch($("#info-retencion").val());
-        let params = $("#retencion-reports").serialize();
+        let params = $("#retencion-reports").serialize()+ "&cliente="+getClienteId();
         let loader = "<img  src='<?= base_url("assets/img/loader.gif") ?>'   />";
         $("#tabla-retencion").html(loader);
         let req = await fetch($("#info-retencion").val(), {

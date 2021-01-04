@@ -29,16 +29,14 @@
 
 
     <style>
+        @import url("<?= base_url('assets/Marvel-Regular.ttf') ?>");
 
+        @font-face {
+            font-family: "mainfont";
+            src: url("<?= base_url('assets/Marvel-Regular.ttf') ?>");
 
-@import url("<?=base_url('assets/Marvel-Regular.ttf')?>");
+        }
 
-@font-face{
-    font-family: "mainfont";
-    src: url("<?=base_url('assets/Marvel-Regular.ttf')?>");
-    
-}
-      
 
 
         .form-control {
@@ -58,7 +56,7 @@
         .login-form {
             /* background: #ffffff; */
             background: #5491320f !important;
-        
+
         }
 
         /* bootstrap.min.css | http://localhost/ivafacil/assets/template/vendors/bootstrap/dist/css/bootstrap.min.css */
@@ -116,7 +114,7 @@
             color: #69a44e !important;
         }
 
-       
+
 
         /* Elemento | http://localhost/ivafacil/admin/sign-in */
 
@@ -137,28 +135,25 @@
     if ($adaptativo->isMobile()) :
     ?>
 
-<style>
-  html{
-    height: 100% !important; 
-     background-size: cover; 
-     background-image: url(<?= base_url("assets/img/spring-wallpaper.jpg") ?>);
-     background-position: 100% 50%;
-    }
-
-</style>
+        <style>
+            html {
+                height: 100% !important;
+                background-size: cover;
+                background-image: url(<?= base_url("assets/img/spring-wallpaper.jpg") ?>);
+                background-position: 100% 50%;
+            }
+        </style>
 
     <?php
     else : ?>
 
-<style>
-    
-    html{
-    height: 100% !important; 
-     background-size: cover; 
-     background-image: url(<?= base_url("assets/img/spring-wallpaper.jpg") ?>);
-    }
-
-</style>
+        <style>
+            html {
+                height: 100% !important;
+                background-size: cover;
+                background-image: url(<?= base_url("assets/img/spring-wallpaper.jpg") ?>);
+            }
+        </style>
 
 
 
@@ -191,7 +186,7 @@
                                 </div>
                             </div>
                             <div class="col-12 col-md-6 align-self-center">
-                                <h4   style="font-family: mainfont;font-size: 40px;color: #428e20;" class="">ADMINISTRACIÓN</h4>
+                                <h4 style="font-family: mainfont;font-size: 40px;color: #428e20;" class="">ADMINISTRACIÓN</h4>
                             </div>
                         </div>
 
@@ -217,13 +212,14 @@
                         <button type="submit" class="btn btn-success btn-flat m-b-30 m-t-30">INGRESAR</button>
                         <div class="checkbox">
                             <label>
-                                <input <?= isset($remember) ? 'checked' : '' ?> type="checkbox" name="remember" value="S"> <span style="font-weight: 600;color: #555555;">Recordar contraseña</span>
+                                <input  onchange="olvidar(event)" <?= isset($remember) ? 'checked' : '' ?> type="checkbox" name="remember" value="S"> <span style="font-weight: 600;color: #555555;">Recordar contraseña</span>
                             </label>
                             <label class="pull-right">
-                                <a style="color: #fd4040; font-weight: 600;" href="<?=base_url("admin/olvido-password")?>">Olvidaste tu contraseña?</a>
+                                <a style="color: #fd4040; font-weight: 600;" href="<?= base_url("admin/olvido-password") ?>">Olvidaste tu contraseña?</a>
                             </label>
 
                         </div>
+                        <a href="<?= base_url("home") ?>" class="badge badge-success">PÁGINA PRINCIPAL</a>
 
 
                     </form>
@@ -238,6 +234,13 @@
     <script src="<?= base_url("assets/template/vendors/bootstrap/dist/js/bootstrap.min.js") ?>"></script>
     <script src="<?= base_url("assets/template/assets/js/main.js") ?>"></script>
 
+    <script>
+        function olvidar(ev) {
+
+            if (!ev.target.checked)
+                document.querySelector("input[name=pass]").value = "";
+        }
+    </script>
 
 </body>
 

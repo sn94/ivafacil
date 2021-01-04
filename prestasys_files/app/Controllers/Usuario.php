@@ -97,7 +97,9 @@ class Usuario extends ResourceController {
 			$sesion= $this->request->getHeader('Ivasession');
 			if(  $sesion != "") {
 				$usu_filter= (new Usuario_model())
-				->select("regnro, ruc, dv, tipoplan, email, cliente, cedula, telefono, celular, domicilio, ciudad, rubro")->get()->getResult();
+				->select("regnro, ruc, dv, tipoplan, email, cliente, cedula, telefono, celular, domicilio, ciudad, rubro")
+				->get()
+				->getResult();
 				return $this->genericResponse($usu_filter, null, 200);
 			}
 			else 
@@ -108,6 +110,8 @@ class Usuario extends ResourceController {
 
 
 	
+	//Busqueda por patrones
+	//Nombre, RUC
 	public function list(){
 
 		/**Parametros POST */
@@ -247,7 +251,11 @@ class Usuario extends ResourceController {
 
 	 private function prueba_gratuita( $CODCLIENTE){
 		$data = $this->request->getRawInput();
-		$DIASPLAN= 30;
+		$PLAN= (new Planes_model())->join("usuarios", "usuarios.tipoplan=planes.regnro")
+		->where("usuarios.regnro", $CODCLIENTE)
+		->first();
+
+		$DIASPLAN=  $PLAN->dias;
 		//CALCULO DE FECHA CADUCIDAD PRUEBA GRATIS
 		$validez= date("Y-m-d H:i:s",  strtotime( date("Y-m-d H:i:s")." + $DIASPLAN days"  )  );
 		$datos = [
@@ -326,7 +334,7 @@ class Usuario extends ResourceController {
 				if(! $this->API_MODE ) 
 				$this->email_bienvenida( $data['email']);
 				$usuario_Response= (new Usuario_model())
-				->select("regnro, ruc, dv, tipoplan, email, cliente, cedula, telefono, celular, domicilio, ciudad, rubro")->
+				->select("regnro, ruc, dv, tipoplan, email, cliente, cedula, telefono, celular, domicilio, ciudad, rubro, saldo_IVA")->
 				where("regnro", $id  )->first();
 				$resu = $this->genericResponse($usuario_Response, null, 200);
 
@@ -419,15 +427,16 @@ class Usuario extends ResourceController {
 				->update();
 
 				//actualizar saldo inicial
-				(new Estado_anio_model())
+				$update_estado_anio= (new Estado_anio_model())
 				->where( "codcliente",   $data['regnro'] )
-				->where("anio", date("Y"))
-				->set(['saldo_inicial'=>   $data['saldo_IVA']  ]  )
-				->update();
+				->where("anio", date("Y"));
+				if( array_key_exists("saldo_IVA",  $data) )
+				$update_estado_anio= $update_estado_anio->set(['saldo_inicial'=>   $data['saldo_IVA']  ]  )->update();
+ 
 				$db->transCommit();
 
 				$usu_Response= (new Usuario_model())
-				->select("regnro, ruc, dv, tipoplan, email, cliente, cedula, telefono, celular, domicilio, ciudad, rubro")->
+				->select("regnro, ruc, dv, tipoplan, email, cliente, cedula, telefono, celular, domicilio, ciudad, rubro, saldo_IVA")->
 				where("regnro",  $data['regnro'] )->first();
 				$resu=  $this->genericResponse($usu_Response , null, 200);
 			}catch( Exception $e){
@@ -493,7 +502,30 @@ dv
 		$recordar= isset(  $data["remember"])  ?  $data["remember"] : "N" ;
 		$usu = (new Usuario_model())->find( $CODCLIENTE); 
 		
+		if(  $recordar == "N"){
+			//BORRAR COOKIES
+			//unset( $_COOKIE["ivafacil_user_ruc"] );
+			setcookie( "ivafacil_user_ruc", NULL , -1,  "/ivafacil", env("DOMINIO"));
+			//unset( $_COOKIE["ivafacil_user_dv"] );
+			setcookie( "ivafacil_user_dv", NULL , -1,  "/ivafacil", env("DOMINIO"));
+			//unset( $_COOKIE["ivafacil_user_pa"] );
+			setcookie( "ivafacil_user_pa", NULL , -1,  "/ivafacil", env("DOMINIO"));
+			 
 			//Verificar session id?
+		}else{
+			if (isset($_COOKIE['ivafacil_user_ruc']))
+			 {
+				$usuarioCookie = new Usuario_model();
+				$result_pass_comparison =
+					$usuarioCookie->where("ruc", $_COOKIE['ivafacil_user_ruc'])
+					->where("dv", $_COOKIE['ivafacil_user_dv'])
+					->where("remember_pass", $_COOKIE['ivafacil_user_pa'])->first();
+				if (!is_null($result_pass_comparison))
+					return array("data" => "Contraseña Correcta", "code" =>  200);
+			}
+
+		}
+
 			if( !$this->API_MODE  &&  $recordar=="S" && isset( $_COOKIE["ivafacil_user_pa"] )  ){
 
 				$cookie_session=  $_COOKIE["ivafacil_user_pa"];
@@ -536,15 +568,20 @@ dv
 	private function verificar_cookie_sesion()
 	{
 		$session =  \Config\Services::session();
+		//se pidio recordar sesion?
+		$request= \Config\Services::request();
+		$recordar_=  ($request->getRawInput());
+		 
+		
 		//verificar cookies
 		if (isset($_COOKIE['ivafacil_user_dv']) && isset($_COOKIE['ivafacil_user_ruc']) && isset($_COOKIE['ivafacil_user_pa'])) {
 
 			//comparar passw hasheadas
 			$usuarioCookie = new Usuario_model();
 			$result_pass_comparison =
-			$usuarioCookie->where("ruc", $_COOKIE['ivafacil_user_ruc'])
-			->where("dv", $_COOKIE['ivafacil_user_dv'])
-			->where("session_id", $_COOKIE['ivafacil_user_pa'])->first();
+				$usuarioCookie->where("ruc", $_COOKIE['ivafacil_user_ruc'])
+				->where("dv", $_COOKIE['ivafacil_user_dv'])
+				->where("remember_pass", $_COOKIE['ivafacil_user_pa'])->first();
 
 			if (is_null($result_pass_comparison)) {
 				//MOSTRAR FORM
@@ -556,7 +593,7 @@ dv
 				if ($result_pass_comparison->remember == "S") {
 					//recuperar sesion si es valida
 					$hoy = strtotime(date("Y-m-d H:i:s"));
-					$expir =  strtotime($result_pass_comparison->session_expire);
+					$expir =  strtotime($result_pass_comparison->remember_expire);
 					if ($hoy >  $expir) return view("usuario/login");
 
 
@@ -568,7 +605,7 @@ dv
 						'ruc'  => $ruc,
 						'dv'     => $dv,
 						'pass_alt' => $alt_pa_sessionid,
-						'remember'=>  "S"
+						'remember' =>  "S"
 					];
 					return view("usuario/login", $newdata);
 				} else {
@@ -591,55 +628,43 @@ dv
 		$dv =  $data['dv'];
 		$remember= isset(  $data["remember"])  ?  $data["remember"] : "N" ;
 	
+		/**cREDENCIALES */
+		//Guardar sesion 
+		$fecha_expire_session=     date(  "Y-m-d H:i",   strtotime(date("Y-m-d H:i")." + 10 days")  );
+		//Para autenticar desde la API, y tambien para recordar sesiones para clientes web
+		$remember_password=  $CODCLIENTE.(  strtotime(date("Y-m-d H:i:s")  ) );
+		$SESSIONID=  password_hash( $remember_password,  PASSWORD_BCRYPT);
 		//cONDICION PARA PERMITIR RECORDAR PASS PARA CLIENTES DE WEB
 		$USU_WEB_PIDE_RECORD_PASS= $remember == "S";
+
 		
-		if (   $this->API_MODE  ||  $USU_WEB_PIDE_RECORD_PASS ) {
-			try {
-				//Guardar sesion 
-				 $fecha_expire_session=     date(  "Y-m-d H:i",   strtotime(date("Y-m-d H:i")." + 10 days")  );
-				 //Para autenticar desde la API, y tambien para recordar sesiones para clientes web
-				 $SESSIONID=  password_hash( $CODCLIENTE,  PASSWORD_BCRYPT);
-				 $usu_ = new Usuario_model(); 
-				 $usu_->where("regnro", $CODCLIENTE);
-				$usu_->set(["session_id" => $SESSIONID, 'session_expire'=> $fecha_expire_session ,'remember'=>'S' ]);
-				$usu_->update();
-
-
-				//Solo crear cookies para clientes  autenticados deSDE la web
-				if (!$this->API_MODE) {
-					setcookie("ivafacil_user_ruc", $ruc,  time() + 365 * 24 * 60 * 60, "/ivafacil",  env("DOMINIO"));
-					setcookie("ivafacil_user_dv", $dv,  time() + 365 * 24 * 60 * 60,  "/ivafacil",  env("DOMINIO"));
-					//Crear cookie para password
-					setcookie("ivafacil_user_pa", $SESSIONID,  time() + 365 * 24 * 60 * 60,  "/ivafacil",  env("DOMINIO"));
-					return redirect()->to(base_url("/"));
-				}else{
-					//Enviar el session id para usuarios de api
-					return $this->genericResponse( $SESSIONID, null,  200);
-				}
-			
-			} catch (Exception $e) {
-				if( $this->API_MODE)
-				return $this->genericResponse( null, "Error al tratar de crear cookies",  500);
-				else
-				return view("usuario/login", array("error" => $e));
-			}
-		} else { //Camino accesible solo para web request
-			// Olvidar sesion
-			try {
-				/*$usu_ = new Usuario_model();
-				$usu_->where("ruc", $ruc)->where("dv", $dv);
-				$usu_->set(["session_id" => ""]);
-				$usu_->update();
-				//borrar cookies
-				unset($_COOKIE['ivafacil_user_dv']);
-				unset($_COOKIE['ivafacil_user_ruc']);
-				unset($_COOKIE['ivafacil_user_pa']);*/
-				return redirect()->to(base_url("/"));
-			} catch (Exception $e) {
-				return view("usuario/login", array("error" => $e));
-			}
+		if ($this->isAPI()) {
+			 
+			$usu_ = new Usuario_model();
+			$usu_->where("regnro", $CODCLIENTE);
+			$usu_->set(["session_id" => $SESSIONID, 'session_expire' => $fecha_expire_session]);
+			$usu_->update($CODCLIENTE);
+			//Enviar el session id para usuarios de api
+			return $this->genericResponse( $SESSIONID, null,  200);
 		}
+		if ($USU_WEB_PIDE_RECORD_PASS) {
+			$usu_ = new Usuario_model();
+			$usu_->where("regnro", $CODCLIENTE);
+			$usu_->set(["remember_pass" => $SESSIONID, 'remember_expire' => $fecha_expire_session, 'remember' => 'S']);
+			$usu_->update();
+			setcookie("ivafacil_user_ruc", $ruc,  time() + 365 * 24 * 60 * 60, "/ivafacil",  env("DOMINIO"));
+			setcookie("ivafacil_user_dv", $dv,  time() + 365 * 24 * 60 * 60,  "/ivafacil",  env("DOMINIO"));
+			//Crear cookie para password
+			setcookie("ivafacil_user_pa", $SESSIONID,  time() + 365 * 24 * 60 * 60,  "/ivafacil",  env("DOMINIO"));
+			return redirect()->to(base_url("/"));
+		} else { 
+			$usu_ = new Usuario_model();
+			$usu_->where("regnro", $CODCLIENTE);
+			$usu_->set([  'remember' => 'N']);
+			$usu_->update();
+			
+			return redirect()->to(base_url("/")); }
+
 	}
 
 
@@ -815,9 +840,14 @@ dv
 
 
 
-	public function actualizar_saldo($saldo)
+	public function actualizar_saldo($saldo= NULL)
 	{
+		(new Cierres())->crear_ejercicio();
 		//obtener codigo de cliente
+		if( is_null(  $saldo ) ){
+			$estado_anio=(new Estado_anio_model())->where("codcliente", $this->getClienteId())->where("anio", date("Y"))->first();
+			return view("usuario/solici_saldo_ini", ['saldo'=>   $estado_anio->saldo_inicial]);
+		}
 		$id = $this->getClienteId();
 		$response = \Config\Services::response();
 		$db = \Config\Database::connect();
@@ -990,7 +1020,8 @@ dv
 				$PASS =  $nuevopass['pass'];
 				$PASSHASH= password_hash(   $PASS,  PASSWORD_BCRYPT );
 				
-				(new Usuario_model())->where("regnro", $Cliente->regnro)->set( ['pass'=> $PASSHASH ] )->update();
+				(new Usuario_model())->where("regnro", $Cliente->regnro)
+				->set( ['pass'=> $PASSHASH,  'token_recu'=>'', 'token_validez'=>'NULL' ] )->update();
 				if( $this->isAPI())
 				return $this->response->setJSON(['data' => 'Contraseña cambiada', 'code' => '200']);
 				else 	return redirect()->to(base_url("usuario/sign-in"));

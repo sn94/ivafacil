@@ -84,9 +84,7 @@ Bienvenido
             </div>
         </div>
 
-        <div id="testest">
-
-        </div>
+       
         <div id="loaderplace">
         </div>
 
@@ -182,6 +180,10 @@ Bienvenido
                 </div>
                 <!--end card-->
 
+            </div>
+
+            <div class="col-12">
+<?=view("admin/clientes/informe_pagos") ?>
             </div>
 
         </div>
@@ -338,10 +340,10 @@ Bienvenido
             }
 
 
-function limpiar_campos(){
-    $("input[name=comprobante]").val("");
-    $("input[name=concepto]").val("");
-}
+            function limpiar_campos() {
+                $("input[name=comprobante]").val("");
+                $("input[name=concepto]").val("");
+            }
             async function registro(ev) {
 
                 ev.preventDefault();
@@ -360,7 +362,7 @@ function limpiar_campos(){
                 hide_loader();
                 if (("data" in respuesta) && parseInt(respuesta.code) == 200) {
 
-                 
+
                     alert("REGISTRADO");
                     limpiar_campos();
                     //actualizar grilla de pagos
@@ -383,11 +385,16 @@ function limpiar_campos(){
 
             //Actualizar tabla
             async function actualizar_grilla() {
+
+                let MES = $("#pagos-reports select[name=month]").val();
+                let ANIO = $("#pagos-reports select[name=year]").val();
+
                 $("#tabla-pagos").html(showLoader());
-                let form = await fetch("<?= base_url("admin/clientes/list-pagos/" . $CLIENTE) ?>", {
+                let form = await fetch("<?= base_url("admin/clientes/list-pagos/" . $CLIENTE) ?>/" + MES + "/" + ANIO, {
                     headers: {
                         "X-Requested-With": "XMLHttpRequest"
-                    }
+                    },
+
                 });
                 let form_R = await form.text();
                 $("#tabla-pagos").html(form_R);
@@ -413,6 +420,9 @@ $base_url_for_resources = base_url() . "/assets/template/";
 
 <script src="<?= $base_url_for_resources ?>vendors/jquery/dist/jquery.min.js"></script>
 <script src="<?= $base_url_for_resources ?>vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="<?= base_url("assets/xls_gen/xls.js") ?>"></script>
+<script src="<?= base_url("assets/xls_gen/xls_ini.js") ?>"></script>
 
+ 
 
 <?= $this->endSection() ?>

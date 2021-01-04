@@ -53,7 +53,7 @@ $estado=  isset( $venta)  ? ( $venta->estado =="A" ? "" : "checked" )  : "";
                 <div class="col-8 col-md-8 pb-0 mb-0">
                     <input oninput="solo_numeros(event)" value="<?= $factura ?>" placeholder="000-000-0000000" maxlength="15" type="text" id="nf-password" name="factura" class=" form-control form-control-label form-control-sm mb-0 ">
                   
-                    <span style="font-size: 11px;">
+                    <span style="font-size: 11px; font-weight: 600;color: red;">
                         ANULADO <input   <?=$estado?> type="checkbox" name="estado" value="B">
                     </span>
                     <p style="color:red; font-size: 11px; font-weight: 600;" id="error-factura"></p>

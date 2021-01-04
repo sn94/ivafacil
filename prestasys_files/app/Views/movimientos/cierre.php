@@ -48,6 +48,7 @@ use App\Models\Parametros_model;
                         <thead>
                             <tr>
                                 <th></th>
+                                <th></th>
                                 <th>Exenta</th>
                                 <th>5%</th>
                                 <th>10%</th>
@@ -56,13 +57,23 @@ use App\Models\Parametros_model;
                         </thead>
                         <tbody>
                             <tr>
+                                <th>
+                                    <?php if (isset($edicion_saldo_inicial)  &&  $edicion_saldo_inicial) : ?>
+                                        <a href="<?= base_url("usuario/actualizar-saldo") ?>">
+                                        <i class="fa fa-refresh" aria-hidden="true"></i>
+                                        </a>
+                                    <?php endif; ?>
+
+                                </th>
                                 <td>Saldo Inicial</td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
-                                <td id="saldo-anterior" class="text-right"></td>
+                                <td id="saldo-anterior" class="text-right">
+                                </td>
                             </tr>
                             <tr>
+                                <td></td>
                                 <td>Compras</td>
                                 <td id="compras-exenta" class="text-right"></td>
                                 <td id="compras-5" class="text-right"></td>
@@ -70,6 +81,7 @@ use App\Models\Parametros_model;
                                 <td id="compras-iva" class="text-right"></td>
                             </tr>
                             <tr>
+                                <td></td>
                                 <td>Ventas</td>
                                 <td id="ventas-exenta" class="text-right"></td>
                                 <td id="ventas-5" class="text-right"></td>
@@ -77,6 +89,7 @@ use App\Models\Parametros_model;
                                 <td id="ventas-iva" class="text-right"></td>
                             </tr>
                             <tr>
+                                <td></td>
                                 <td>Retención</td>
                                 <td id="retencion-exenta" class="text-right"></td>
                                 <td></td>
@@ -85,6 +98,7 @@ use App\Models\Parametros_model;
                             </tr>
 
                             <tr id="saldo-row">
+                                <td></td>
                                 <td>Saldo final</td>
                                 <td id="saldo-descri" colspan="3"></td>
                                 <td id="saldo" class="text-right"></td>
@@ -153,7 +167,7 @@ use App\Models\Parametros_model;
 
         let saldo_a = parseInt(resp_json.saldo_anterior);
 
-        let saldo = parseInt(resp_json.saldo) +  saldo_a;
+        let saldo = parseInt(resp_json.saldo) + saldo_a;
         let saldo_descri = (s_fisco > s_contri) ? "a favor del fisco " : "a favor del contribuyente";
 
 
@@ -182,7 +196,7 @@ use App\Models\Parametros_model;
         $("#saldo-row").removeClass("table-danger");
         $("#saldo-row").removeClass("table-success");
 
-        if (s_fisco < s_contri) {
+        if (s_fisco < (s_contri+saldo_a)  ) {
             $("#saldo-row").addClass("table-success");
             $("#saldo-descri").css("color", "green");
         } else {

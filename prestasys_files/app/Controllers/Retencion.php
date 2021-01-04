@@ -74,8 +74,64 @@ class Retencion extends ResourceController {
 
 
 
+	private function isAdminView()
+	{
+		$request = \Config\Services::request();
+		$uri = $request->uri;
+		return (sizeof($uri->getSegments()) > 0  && $uri->getSegment(1) == "admin");
+	}
+
+
+
 	
-	public function index( ){
+	public function index_se(   $CLIENTE= NULL,  $MES= NULL,   $ANIO=   NULL  ){
+
+		$this->API_MODE=  $this->isAPI();
+		$reten= (new Retencion_model());
+
+		
+		$lista_co= []; 
+	
+		//Segun los parametros
+		//Parametros: mes y anio
+		$parametros = [];
+		$cliente=  $CLIENTE;
+		$year =   is_null($ANIO) ?  date("Y")  :  $ANIO;
+		$month = is_null($MES)?  date("m") :  $MES;
+
+		if ($this->request->getMethod(true) == "POST") {
+			$parametros = $this->request->getRawInput();
+			$cliente = isset($parametros['cliente'])  ? $parametros['cliente'] : $cliente;
+			$month = isset( $parametros['month'])  ? $parametros['month'] : $month;
+			$year =  isset(  $parametros['year']) ? $parametros['year'] : $year;
+		}
+		$lista_co = (new Retencion_model())
+		->where("codcliente", $cliente)
+		->where("month(fecha)", $month)
+		->where("year(fecha)", $year);
+
+		
+		if ($this->API_MODE) {
+			$lista_co = $lista_co->get()->getResult();
+			return $this->respond(array("data" => $lista_co, "code" => 200));
+		} else {
+			$lista_pagi = $lista_co->paginate(15);
+			if( $this->isAdminView())
+			return view("admin/clientes/movimientos/grill_retencion", 
+			['retencion' =>  $lista_pagi, 'retencion_pager'=> $lista_co->pager,
+			'year'=> $year,  'month'=> $month,  	'CLIENTE'=>  $cliente   ]);
+
+			else
+			return view("movimientos/informes/grill_retencion", 
+			 ['retencion' =>  $lista_pagi, 'retencion_pager'=> $lista_co->pager,
+			 'year'=> $year,  'month'=> $month]);
+		}
+		 
+	}
+
+
+	
+	public function index(   $MES= NULL,   $ANIO=   NULL  ){
 
 		$this->API_MODE=  $this->isAPI();
 		$reten= (new Retencion_model());
@@ -99,8 +155,8 @@ class Retencion extends ResourceController {
 		//Segun los parametros
 		//Parametros: mes y anio
 		$parametros = [];
-		$year = date("Y");
-		$month = date("m");
+		$year =   is_null($ANIO) ?  date("Y")  :  $ANIO;
+		$month = is_null($MES)?  date("m") :  $MES;
 
 		if ($this->request->getMethod(true) == "POST") {
 			$parametros = $this->request->getRawInput();
@@ -129,7 +185,40 @@ class Retencion extends ResourceController {
 
 
 
-	public  function  total_($cod_cliente)
+	public  function  total_mes($cod_cliente, $mes, $anio)
+	{ 
+		$this->API_MODE =  $this->isAPI();
+		$reten = (new Retencion_model())->where("codcliente", $cod_cliente);
+		$lista_co = [];
+
+		//Segun los parametros
+		//Parametros: mes y anio 
+		$year = is_null($anio)?  date("Y") :   $anio;
+		$month = is_null($mes) ? date("m") :  $mes; 
+		$lista_co = $reten->where("year(fecha)", $year)
+		->where("month(fecha)", $month)
+		->select('if(  sum(importe) is null, 0,   sum(importe)  ) as importe')
+		->first();
+		return $lista_co;
+	}
+
+
+	public  function  total_anio($cod_cliente, $anio= NULL)
+	{ 
+		 
+		$reten = (new Retencion_model())->where("codcliente", $cod_cliente);
+		$lista_co = [];
+		//Segun los parametros
+		//Parametros: mes y anio 
+		$year = is_null($anio)?  date("Y") :   $anio; 
+		$lista_co = $reten->where("year(fecha)", $year)
+		->select('if(  sum(importe) is null, 0,   sum(importe)  ) as importe')
+		->first();
+		return $lista_co;
+	}
+
+
+	public  function  total_($cod_cliente,  $MES= NULL,  $ANIO=  NULL)
 	{
 		$request = \Config\Services::request();
 		$this->API_MODE =  $this->isAPI();
@@ -139,8 +228,9 @@ class Retencion extends ResourceController {
 		//Segun los parametros
 		//Parametros: mes y anio
 		$parametros = [];
-		$year = date("Y");
-		$month = date("m");
+		$year =  is_null( $ANIO) ?  date("Y") :  $ANIO;
+		$month =  is_null($MES) ?  date("m") :  $MES;
+
 		if ($request->getMethod(true) == "POST") {
 			$parametros = $this->request->getRawInput();
 			$month = isset($parametros['month'])  ? $parametros['month'] : $month;
@@ -171,52 +261,7 @@ class Retencion extends ResourceController {
 
 
 	
-	public  function  total_anio(  $inArray= false){
-		$request = \Config\Services::request();
-		$this->API_MODE=  $this->isAPI();
 	
-		$compras= (new Retencion_model());
-	
-		$lista_co=[];
-	
-			if ($this->API_MODE) {
-				
-				$sesion = is_null($request->getHeader('Ivasession')) ? "" :  $request->getHeader('Ivasession')->getValue();
-				//idS de usuario
-				$usunow= (new Usuario_model())->where( "session_id", $sesion)->first();
-				$ruc=  $usunow->ruc;
-				$dv=  $usunow->dv;
-				$codcliente=  $usunow->regnro;
-				//**********/ 
-				$lista_co = $compras->where("dv", $dv)
-				->where("ruc", $ruc) 
-				->where("codcliente", $codcliente)  ;
-			} else {
-				$lista_co = $compras->where("ruc", session("ruc"))
-				->where("dv", session("dv"))
-				->where("codcliente", session("id"));
-			}
-			//Segun los parametros
-			//Parametros: mes y anio
-			$parametros = [];
-			$year = date("Y"); 
-	
-		 
-			if ($request->getMethod(true) == "POST") {
-				$parametros = $this->request->getRawInput(); 
-				$year =  isset(  $parametros['year']) ? $parametros['year'] : $year;
-			}
-			$lista_co = $lista_co->where("year(fecha)", $year) 
-			->select('if(  sum(importe) is null, 0,   sum(importe)  ) as importe') 
-			->first();
-			$response=  \Config\Services::response();
-			if( $inArray)
-			return $lista_co;
-			else
-			return $response->setJSON(   $lista_co);
-	}
-
-
 
 
    
@@ -429,7 +474,7 @@ class Retencion extends ResourceController {
 		$params=  $this->request->getRawInput();
 		$Mes= $params['month']; 
 		$Anio=  $params['year'];
-		$Cliente= session("id");
+		$Cliente=  (  array_key_exists("cliente",  $params) )  ?  $params['cliente']  : session("id");
 
 		$lista=	(new Retencion_model())
 		->where("codcliente",   $Cliente)
@@ -437,7 +482,7 @@ class Retencion extends ResourceController {
 		->where(" month( fecha) ",  $Mes)->get()->getResult(); 
 
 		
-		if($tipo== "PDF") return  $this->pdf( $lista);
+		if($tipo== "PDF") return  $this->pdf( $lista, $Cliente);
 		if($tipo == "JSON") return $this->response->setJSON(   $lista ); 
 		}catch( Exception $e)
 		{return $this->response->setJSON(  [] ); }
@@ -445,7 +490,7 @@ class Retencion extends ResourceController {
 
 
 
-public function pdf( $lista){ 
+public function pdf( $lista, $CLIENTE= NULL){ 
 	 
 	 
 	$html=<<<EOF
@@ -471,6 +516,7 @@ public function pdf( $lista){
 	<table class="tabla">
 	<thead >
 	<tr class="header">
+	<th style="text-align:center;">FECHA</th>
 	<th style="text-align:center;">COMPROBANTE</th>
 	<th style="text-align:right;">IMPORTE</th>
 	</tr>
@@ -481,25 +527,27 @@ public function pdf( $lista){
 	$t_importe=0;
 
 	foreach( $lista as $row){
+		$fecha= Utilidades::fecha_f( $row->fecha );
 		$comprobante= Utilidades::formato_factura( $row->retencion );
+		 
 		$importe= Utilidades::number_f( $row->importe ); 
 
 		$t_importe= intval(  $row->importe); 
 
-		$html.="<tr> <td style=\"text-align:center;\">$comprobante</td> <td style=\"text-align:right;\" >$importe</td>    </tr>";
+		$html.="<tr>  <td style=\"text-align:center;\">$fecha</td> <td style=\"text-align:center;\">$comprobante</td> <td style=\"text-align:right;\" >$importe</td>    </tr>";
 	}
 	$t_importe= Utilidades::number_f( $t_importe); 
 
 	//totales
-	$html.="<tr class=\"footer\"> <td style=\"text-align:center;\">Totales</td> <td style=\"text-align:right;\" >$t_importe</td>  </tr>";
+	$html.="<tr class=\"footer\"> <td></td> <td style=\"text-align:center;\">Totales</td> <td style=\"text-align:right;\" >$t_importe</td>  </tr>";
 
 	$html.="</tbody> </table> ";
 	/********* */
-
+ 
 	$tituloDocumento= "Retencion-".date("d")."-".date("m")."-".date("yy");
  
 		$pdf = new PDF(); 
-		$Cliente= session("id");
+		$Cliente=  is_null($CLIENTE) ? session("id")  :  $CLIENTE;
 		$RUCCLIENTE= (new Usuario_model())->where("regnro", $Cliente)->first();
 		$TITULO_DOCUMENTO=  "RUC:". $RUCCLIENTE->ruc."-".$RUCCLIENTE->dv." (RETENCIONES)";
 		$pdf->prepararPdf("$tituloDocumento.pdf",  $TITULO_DOCUMENTO , ""); 

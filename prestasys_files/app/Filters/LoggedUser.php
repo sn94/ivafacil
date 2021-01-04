@@ -29,15 +29,16 @@ class LoggedUser implements FilterInterface
         $usu= new Usuario_model();
         $request = \Config\Services::request();
         $IVASESSION= is_null($request->getHeader("Ivasession")) ? "" :  $request->getHeader("Ivasession")->getValue();
-        $res= $usu->where( "session_id",  $IVASESSION )->first();
+        $res= $usu->where( "session_id", $IVASESSION )->first();
      
-    
+        
 		if( is_null( $res) ) return false;
-		else{
+		else{ 
 			// return true;
 				//recuperar sesion si es valida
 				$hoy= strtotime(  date(  "Y-m-d H:i:s")  );
-				$expir=  strtotime(  $res->session_expire);
+                $expir=  strtotime(  $res->session_expire);
+               
 				return (  $hoy <=  $expir ) ;
 			 
 		}

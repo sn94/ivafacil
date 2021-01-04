@@ -90,7 +90,8 @@
                         <button type="submit" class="btn btn-success btn-flat m-b-30 m-t-30">INGRESAR</button>
                         <div class="checkbox">
                             <label>
-                                <input <?= isset($remember) ? 'checked' : '' ?> type="checkbox" name="remember" value="S"> <span style="font-weight: 600;color: #555555;">Recordar Número de RUC o contraseña</span>
+                                <input onchange="olvidar(event)" <?= isset($remember) ? 'checked' : '' ?> type="checkbox" name="remember" value="S"> 
+                                <span style="font-weight: 600;color: #555555;">Recordar Número de RUC y contraseña</span>
                             </label>
                             <label class="pull-right">
                                 <a style="color: #fd4040; font-weight: 600;" href="<?=base_url("usuario/olvido-password")?>">Olvidaste tu contraseña?</a>
@@ -113,6 +114,17 @@
     <script src="<?= base_url("assets/template/assets/js/main.js") ?>"></script>
 
     <script>
+
+
+
+    function olvidar(  ev){
+
+        if( !ev.target.checked )
+        document.querySelector("input[name=pass]").value="";
+    }
+
+
+
         function obtener_dv(ev) {
             if (ev.target.value == "") document.querySelector("input[name=dv]").value = "";
 

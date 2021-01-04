@@ -29,7 +29,12 @@ use App\Helpers\Utilidades;
 
 <?= $this->section("contenido") ?>
 
+<?php 
 
+
+$SALDO=  isset( $saldo )?  Utilidades::number_f(   $saldo  ) :  0;
+
+?>
 
 <input type="hidden" id="info-totales" value="<?= base_url("usuario/totales") ?>">
 
@@ -43,7 +48,7 @@ use App\Helpers\Utilidades;
     <div class="col-12 offset-md-3 col-md-6 ">
         <div class="card">
             <div class="card-header">
-                <h4 class="text-center">Cierre del mes: <?= Utilidades::monthDescr(date("m")) ?>/<?= date("Y") ?></h4>
+                <h4 class="text-center">Actualizar saldo para el <?= date("Y") ?></h4>
             </div>
             <div class="card-body card-block p-0">
                 <form onsubmit="cerrar( event)" action="<?= base_url("usuario/actualizar-saldo") ?>" method="get" class="container">
@@ -54,7 +59,7 @@ use App\Helpers\Utilidades;
                             <label for="nf-password" class=" form-control-label form-control-sm -label">Saldo inicial:</label>
                         </div>
                         <div class="col-12 col-md-5">
-                            <input oninput="formatear_entero(event)" id="SALDO" style="border:none; border-bottom: 1px solid #092301 !important;" type="text" class=" text-right form-control form-control-label form-control-sm ">
+                            <input value="<?=$SALDO?>"   onfocus="if(this.value=='0') this.value='';" onblur="if(this.value=='') this.value='0';"   oninput="formatear_entero(event)" id="SALDO" style="border:none; border-bottom: 1px solid #092301 !important;" type="text" class=" text-right form-control form-control-label form-control-sm ">
                         </div>
                     </div>
                      <button type="submit"   style="font-size: 10px;font-weight: 600;"  class="btn btn-success btn-sm">
@@ -98,7 +103,7 @@ use App\Helpers\Utilidades;
         $("#loaderplace").html("");
         if ("data" in resp_json) {
             alert(resp_json.data);
-            window.location = "<?= base_url("cierres/v-cierre-mes") ?>";
+            window.location = "<?= base_url("cierres/view-cierre-mes") ?>";
         } else
             alert(resp_json.msj);
     }

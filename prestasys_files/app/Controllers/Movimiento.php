@@ -47,7 +47,11 @@ class Movimiento extends Controller {
 	 
 
 
-
+	public function informe_mes_(  $CLIENTE ){
+		return view("admin/clientes/movimientos/index",  ['CLIENTE'=>  $CLIENTE]);
+	}
+	
+	 
 
 
 	

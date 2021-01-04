@@ -42,7 +42,7 @@ $ultimo_nro = isset($usuario) ?     $usuario->ultimo_nro : "";
                         <label class=" form-control-label form-control-sm -label">RUC:</label>
                     </div>
                     <div class="col-5 col-md-6 pr-0">
-                        <input <?= (isset($OPERACION)  && $OPERACION == "M") ? "disabled" : "" ?> oninput="solo_numero(event);control_campo_vacio(event);" value="<?= $ruc ?>" maxlength="15" type="text" id="nf-email" name="ruc" class="  form-control form-control-label form-control-sm ">
+                        <input <?= (isset($OPERACION)  && $OPERACION == "M") ? "disabled" : "" ?> oninput="obtener_dv(event);control_campo_vacio(event);" value="<?= $ruc ?>" maxlength="15" type="text" id="nf-email" name="ruc" class="  form-control form-control-label form-control-sm ">
                         <p id="ruc" style="font-size: 11px;color: greenyellow;"></p>
                     </div>
                     <div class="col-1 col-md-1 pl-0 ">

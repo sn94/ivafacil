@@ -78,14 +78,89 @@ class Venta extends ResourceController {
 
 
 
+	private function isAdminView()
+	{
+		$request = \Config\Services::request();
+		$uri = $request->uri;
+		return (sizeof($uri->getSegments()) > 0  && $uri->getSegment(1) == "admin");
+	}
 
-	public function index(  $estado_ = "A")
+
+
+
+
+	
+	public function index_se(  $CLIENTE= NULL,  $MES= NULL,   $ANIO=   NULL,  $estado_ = "A")
+	{
+
+		$this->API_MODE =  $this->isAPI(); 
+
+		$ventas = (new Ventas_model());
+
+	
+		//Segun los parametros
+		//Parametros: mes y anio
+		$parametros = [];
+		$cliente=  $CLIENTE;
+		$year =   is_null($ANIO) ?  date("Y")  :  $ANIO;
+		$month = is_null($MES)?  date("m") :  $MES;
+		$estado= "A";
+
+		if ($this->request->getMethod(true) == "POST") {
+			$parametros = $this->request->getRawInput();
+			$cliente = isset($parametros['cliente'])  ? $parametros['cliente'] : $cliente;
+			$month = isset($parametros['month'])  ? $parametros['month'] : $month;
+			$year =  isset($parametros['year']) ? $parametros['year'] : $year;
+			if (array_key_exists("anulados",  $parametros))  $estado =  $parametros['anulados'];
+			else 	$estado = $estado_;
+		} else {
+			$estado = $estado_;
+		}
+		$lista_co =  $ventas
+		->where("codcliente", $cliente)->where("year(fecha)", $year)
+		->where("month(fecha)", $month)
+		->where("estado", $estado);
+
+		if ($this->API_MODE) {
+			$lista_co = $lista_co->get()->getResult();
+			return $this->respond(array("data" => $lista_co, "code" => 200));
+		} else {
+			$lista_pagi = $lista_co->paginate(10);
+
+			//Seleccionar vista
+			if( $this->isAdminView())
+			{$LaVista=  "admin/clientes/movimientos/grill_ventas";
+				if( $estado == "B")  $LaVista=  "admin/clientes/movimientos/grill_ventas_anuladas";
+				return view(  $LaVista,
+				  ['ventas' =>  $lista_pagi,
+				   'ventas_pager' => $lista_co->pager,
+				   'year'=> $year,
+				   'month'=> $month,
+				   'estado'=> $estado_,
+				   'CLIENTE'=>  $cliente ]
+				);}
+			else
+			{$LaVista=  "movimientos/informes/grill_ventas";
+				if( $estado == "B")  $LaVista=  "movimientos/informes/grill_ventas_anuladas";
+				return view(  $LaVista,
+				  ['ventas' =>  $lista_pagi,
+				   'ventas_pager' => $lista_co->pager,
+				   'year'=> $year,
+				   'month'=> $month,
+				   'estado'=> $estado_]
+				);}
+		}
+		
+	}
+
+
+
+
+	public function index(  $MES= NULL,   $ANIO=   NULL,  $estado_ = "A")
 	{
 
 		$this->API_MODE =  $this->isAPI();
-		$response = \Config\Services::response();
-
-		$ventas = (new Ventas_model());
+		$CLIENTE= NULL; 
 
 		$lista_co = [];
 
@@ -96,22 +171,16 @@ class Venta extends ResourceController {
 			$usunow = (new Usuario_model())->where("session_id", $sesion)->first();
 			$ruc =  $usunow->ruc;
 			$dv =  $usunow->dv;
-			$codcliente =  $usunow->regnro;
-			//**********/ 
-			$lista_co = $ventas->where("dv", $dv)
-			->where("ruc", $ruc)
-			->where("codcliente", $codcliente);
+			$CLIENTE =  $usunow->regnro; 
 		} else {
-			$lista_co = $ventas->where("ruc", session("ruc"))
-			->where("dv", session("dv"))
-			->where("codcliente", session("id"));
+			$CLIENTE= session("id");
 		} 
 
 		//Segun los parametros
 		//Parametros: mes y anio
 		$parametros = [];
-		$year = date("Y");
-		$month = date("m");
+		$year =   is_null($ANIO) ?  date("Y")  :  $ANIO;
+		$month = is_null($MES)?  date("m") :  $MES;
 		$estado= "A";
 
 		if ($this->request->getMethod(true) == "POST") {
@@ -123,29 +192,50 @@ class Venta extends ResourceController {
 		} else {
 			$estado = $estado_;
 		}
-		$lista_co = $lista_co->where("year(fecha)", $year)
-		->where("month(fecha)", $month)
-		->where("estado", $estado);
-
-		if ($this->API_MODE) {
-			$lista_co = $lista_co->get()->getResult();
-			return $this->respond(array("data" => $lista_co, "code" => 200));
-		} else {
-			$lista_pagi = $lista_co->paginate(10);
-
-			//Seleccionar vista
-			$LaVista=  "movimientos/informes/grill_ventas";
-			if( $estado_ == "B")  $LaVista=  "movimientos/informes/grill_ventas_anuladas";
-			return view(  $LaVista,
-			  ['ventas' =>  $lista_pagi,
-			   'ventas_pager' => $lista_co->pager,
-			   'year'=> $year,
-			   'month'=> $month,
-			   'estado'=> $estado_]
-			);
-		}
+		$lista_co = $this->index_se( $CLIENTE,  $month, $year, $estado );
+		 return  $lista_co;
 	}
 
+
+	public  function  total_mes($cod_cliente, $mes= NULL, $anio= NULL)
+	{
+		$ventas = (new Ventas_model())->where("codcliente", $cod_cliente);
+
+		$lista_co = [];
+
+		//Segun los parametros
+		//Parametros: mes y anio 
+		$year = is_null($anio)?  date("Y") :   $anio;
+		$month = is_null($mes) ? date("m") :  $mes; 
+		$lista_co = $ventas->where("year(fecha)", $year)
+		->where("month(fecha)", $month)
+		->select('if( sum(iva1) is null, 0,  sum(iva1) ) as iva1, if( sum(iva2) is null, 0,  sum(iva2) ) as iva2, if( sum(iva3) is null, 0,  sum(iva3) ) as iva3,
+		if( sum(importe1) is null, 0, sum(importe1) ) as total10, 
+		if( sum(importe2) is null, 0, sum(importe2) ) as total5,
+		if( sum(importe3) is null, 0, sum(importe3) ) as totalexe
+		')
+		->where("estado", "A")
+		->first(); 
+		return $lista_co;
+	}
+
+	public  function  total_anio($cod_cliente, $anio= NULL)
+	{ 
+		$ventas = (new Ventas_model())->where("codcliente", $cod_cliente);
+		$lista_co = [];
+		//Segun los parametros
+		//Parametros: mes y anio 
+		$year = is_null($anio)?  date("Y") :   $anio; 
+		$lista_co = $ventas->where("year(fecha)", $year) 
+		->select('if( sum(iva1) is null, 0,  sum(iva1) ) as iva1, if( sum(iva2) is null, 0,  sum(iva2) ) as iva2, if( sum(iva3) is null, 0,  sum(iva3) ) as iva3,
+		if( sum(importe1) is null, 0, sum(importe1) ) as total10, 
+		if( sum(importe2) is null, 0, sum(importe2) ) as total5,
+		if( sum(importe3) is null, 0, sum(importe3) ) as totalexe
+		')
+		->where("estado", "A")
+		->first(); 
+		return $lista_co;
+	}
 
 
 
@@ -195,89 +285,36 @@ class Venta extends ResourceController {
 	}
 
 
-	
-	public  function  total_anio( $commonObject= false){
-		$request = \Config\Services::request();
-		$this->API_MODE=  $this->isAPI();
-		$compras= (new Ventas_model());
-	
-		$lista_co=[];
-	
-			if ($this->API_MODE) {
-			
-				$sesion = is_null($request->getHeader('Ivasession')) ? "" :  $request->getHeader('Ivasession')->getValue();
-				//idS de usuario
-				$usunow= (new Usuario_model())->where( "session_id", $sesion)->first();
-				$ruc=  $usunow->ruc;
-				$dv=  $usunow->dv;
-				$codcliente=  $usunow->regnro;
-				//**********/ 
-				$lista_co = $compras->where("dv", $dv)
-				->where("ruc", $ruc) 
-				->where("codcliente", $codcliente)  ;
-			} else {
-				$lista_co = $compras->where("ruc", session("ruc"))
-				->where("dv", session("dv"))
-				->where("codcliente", session("id"));
-			}
-			//Segun los parametros
-			//Parametros: mes y anio
-			$parametros = [];
-			$year = date("Y"); 
-	
-		 
-			if ($request->getMethod(true) == "POST") {
-				$parametros = $this->request->getRawInput(); 
-				$year =  isset(  $parametros['year']) ? $parametros['year'] : $year;
-			}
-			$lista_co = $lista_co->where("year(fecha)", $year) 
-			->select('if( sum(iva1) is null, 0,  sum(iva1) ) as iva1, if( sum(iva2) is null, 0,  sum(iva2) ) as iva2, if( sum(iva3) is null, 0,  sum(iva3) ) as iva3 ')
-			->where("estado", "A")
-			->first();
-			$response=  \Config\Services::response();
-			if(  $commonObject)
-			return $lista_co;
-			else
-			return $response->setJSON(   $lista_co);
+
+
+
+
+	public  function  anuladas_($Cliente, $MES = NULL, $ANIO = NULL)
+	{
+		$ventas = (new Ventas_model());
+		$lista_co = $ventas->where("codcliente", $Cliente);
+
+		$year =  is_null($ANIO) ?  date("Y") : $ANIO;
+
+		$lista_co = $lista_co->where("year(fecha)", $year)
+		->select('count(regnro) as cantidad, sum(total) as total, sum(iva1+iva2+iva3) as total_iva')
+		->where("estado", "B");
+		if (!is_null($MES))
+		$lista_co =  $lista_co->where("month(fecha)",  $MES);
+
+		$lista_co =  $lista_co->first();
+		return $lista_co;
 	}
 
 
 
-	public  function  anuladas( $inArray= false){
-		$request = \Config\Services::request();
+
+	public  function  anuladas(  $MES= NULL, $ANIO= NULL){
+		$response = \Config\Services::response();
 		$this->API_MODE=  $this->isAPI();
-		$ventas= (new Ventas_model());
-	
-		$lista_co=[];
-	
-			if ($this->API_MODE) {
-			
-				$sesion = is_null($request->getHeader('Ivasession')) ? "" :  $request->getHeader('Ivasession')->getValue();
-				//idS de usuario
-				$usunow= (new Usuario_model())->where( "session_id", $sesion)->first();
-				$ruc=  $usunow->ruc;
-				$dv=  $usunow->dv;
-				$codcliente=  $usunow->regnro;
-				//**********/ 
-				$lista_co = $ventas->where("dv", $dv)
-				->where("ruc", $ruc) 
-				->where("codcliente", $codcliente)  ;
-			} else {
-				$lista_co = $ventas->where("ruc", session("ruc"))
-				->where("dv", session("dv"))
-				->where("codcliente", session("id"));
-			} 
-			$year = date("Y"); 
-	 
-			$lista_co = $lista_co->where("year(fecha)", $year) 
-			->select('count(regnro) as cantidad, sum(total) as total, sum(iva1+iva2+iva3) as total_iva')
-			->where("estado", "B")
-			->first();
-			$response=  \Config\Services::response();
-			if(  $inArray)
-			return $lista_co;
-			else
-			return $response->setJSON(   $lista_co);
+		$Cliente= $this->getClienteId();
+		$respuesta= $this->anuladas_(  $Cliente, $MES, $ANIO );
+		return $response->setJSON(   $respuesta);
 	}
 
 
@@ -560,7 +597,7 @@ class Venta extends ResourceController {
 		$params=  $this->request->getRawInput();
 		$Mes= $params['month']; 
 		$Anio=  $params['year'];
-		$Cliente= session("id");
+		$Cliente=   (  array_key_exists("cliente",  $params) )  ?  $params['cliente']  : session("id");
 		$estado= "A";
 		if( array_key_exists("anulados",  $params) )  $estado=  $params['anulados'];
 
@@ -572,7 +609,7 @@ class Venta extends ResourceController {
 		->get()->getResult(); 
 
 		
-		if($tipo== "PDF") return  $this->pdf( $lista);
+		if($tipo== "PDF") return  $this->pdf( $lista, $Cliente);
 		if($tipo == "JSON") return $this->response->setJSON(   $lista ); 
 		}catch( Exception $e)
 		{return $this->response->setJSON(  [] ); }
@@ -580,7 +617,7 @@ class Venta extends ResourceController {
 
 
 
-public function pdf( $lista){ 
+public function pdf( $lista, $CLIENTE= NULL){ 
 	 
 	 
 	$html=<<<EOF
@@ -606,6 +643,7 @@ public function pdf( $lista){
 	<table class="tabla">
 	<thead >
 	<tr class="header">
+	<th style="text-align:center;">FECHA</th>
 	<th style="text-align:center;">COMPROBANTE</th>
 	<th style="text-align:right;">EXENTA</th>
 	<th style="text-align:right;">5%</th>
@@ -618,6 +656,7 @@ public function pdf( $lista){
 	$t_exenta=0; $t_iva5= 0;  $t_iva10= 0;
 
 	foreach( $lista as $row){
+		$fecha= Utilidades::fecha_f( $row->fecha );
 		$comprobante= Utilidades::formato_factura( $row->factura );
 		$exenta= Utilidades::number_f( $row->importe3 );
 		$iva5= Utilidades::number_f( $row->importe2 );
@@ -627,14 +666,14 @@ public function pdf( $lista){
 		$t_iva5+= intval(  $row->importe2);
 		$t_iva10+= intval(  $row->importe1);
 
-		$html.="<tr> <td style=\"text-align:center;\">$comprobante</td> <td style=\"text-align:right;\" >$exenta</td> <td style=\"text-align:right;\">$iva5</td><td style=\"text-align:right;\">$iva10</td> </tr>";
+		$html.="<tr> <td style=\"text-align:center;\">$fecha</td>  <td style=\"text-align:center;\">$comprobante</td> <td style=\"text-align:right;\" >$exenta</td> <td style=\"text-align:right;\">$iva5</td><td style=\"text-align:right;\">$iva10</td> </tr>";
 	}
 	$t_exenta= Utilidades::number_f( $t_exenta);
 	$t_iva5= Utilidades::number_f( $t_iva5);
 	$t_iva10= Utilidades::number_f( $t_iva10);
 
 	//totales
-	$html.="<tr class=\"footer\"> <td style=\"text-align:center;\">Totales</td> <td style=\"text-align:right;\" >$t_exenta</td> <td style=\"text-align:right;\">$t_iva5</td><td style=\"text-align:right;\">$t_iva10</td> </tr>";
+	$html.="<tr class=\"footer\"> <td></td> <td style=\"text-align:center;\">Totales</td> <td style=\"text-align:right;\" >$t_exenta</td> <td style=\"text-align:right;\">$t_iva5</td><td style=\"text-align:right;\">$t_iva10</td> </tr>";
 
 	$html.="</tbody> </table> ";
 	/********* */
@@ -642,7 +681,7 @@ public function pdf( $lista){
 	$tituloDocumento= "IVA_Venta-".date("d")."-".date("m")."-".date("yy");
  
 		$pdf = new PDF(); 
-		$Cliente= session("id");
+		$Cliente=  is_null($CLIENTE) ? session("id")  :  $CLIENTE;
 		$RUCCLIENTE= (new Usuario_model())->where("regnro", $Cliente)->first();
 		$TITULO_DOCUMENTO=  "RUC:". $RUCCLIENTE->ruc."-".$RUCCLIENTE->dv." (VENTAS)";
 		$pdf->prepararPdf("$tituloDocumento.pdf",  $TITULO_DOCUMENTO , ""); 

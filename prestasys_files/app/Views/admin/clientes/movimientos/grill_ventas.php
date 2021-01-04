@@ -12,18 +12,19 @@ $ventas_t = 0;
 
 
 <script>
-    function descarga_archivo_ventas_a(ev) {
+    function descarga_archivo_ventas(ev) {
         let valor = ev.target.value;
-        if (valor == "PDF") $('#ventas-a-reports').submit();
+        if (valor == "PDF") $('#ventas-reports').submit();
         if (valor == "EXCEL") {
             let res_xls = "<?= base_url("venta/informes/JSON") ?>";
-            callToXlsGen_post_url(res_xls, 'IVA DÉBITO FISCAL', '#ventas-a-reports');
+            callToXlsGen_post_url(res_xls, 'IVA DÉBITO FISCAL', '#ventas-reports');
         }
     }
 </script>
-<form id="ventas-a-reports" method="POST" action="<?= base_url("venta/informes/PDF") ?>" target="_blank">
+<form id="ventas-reports" method="POST" action="<?= base_url("admin/clientes/ventas-informes/PDF") ?>" target="_blank">
+<input type="hidden" name="cliente"  value="<?=$CLIENTE?>">
     <!--cargar anios -->
-    <select onchange="$('#download-a-1').val('');informe_ventas_anuladas();" name="year" style="font-size: 11px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
+    <select onchange="$('#download-1').val('');informe_ventas();" name="year" style="font-size: 11px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
         <?php
         for ($m = 2019; $m <= date("Y"); $m++) {
             if ($year ==  $m)
@@ -35,7 +36,7 @@ $ventas_t = 0;
     </select>
 
     <!--cargar meses -->
-    <select onchange="$('#download-a-1').val('');informe_ventas();" name="month" style="font-size: 11px; border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
+    <select onchange="$('#download-1').val('');informe_ventas();" name="month" style="font-size: 11px; border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
         <?php
         for ($m = 1; $m <= 12; $m++) {
             $nom_mes = Utilidades::monthDescr($m);
@@ -47,11 +48,8 @@ $ventas_t = 0;
         ?>
     </select>
 
-    
-     <input  type="hidden" name="anulados" value="B"> 
-
-
-    <select id="download-a-1" onchange="descarga_archivo_ventas_a(event)" style="font-size: 11px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
+    <span>ANULADOS?&nbsp; <input onchange="$('#download-1').val('');informe_ventas();"  type="checkbox" name="anulados" value="B"> </span>
+    <select id="download-1" onchange="descarga_archivo_ventas(event)" style="font-size: 11px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
         <option value="">Descargar como..</option>
         <option value="PDF"> PDF</option>
         <option value="EXCEL">EXCEL</option>
@@ -113,4 +111,8 @@ $ventas_t = 0;
 <p style="color:black; font-weight: 600;font-size:11.5px;">Página(s)</p>
 <?= (sizeof($ventas) > 1) ? $ventas_pager->links() : '' ?>
 
- 
+<script>
+    async function filtrar_ventas() {
+
+    }
+</script>

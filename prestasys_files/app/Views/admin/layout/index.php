@@ -1,25 +1,4 @@
-<?php
-// FONDO DE PANTALLA PERSONALIZADO
 
-use App\Models\Admin_model;
-
-$wallpaper = "";
-if (session("id") != "") {
-    $_usu_ = (new Admin_model())->find(session("id"));
-    try {
-        if ($_usu_->fondo != "" &&  $_usu_->fondo != "none"  &&  !is_null($_usu_->fondo))
-            $wallpaper =  $_usu_->fondo;
-        else {
-            if ($_usu_->fondo == "")
-                $wallpaper = base_url('assets/img/papers.jpg');
-            else
-                $wallpaper = "none";
-        }
-    } catch (Exception $ex) {
-        $wallpaper = base_url('assets/img/papers.jpg');
-    };
-} else $wallpaper = base_url('assets/img/papers.jpg');
-?>
 <!doctype html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
@@ -81,25 +60,7 @@ if (session("id") != "") {
             color: #d5fec7 !important;
         }
     </style>
-    <style>
-        #right-panel {
-            background-image: url(<?= $wallpaper ?>) !important;
-            background-repeat: no-repeat;
-            background-size: cover;
-        }
-
-        .right-panel header.header {
-            margin-bottom: -10px;
-        }
-
-        html {
-            line-height: unset !important;
-            height: 100% !important;
-            background-image: url(<?= $wallpaper ?>) !important;
-            background-repeat: no-repeat;
-            background-size: cover;
-        }
-    </style>
+    
 </head>
 
 <body>

@@ -29,7 +29,13 @@ use App\Models\Parametros_model;
 
 
 
-<input type="hidden" id="info-totales" value="<?= base_url("cierres/totales-anio") ?>">
+
+
+
+
+
+
+<input type="hidden" id="info-totales" value="<?= base_url("cierres/totales-anio-session") ?>">
 
 <!-- Menu de Usuario -->
 
@@ -38,82 +44,30 @@ use App\Models\Parametros_model;
 <div class="row">
 
     <div id="loaderplace" class="col-12"></div>
+
+    <div class="col-12">
+        <!--cargar anios -->
+        <select onchange="totales_cierre(event)" name="year" style="font-size: 11px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
+            <?php
+            $year = date("Y");
+            foreach ($ANIOS as $m) {
+                if ($year ==  $m->anio)
+                    echo "<option selected value='$m->anio'>$m->anio</option>";
+                else
+                    echo "<option value='$m->anio'>$m->anio</option>";
+            }
+            ?>
+        </select>
+    </div>
     <div class="col-12 offset-md-3 col-md-6 ">
         <div class="card">
             <div class="card-header">
-                <h4 class="text-center">Resumen del año: <?= date("Y") ?></h4>
+                <h4 class="text-center">Resumen del año: <span id="ANIO-LABEL"><?= date("Y") ?></span> </h4>
             </div>
-            <div class="card-body card-block p-0">
-                <form action="" method="post" class="container">
-
-                    <div class="row form-group">
-
-
-
-                        <div class="col-12 col-md-6 pl-md-3 pl-0  ">
-                            <label for="nf-password" class=" form-control-label form-control-sm -label">
-                                (+)Saldo inicial:</label>
-                        </div>
-                        <div class="col-12 col-md-6 ">
-                            <input readonly type="text" id="saldo-inicial" class="text-right  form-control form-control-label form-control-sm ">
-                        </div>
-
-
-                        <div class="col-12 col-md-6 pl-md-3 pl-0">
-                            <label for="nf-password" class=" form-control-label form-control-sm -label">Total Compras:</label>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <input readonly type="text" id="t_compras" name="t_compras" class="text-right  form-control form-control-label form-control-sm ">
-                        </div>
-
-                        <div class="col-12 col-md-6 pl-md-3 pl-0">
-                            <label for="nf-password" class=" form-control-label form-control-sm -label">Total Ventas:</label>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <input readonly type="text" id="t_ventas" class=" text-right form-control form-control-label form-control-sm ">
-                        </div>
-
-
-                        <div class="col-12 col-md-6 pl-md-3 pl-0">
-                            <label for="nf-password" class=" form-control-label form-control-sm -label">Total Retenciones:</label>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <input readonly type="text" id="t_retencion" name="t_retencion" class="text-right  form-control form-control-label form-control-sm ">
-                        </div>
-
-
-
-
-
-                        
-
-                        <div class="col-12 col-md-6 pl-md-3 pl-0 bg-dark text-light pt-1">
-                            <label for="nf-password" class=" form-control-label form-control-sm -label"> Saldo:</label>
-                        </div>
-                        <div class="col-12 col-md-6 bg-dark text-light pt-1">
-                            <input readonly type="text" id="saldo" class=" text-right form-control form-control-label form-control-sm ">
-                        </div>
-                        <!--facturas anuladas -->
-
-                        <?php
-
-                        $Parametro_Mensaje_ = (new Parametros_model())->first();
-                        $MSJ_PANT_CIERRE_A =  !(is_null($Parametro_Mensaje_)) ? $Parametro_Mensaje_->MSJ_PANT_CIERRE_A :  "";
-                        if ($MSJ_PANT_CIERRE_A !=  "") :
-                        ?>
-                            <div class="col-12">
-                                <p style="color: #026804; font-weight: 600;"> <?= $MSJ_PANT_CIERRE_A ?></p>
-                            </div>
-
-                        <?php endif; ?>
-                    </div>
-
-
-
-
-                </form>
+            <div class="card-body card-block p-0" id="CIERRE-ANIO">
+                <?= view("movimientos/resumen_anio_form") ?>
             </div>
-            <div class="card-footer">
+            <div class="card-footer" id="BOTON-CERRAR-AREA">
 
                 <a onclick="cerrar( event)" style="font-size: 10px;font-weight: 600;" href="<?= base_url("cierres/cierre-anio") ?>" class="btn btn-success">
                     <i class="fa fa-dot-circle-o"></i> CERRAR EL AÑO
@@ -137,13 +91,27 @@ use App\Models\Parametros_model;
         $("#saldo-anterior").val(dar_formato_millares(resp_json.data));
     }
 
-    async function totales_cierre() {
+    async function totales_cierre(ev) {
+
+
+        let ejercicio = "<?= date("Y") ?>";
+        if (ev != undefined) ejercicio = ev.target.value;
+
 
         let loader = "<img style='z-index: 400000;position: absolute;top: 50%;left: 50%;'  src='<?= base_url("assets/img/loader.gif") ?>'   />";
         $("#loaderplace").html(loader);
-        let req = await fetch($("#info-totales").val());
+        let resource = $("#info-totales").val() + "/" + ejercicio
+        let req = await fetch(resource);
         let resp_json = await req.json();
+
         $("#loaderplace").html("");
+        $("#ANIO-LABEL").text(ejercicio);
+        //ocultar boton de cierre
+        if (parseInt((new Date()).getFullYear()) == ejercicio)
+            $("#BOTON-CERRAR-AREA").removeClass("d-none");
+        else
+            $("#BOTON-CERRAR-AREA").addClass("d-none");
+
         let saldo_ini = parseInt(resp_json.saldo_inicial);
         let compras = parseInt(resp_json.compras);
         let ventas = parseInt(resp_json.ventas);
@@ -165,7 +133,7 @@ use App\Models\Parametros_model;
         $("#s_contri").val(dar_formato_millares(s_contri));
 
         //Anuladas
-     /*   let total_fv_cant = resp_json.ventas_anuladas_cant;
+        /*   let total_fv_cant = resp_json.ventas_anuladas_cant;
         let total_fv_monto = resp_json.ventas_anuladas_tot;
         let total_fv_iva = resp_json.ventas_anuladas_iva;
         $("#total-fv-anuladas").val(dar_formato_millares(total_fv_cant));
