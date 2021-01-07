@@ -88,7 +88,7 @@ Bienvenido
 
 
                 <div class="container" style="border-radius: 15px 15px 0px 0px; background-color: #d1d1d1;">
-                    <h4 class="text-center">INFORMACIÓN DE CLIENTE</h4>
+                    <h3 class="text-center">INFORMACIÓN DE CLIENTE</h3>
                 </div>
 
                 <div class="container pt-1" style="border: 1px solid #d1d1d1;">

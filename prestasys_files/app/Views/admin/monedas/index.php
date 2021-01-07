@@ -70,7 +70,7 @@ Bienvenido
         </div>
     </div>
 
-    <h4 class="text-center mb-2">MONEDAS</h4>
+    <h3 class="text-center mb-2">MONEDAS</h3>
 
     <button type="button" class="btn btn-dark btn-sm" onclick="cargar_form()">NUEVO</button>
     <div id="tabla-monedas">

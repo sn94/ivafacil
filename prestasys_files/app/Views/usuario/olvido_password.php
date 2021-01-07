@@ -76,11 +76,11 @@
 
 
                         <div class="row mb-1" id="login-form">
-                            <div class="col-1 col-md-1 ">
+                            <div class="col-12 col-md-1 ">
                                 <label style="font-weight: 600;color: #555555;">Email:</label>
                             </div>
-                            <div class="col-6 col-md-8">
-                                <input placeholder="" maxlength="120" type="text" name="email" class="  form-control form-control-label   ">
+                            <div class="col-12 col-md-8">
+                                <input placeholder="Escriba aquí su email" maxlength="120" type="text" name="email" class="  form-control form-control-label   ">
                             </div>
                             <div class="col-12">
                                 <button type="submit" class="btn btn-success btn-flat m-b-30 m-t-30">Recuperar</button>

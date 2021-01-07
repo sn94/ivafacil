@@ -6,7 +6,7 @@
 
          <div class="col-12 col-md-6 pl-md-3 pl-0  ">
              <label for="nf-password" class=" form-control-label form-control-sm -label">
-                 (+)Saldo inicial:</label>
+                 Saldo inicial:</label>
          </div>
          <div class="col-12 col-md-6 ">
              <input readonly type="text" id="saldo-inicial" class="text-right  form-control form-control-label form-control-sm ">

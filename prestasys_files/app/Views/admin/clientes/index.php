@@ -70,7 +70,7 @@ Bienvenido
         </div>
     </div>
 
-    <h4 class="text-center mb-2">CLIENTES</h4>
+    <h3 class="text-center mb-2">CLIENTES</h3>
 
     <a class="btn btn-dark btn-sm mb-3" href="<?= base_url("admin/clientes/create") ?>">NUEVO</a>
 

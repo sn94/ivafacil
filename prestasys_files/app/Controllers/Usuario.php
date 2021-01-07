@@ -12,7 +12,8 @@ use App\Models\Pago_model;
 use App\Models\Parametros_model;
 use App\Models\Planes_model;
 use App\Models\Rubro_model;
-use App\Models\Usuario_model; 
+use App\Models\Usuario_model;
+use CodeIgniter\HTTP\Response;
 use CodeIgniter\RESTful\ResourceController;
 use CodeIgniter\Session\Session;
 use Exception;
@@ -156,6 +157,75 @@ class Usuario extends ResourceController {
 		else 
 		return view("admin/clientes/index", ['clientes'=> $lista_m, 'pager'=> $pager   ]);
 	 }
+
+
+
+	public function  novedades()
+	{
+		$res = $this->list_priority_("");
+		if (sizeof($res)  >  0)
+		return $this->response->setJSON(['data' => "Hay novedades",  'code' => '200']);
+		else
+		return $this->response->setJSON(['msj' => "Nada",  'code' => '500']);
+	}
+
+
+
+	 private function list_priority_( $argumento){
+		$sql_str=
+		"
+		SELECT `usuarios`.*,
+if( (select DATEDIFF( CURRENT_TIMESTAMP, pagos.validez) from pagos where pagos.ruc = usuarios.ruc and pagos.dv=usuarios.dv order by pagos.fecha DESC limit 1) >=0, 1, 0) as vencido,
+(select DATEDIFF( CURRENT_TIMESTAMP, pagos.validez) from pagos where pagos.ruc = usuarios.ruc and pagos.dv=usuarios.dv order by pagos.fecha DESC limit 1 ) as diasvenci, 
+IF( (select estado_mes.regnro from estado_mes where estado_mes.codcliente= usuarios.regnro and estado_mes.estado='C' order by created_at desc limit 1) IS NULL, 0, 1) AS novedad_c_mes,
+IF( (select estado_anio.regnro from estado_anio where estado_anio.codcliente= usuarios.regnro and estado_anio.estado='C' order by created_at desc limit 1) IS NULL, 0, 1) AS novedad_c_anio 
+FROM `usuarios` 
+			"
+	;
+
+	//fILTRAR
+	if ($argumento !=  "") {
+		$sql_str = 	$sql_str . "   where  usuarios.ruc like '%$argumento%'  or usuarios.cedula like '%$argumento%'  or usuarios.cliente like  '%$argumento%'  ";
+	}
+	//order by
+	$sql_str = $sql_str . "
+ORDER BY
+ (select DATEDIFF( CURRENT_TIMESTAMP, pagos.validez) from pagos 
+ where pagos.ruc = usuarios.ruc and pagos.dv=usuarios.dv order by pagos.fecha DESC limit 1) DESC,
+ 
+ IF( (select estado_mes.regnro from estado_mes where estado_mes.codcliente= usuarios.regnro and estado_mes.estado='C' order by created_at desc limit 1) IS NULL, 0 , 1) ,
+
+	IF( (select estado_anio.regnro from estado_anio where estado_anio.codcliente= usuarios.regnro and estado_anio.estado='C' order by created_at desc limit 1) IS NULL , 0 , 1) DESC
+
+	limit 0, 15
+	";
+	 
+
+	$db = \Config\Database::connect();
+	$query = $db->query( $sql_str);
+	$lista_m=  $query->getResult();
+	return  $lista_m;
+	 }
+
+
+	 public function list_priority(){
+
+		/**Parametros POST */
+		$argumento= "";
+		if(  $this->request->getMethod( true )  ==  "POST"){
+			$data=  $this->request->getRawInput();
+			$argumento=  $data['argumento'];
+		}
+		$lista_m=  $this->list_priority_( $argumento);
+//$lista_m = $usu->paginate(10);
+//		$pager =  $usu->pager;
+		if( $this->request->isAJAX())
+		return view("admin/clientes/list", ['clientes'=>  $lista_m ]);
+		else 
+		return view("admin/clientes/index", ['clientes'=> $lista_m  ]);
+		
+	 }
+
 
 
 
@@ -866,87 +936,12 @@ dv
 		}
 	}
 
-	public function list_pagos($id)
-	{
-		$pagos =	(new Pago_model())->where("cliente",  $id)
-			->select(" pagos.regnro, pagos.comprobante, pagos.fecha, pagos.created_at, planes.descr as plan")
-			->join(
-				"planes",
-				"planes.regnro=pagos.plan"
-			);
-		$lista_m = $pagos->paginate(10);
-		$pager =  $pagos->pager;
-
-		return view("admin/clientes/grill_pagos",  ['pagos' =>  $lista_m, "pager" =>  $pager]);
-	}	
-
-	public function pagar(  $id= null){
-
-		if( $this->request->getMethod( true) == "GET")
-		return view( "admin/clientes/pagos", ['CLIENTE'=>  $id]);
-		else 
-		{
-			$data_req = $this->request->getRawInput();
-			$Cliente_cod = $data_req['cliente'];
-			$Cliente_datos = (new Usuario_model())->find($Cliente_cod);
-			$PlanDatos= (new Planes_model())->find(  $Cliente_datos->tipoplan);
-			//CALCULO DE FECHA CADUCIDAD PRUEBA GRATIS
-			$DIASPLAN = $PlanDatos->dias;
-			$validez = date("Y-m-d H:i:s",  strtotime(date("Y-m-d H:i:s") . " + $DIASPLAN days"));
-			$datos_plus = [
-			 
-				"validez" =>  $validez,
-				"plan" => $Cliente_datos->tipoplan, 
-				"precio" => $PlanDatos->precio,
-			];
-			$datos= array_merge( $data_req, $datos_plus );
-			$pago = new Pago_model();
-			//transaccion
-			$db = \Config\Database::connect();
-
-			$db->transStart();
-			try {
-				$pago->insert($datos);
-				$db->transCommit();
-				return $this->response->setJSON(['data' => "REGISTRADO",  'code' => "200"]);
-			} catch (Exception $ex) {
-				$db->transRollback();
-				return $this->response->setJSON(['msj' => "$ex",  'code' => "500"]);
-			}
-			$db->transComplete();
-		
-
-		}
-	}
+ 	
  
-
 	   
 	 
 
-
-	/**
-	 * recordatorio de pago
-	 */
-	public function email_recordar_pago( $CODCLIENTE= NULL){
-		/*******Envio de correo */
-		$Cliente= (new Usuario_model())->find( $CODCLIENTE);
-		
-		$destinatario=  $Cliente->email;
-
-		//obtener fecha de vencimiento del plan segun ultimo pago
-		$ultimopago= (new Pago_model())->where("cliente", $CODCLIENTE)->orderBy("created_at", "DESC")->first();
-		$vencimiento=  $ultimopago->validez;
-		$dest=  $destinatario == "" ? $this->request->getRawInput("email") :  $destinatario;
-		//parametro
-		$parametros= ['vencimiento'=>  $vencimiento ];
-		$correo= new Correo();
-		$correo->setDestinatario( $dest);
-		$correo->setAsunto("Recordatorio de pago");
-		$correo->setParametros( $parametros );
-		$correo->setMensaje(   "usuario/recordatorio_email" );
-		$correo->enviar();
-		/********* */
-	}
+ 
 
 
 

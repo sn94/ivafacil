@@ -56,3 +56,26 @@ if (session("id") != "") {
 <?= $this->section("contenido") ?>
 <h4 class="text-center mt-5" style="background-color: #ffffff90;">Bienvenido</h4>
 <?= $this->endSection() ?>
+
+
+<?= $this->section("scripts") ?>
+<script>
+    if ('serviceWorker' in navigator) {
+ 
+                window.addEventListener('load', function() {
+                    navigator.serviceWorker.register('/ivafacil/sw_novedades_clientes.js', {
+                        scope: "/ivafacil/admin/"
+                    }).then(function(registration) {
+                        // Registration was successful
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    }, function(err) {
+                        // registration failed :(
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+                });
+           
+        } else {
+            alert("No soportado");
+        }
+</script>
+<?= $this->endSection() ?>

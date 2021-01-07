@@ -91,7 +91,7 @@ Bienvenido
                     <div class="container-fluid">
                         <div class="card">
                             <div class="card-header">
-                                <h4 class="text-center">Parámetros</h4>
+                                <h3 class="text-center">Parámetros</h3>
                             </div>
                             <div class="card-body card-block p-3">
                                 <div class="row form-group">

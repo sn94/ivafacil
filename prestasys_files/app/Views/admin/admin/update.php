@@ -83,7 +83,13 @@ Bienvenido
 
                  <div class="card">
                      <div class="card-header">
-                         <h4 class="text-center">Usuario Administrador</h4>
+                         <h3 class="text-center">
+                             <?=  isset($administrador) ? 
+                             ( $administrador->regnro == session("id") ?  "Mis datos" : " Usuario Administrador")
+                             : "Usuario administrador"
+                            ?>
+                            
+                            </h3>
                      </div>
                      <div class="card-body card-block p-2">
                          <div class="row form-group">

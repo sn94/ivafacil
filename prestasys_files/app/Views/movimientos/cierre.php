@@ -168,7 +168,9 @@ use App\Models\Parametros_model;
         let saldo_a = parseInt(resp_json.saldo_anterior);
 
         let saldo = parseInt(resp_json.saldo) + saldo_a;
-        let saldo_descri = (s_fisco > s_contri) ? "a favor del fisco " : "a favor del contribuyente";
+        let saldo_descri =
+         (s_fisco > s_contri) ? "a favor del fisco " :
+          (  (s_fisco < s_contri) ? "a favor del contribuyente" : (  s_fisco==0 ?  "-" :  "IVA C,F = IVA D.F")     );
 
 
 
@@ -200,8 +202,10 @@ use App\Models\Parametros_model;
             $("#saldo-row").addClass("table-success");
             $("#saldo-descri").css("color", "green");
         } else {
+            if (s_fisco < (s_contri+saldo_a)  ) {
             $("#saldo-row").addClass("table-danger");
             $("#saldo-descri").css("color", "red");
+            }
         }
 
     }

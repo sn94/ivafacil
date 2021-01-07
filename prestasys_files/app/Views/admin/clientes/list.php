@@ -33,8 +33,10 @@ $adaptativo = new Mobile_Detect();
 
         use App\Helpers\Utilidades;
 
-        foreach ($clientes as $mo) : ?>
-            <tr    class=" <?= $mo->vencido == "1" ?  "pb-0 table-danger"   :  "pb-0" ?>"  >
+        foreach ($clientes as $mo) : 
+        
+        ?>
+            <tr   class= "<?=  $mo->vencido == "1" ?  "pb-0 table-danger"   :  "pb-0"  ?>"   >
 
                 <td>
                     <div class="dropdown">
@@ -60,14 +62,14 @@ $adaptativo = new Mobile_Detect();
 
 
                 <td class="pb-0">
-                    <?php if ($mo->vencido == "1") : ?>
+                <?php  if ($mo->vencido == "1") : ?>
                  
-                        <a onclick="recordar_pago( event);" class="btn btn-danger btn-sm" href="<?=base_url("admin/recordar-pago/".$mo->regnro)?>">
-                         Recordatorio de pago
-                         </a>
-                    <?php else : ?>
-                        Al día
-                    <?php endif; ?>
+                 <a onclick="recordar_pago( event);" class="btn btn-danger btn-sm" href="<?=base_url("admin/recordar-pago/".$mo->regnro)?>">
+                  Recordatorio de pago
+                  </a>
+             <?php else : ?>
+                 Al día
+             <?php endif; ?>
 
                 </td>
 
@@ -92,7 +94,7 @@ $adaptativo = new Mobile_Detect();
 
 
 
-<?= $pager->links() ?>
+<?=  isset($pager) ?   $pager->links() :  ""  ?>
 
 <script>
 

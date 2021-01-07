@@ -63,6 +63,9 @@
                  <?= view("plantillas/message") ?>
 
              </div>
+             <div class="col-12">
+                 <h3>Nuevo</h3>
+             </div>
              <div class="col-12  p-0 ">
 
                  <div class="container-fluid m-0 p-0">

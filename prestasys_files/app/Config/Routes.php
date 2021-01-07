@@ -111,10 +111,9 @@ $routes->post('/admin/planes/create', 'Planes::create');
 $routes->get('/admin/planes/update/(:num)', 'Planes::update/$1'); 
 $routes->post('/admin/planes/update', 'Planes::update'); 
 $routes->get('/admin/planes/delete/(:num)', 'Planes::delete/$1'); 
-
-
-$routes->get('/admin/clientes', 'Usuario::list'); 
-$routes->post('/admin/clientes', 'Usuario::list'); 
+//admin clientes cruds
+$routes->get('/admin/clientes', 'Usuario::list_priority'); 
+$routes->post('/admin/clientes', 'Usuario::list_priority'); 
 $routes->get('/admin/clientes/create', 'Usuario::create'); 
 $routes->post('/admin/clientes/create', 'Usuario::create'); 
 $routes->get('/admin/clientes/update/(:num)', 'Usuario::update/$1');
@@ -143,7 +142,9 @@ $routes->post('/admin/clientes/pagos', 'Pagos::create');
 $routes->get("/admin/clientes/list-pagos/(:num)",  'Pagos::index/$1');
 $routes->get("/admin/clientes/list-pagos/(:num)/(:num)/(:num)",  'Pagos::index/$1/$2/$3');
 $routes->post("/admin/clientes/informes/(:alpha)/(:num)",  'Pagos::informes/$1/$2');
- 
+//admin clientes novedades
+$routes->get('/admin/clientes/novedades', 'Usuario::novedades'); 
+ //admin cierres
 $routes->get('/admin/cierre-mes/(:num)', 'Cierres::info_mes_cierre/$1'); 
 $routes->get('/admin/cierre-mes/(:num)/(:num)/(:num)', 'Cierres::info_mes_cierre/$1/$2/$3'); 
 $routes->get('/admin/estados-mes/(:num)/(:num)/(:num)', 'Cierres::resumen_mes/$1/$2/$3'); 

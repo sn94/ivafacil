@@ -56,11 +56,11 @@ Bienvenido
 
 
     <div id="message-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-md">
+        <div class="modal-dialog modal-sm">
             <div class="modal-content p-0">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel"></h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <div class="modal-header p-0">
+                    
+                    <button  type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -70,7 +70,7 @@ Bienvenido
         </div>
     </div>
 
-    <h4 class="text-center mb-2">PLANES</h4>
+    <h3 class="text-center mb-2">PLANES</h3>
 
     <button type="button" class="btn btn-dark btn-sm" onclick="cargar_form()">NUEVO</button>
     <div id="tabla-planes">

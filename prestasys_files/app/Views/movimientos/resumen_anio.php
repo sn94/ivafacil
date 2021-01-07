@@ -45,9 +45,9 @@ use App\Models\Parametros_model;
 
     <div id="loaderplace" class="col-12"></div>
 
-    <div class="col-12">
+    <div  class="col-12 offset-md-3 col-md-6 " >
         <!--cargar anios -->
-        <select onchange="totales_cierre(event)" name="year" style="font-size: 11px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
+        <select onchange="totales_cierre(event)" name="year" style="font-size: 15px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
             <?php
             $year = date("Y");
             foreach ($ANIOS as $m) {

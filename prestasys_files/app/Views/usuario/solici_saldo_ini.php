@@ -65,7 +65,7 @@ $SALDO=  isset( $saldo )?  Utilidades::number_f(   $saldo  ) :  0;
                      <button type="submit"   style="font-size: 10px;font-weight: 600;"  class="btn btn-success btn-sm">
                     <i class="fa fa-dot-circle-o"></i> GUARDAR
                      </button>
-                <a style="font-size: 10px;font-weight: 600;" href="<?= base_url("cierres/v-cierre-mes") ?>" class="btn btn-warning btn-sm">
+                <a style="font-size: 10px;font-weight: 600;" href="<?= base_url("cierres/view-cierre-mes") ?>" class="btn btn-warning btn-sm">
                     <i class="fa fa-dot-circle-o"></i> OMITIR
                 </a>
                 </form>

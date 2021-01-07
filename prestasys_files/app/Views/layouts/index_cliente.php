@@ -1,4 +1,3 @@
-
 <!doctype html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
@@ -32,10 +31,29 @@
                 };
                 String.prototype.replaceAll = replaceAll;
             }
-        } 
+        }
         replaceAll_compat();
     </script>
     <style>
+        @import url("<?= base_url('assets/Marvel-Regular.ttf') ?>");
+
+        @font-face {
+            font-family: "mainfont";
+            src: url("<?= base_url('assets/Marvel-Regular.ttf') ?>");
+
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h4,
+        h5,
+        h6 {
+            font-family: mainfont;
+        }
+
+
         .navbar,
         aside.left-panel {
             background-image: url(<?= base_url("assets/ivax/assets/images/homebg2.jpg") ?>);
@@ -62,7 +80,7 @@
     </style>
 
 
- 
+
 
 
 </head>

@@ -1,4 +1,3 @@
-
 <!doctype html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
@@ -36,6 +35,24 @@
         replaceAll_compat();
     </script>
     <style>
+        @import url("<?= base_url('assets/Marvel-Regular.ttf') ?>");
+
+        @font-face {
+            font-family: "mainfont";
+            src: url("<?= base_url('assets/Marvel-Regular.ttf') ?>");
+
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h4,
+        h5,
+        h6 {
+            font-family: mainfont;
+        }
+
         .navbar,
         aside.left-panel {
             background-image: url(<?= base_url("assets/ivax/assets/images/homebg2.jpg") ?>);
@@ -60,7 +77,7 @@
             color: #d5fec7 !important;
         }
     </style>
-    
+
 </head>
 
 <body>
@@ -77,8 +94,8 @@
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-menu" aria-controls="main-menu" aria-expanded="false" aria-label="Toggle navigation">
                     <i class="fa fa-bars"></i>
                 </button>
-                <a class="navbar-brand" href="<?=base_url("admin/index")?>"><img src="<?= base_url("assets/img/Logo.jpg") ?>" alt="Logo"></a>
-                <a class="navbar-brand hidden" href="<?=base_url("admin/index")?>"><img src="<?= base_url("assets/img/Logo.jpg") ?>" alt="Logo"></a>
+                <a class="navbar-brand" href="<?= base_url("admin/index") ?>"><img src="<?= base_url("assets/img/Logo.jpg") ?>" alt="Logo"></a>
+                <a class="navbar-brand hidden" href="<?= base_url("admin/index") ?>"><img src="<?= base_url("assets/img/Logo.jpg") ?>" alt="Logo"></a>
             </div>
 
             <div id="main-menu" class="main-menu collapse navbar-collapse">
@@ -197,6 +214,17 @@
     <script src="<?= $base_url_for_resources ?>vendors/popper.js/dist/umd/popper.min.js"></script>
     <script src="<?= $base_url_for_resources ?>vendors/bootstrap/dist/js/bootstrap.min.js"></script>
 
+    <script>
+        async function recoger_novedades() {
+
+            let req = await fetch("<?= base_url('admin/clientes/novedades') ?>");
+            let resp = await req.json();
+            if ("data" in resp)
+                alert("Novedades");
+        }
+        recoger_novedades();
+
+    </script>
 
     <?= $this->renderSection("scripts") ?>
 

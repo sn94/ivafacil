@@ -103,7 +103,7 @@ Bienvenido
                     <div class="card-header" style="border-radius: 15px 15px 0px 0px; background-color: #d1d1d1;">
                         <div class="row">
                             <div class="col-12">
-                                <h4 class="text-center"> PAGOS: <?= $NOMBRE_CLIENTE ?></h4>
+                                <h3 class="text-center"> PAGOS: <?= $NOMBRE_CLIENTE ?></h3>
                             </div>
                         </div>
                     </div>
