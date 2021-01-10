@@ -107,7 +107,8 @@ class Admin extends Controller {
 		helper("cookie");
 		$request = \Config\Services::request();
 		//valores de sesion
-		$data= $this->request->getRawInput();
+		$this->request->getJSON(true);
+		$data=  ($this->request->getJSON(true) >0)  ?  $this->request->getJSON(true) :  $this->request->getRawInput();
 		$nick =  $data['nick'];
 		$pass =  $data['pass'];
 		
@@ -118,24 +119,28 @@ class Admin extends Controller {
 		$usu_->where("nick", $nick);
 		$ID = $usu_->first()->regnro;
 
+		//generar id de session
+		$fecha_expire_session =     date("Y-m-d H:i",   strtotime(date("Y-m-d H:i") . " + 10 days"));
+		//Para autenticar desde la API, y tambien para recordar sesiones para Adminis web
+		$SESSIONID =  password_hash($ID,  PASSWORD_BCRYPT);
 
+		$usu_->where("regnro", $ID);
+		$usu_->set(["session_id" => $SESSIONID, 'session_expire' => $fecha_expire_session, 'remember' => 'S']);
+		$usu_->update();
+		/**************** */
 		if (    $USU_WEB_PIDE_RECORD_PASS ) {
 			try {
 				//Guardar sesion  
-				$fecha_expire_session =     date("Y-m-d H:i",   strtotime(date("Y-m-d H:i") . " + 10 days"));
-				//Para autenticar desde la API, y tambien para recordar sesiones para Adminis web
-				$SESSIONID =  password_hash($ID,  PASSWORD_BCRYPT);
-
-				$usu_->where("regnro", $ID);
-				$usu_->set(["session_id" => $SESSIONID, 'session_expire' => $fecha_expire_session, 'remember' => 'S']);
-				$usu_->update();
+				
 				// crear cookies  
 				setcookie("ivafacil_admin_nick", $nick,  time() + 365 * 24 * 60 * 60, "/ivafacil",  env("DOMINIO"));
 				//Crear cookie para password
 				setcookie("ivafacil_admin_pa", $SESSIONID,  time() + 365 * 24 * 60 * 60,  "/ivafacil",  env("DOMINIO"));
-				return redirect()->to(base_url("admin/index"));
+				return $this->response->setJSON(  ['data'=>  $SESSIONID,   'code'=>'200'] );
+			//	return redirect()->to(base_url("admin/index"));
 			} catch (Exception $e) {
-				return view("admin/login", array("error" => $e));
+				return $this->response->setJSON(  ['msj'=>  $e,   'code'=>'500'] );
+				//return view("admin/login", array("error" => $e));
 			}
 		} else { //Camino accesible solo para web request
 			// Olvidar sesion
@@ -145,9 +150,11 @@ class Admin extends Controller {
 				$usu_->where("regnro", $ID);
 				$usu_->set([  'remember' => 'N']);
 				$usu_->update();
-				return redirect()->to(base_url("admin/index"));
+				return $this->response->setJSON(  ['data'=>  $SESSIONID,   'code'=>'200'] );
+			//	return redirect()->to(base_url("admin/index"));
 			} catch (Exception $e) {
-				return view("admin/login", array("error" => $e));
+				return $this->response->setJSON(  ['msj'=>  $e,   'code'=>'500'] );
+				//return view("admin/login", array("error" => $e));
 			}
 		}
 	}
@@ -162,7 +169,9 @@ class Admin extends Controller {
 
 		$request= \Config\Services::request(); 
 
-		$data= $this->request->getRawInput();
+		$data=  (($this->request->getJSON(true)) >0)  ?  $this->request->getJSON(true) :  $this->request->getRawInput();
+
+
 		$nick = $data['nick']; 
 		$pass = $data["pass"]; 
 		$recordar= $request->getPost("remember"); 
@@ -217,34 +226,32 @@ class Admin extends Controller {
 		 
 		$request = \Config\Services::request();
 		$session =  \Config\Services::session();
-
-		$data = $this->request->getRawInput();
+ 
+		$data=  (($this->request->getJSON(true)) >0)  ?  $this->request->getJSON(true) :  $this->request->getRawInput();
 
 
 		if ($request->getMethod(true) == "GET") {
 
 			return $this->verificar_cookie_sesion();//Verifica sesiones guardadas
 		} else {
-		 
+
 			$resu = $this->verify_password();
-		 
-			if ($resu['code'] == 200) {
-				//crear sesion
-				
-				$nick = $data["nick"]; 
-				$usuarioId = (new Admin_model())->where("nick", $nick) 
-				->first() ;
-				$newdata = [
-					'id'=>  $usuarioId->regnro,
-					'nick'  => $nick, 
-					'origen' =>  "W"
-				];
-				$session->set($newdata);
-				//Crear cookie 
-				return $this->crear_cookie_recordar_sesion();
-			} else { 
-					return view("admin/login", array("error" => $resu['msj']));
-			}
+
+			if ($resu['code'] != 200)
+				return $this->response->setJSON(   $resu );
+			//crear sesion
+
+			$nick = $data["nick"];
+			$usuarioId = (new Admin_model())->where("nick", $nick)
+				->first();
+			$newdata = [
+				'id' =>  $usuarioId->regnro,
+				'nick'  => $nick,
+				'origen' =>  "W"
+			];
+			$session->set($newdata);
+			//Crear cookie 
+			return $this->crear_cookie_recordar_sesion();
 		} //END ANALISIS DE PARAMETROS
 	} //END SIGN IN
 

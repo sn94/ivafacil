@@ -47,7 +47,8 @@ $ventas_t = 0;
         ?>
     </select>
 
-    <span>ANULADOS?&nbsp; <input onchange="$('#download-1').val('');informe_ventas();"  type="checkbox" name="anulados" value="B"> </span>
+    <span>ANULADOS?&nbsp; 
+  
     <select id="download-1" onchange="descarga_archivo_ventas(event)" style="font-size: 11px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
         <option value="">Descargar como..</option>
         <option value="PDF"> PDF</option>

@@ -94,13 +94,13 @@ use App\Models\Parametros_model;
     async function totales_cierre(ev) {
 
 
-        let ejercicio = "<?= date("Y") ?>";
+        let ejercicio =  $("select[name=year]").val();
         if (ev != undefined) ejercicio = ev.target.value;
 
 
         let loader = "<img style='z-index: 400000;position: absolute;top: 50%;left: 50%;'  src='<?= base_url("assets/img/loader.gif") ?>'   />";
         $("#loaderplace").html(loader);
-        let resource = $("#info-totales").val() + "/" + ejercicio
+        let resource = $("#info-totales").val() + "/" + ejercicio;
         let req = await fetch(resource);
         let resp_json = await req.json();
 

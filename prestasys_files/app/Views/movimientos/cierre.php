@@ -27,7 +27,7 @@ use App\Models\Parametros_model;
 
 
 
-<input type="hidden" id="info-totales" value="<?= base_url("cierres/totales") ?>">
+<input type="hidden" id="info-totales" value="<?= base_url("cierres/totales_mes_session") ?>">
 
 <!-- Menu de Usuario -->
 
@@ -39,7 +39,38 @@ use App\Models\Parametros_model;
     <div class="col-12 offset-md-3 col-md-6 ">
         <div class="card">
             <div class="card-header">
-                <h4 class="text-center">Cierre del mes: <?= Utilidades::monthDescr(date("m")) ?>/<?= date("Y") ?></h4>
+                <h4 class="text-center">Cierre del mes:
+
+
+
+                    <!--cargar meses -->
+                    <select onchange="totales_cierre()" id="month" style="font-size: 15px; border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
+                        <?php
+                        for ($m = 1; $m <= 12; $m++) {
+                            $nom_mes = Utilidades::monthDescr($m);
+                            if (date("m") ==  $m)
+                                echo "<option selected value='$m'>$nom_mes</option>";
+                            else
+                                echo "<option value='$m'>$nom_mes</option>";
+                        }
+                        ?>
+                    </select>
+                    <select onchange="totales_cierre()" id="year" style="font-size: 15px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
+                        <?php
+                        $year = date("Y");
+                        foreach ($ANIOS as $m) {
+                            if (date("Y") ==  $m->anio)
+                                echo "<option selected value='$m->anio'>$m->anio</option>";
+                            else
+                                echo "<option value='$m->anio'>$m->anio</option>";
+                        }
+                        ?>
+                    </select>
+
+
+
+
+                </h4>
             </div>
             <div class="card-body card-block p-0">
                 <form action="" method="post" class="container">
@@ -60,7 +91,7 @@ use App\Models\Parametros_model;
                                 <th>
                                     <?php if (isset($edicion_saldo_inicial)  &&  $edicion_saldo_inicial) : ?>
                                         <a href="<?= base_url("usuario/actualizar-saldo") ?>">
-                                        <i class="fa fa-refresh" aria-hidden="true"></i>
+                                            <i class="fa fa-refresh" aria-hidden="true"></i>
                                         </a>
                                     <?php endif; ?>
 
@@ -142,7 +173,13 @@ use App\Models\Parametros_model;
 
         let loader = "<img style='z-index: 400000;position: absolute;top: 50%;left: 50%;'  src='<?= base_url("assets/img/loader.gif") ?>'   />";
         $("#loaderplace").html(loader);
-        let req = await fetch($("#info-totales").val());
+
+        //ruta 
+        let mes_ = $("#month").val();
+        let anio_ = $("#year").val();
+
+        let Route_to = $("#info-totales").val() + "/" + mes_ + "/" + anio_;
+        let req = await fetch(Route_to);
         let resp_json = await req.json();
         $("#loaderplace").html("");
 
@@ -169,8 +206,8 @@ use App\Models\Parametros_model;
 
         let saldo = parseInt(resp_json.saldo) + saldo_a;
         let saldo_descri =
-         (s_fisco > s_contri) ? "a favor del fisco " :
-          (  (s_fisco < s_contri) ? "a favor del contribuyente" : (  s_fisco==0 ?  "-" :  "IVA C,F = IVA D.F")     );
+            (s_fisco > s_contri) ? "a favor del fisco " :
+            ((s_fisco < s_contri) ? "a favor del contribuyente" : (s_fisco == 0 ? "-" : "IVA C,F = IVA D.F"));
 
 
 
@@ -189,7 +226,8 @@ use App\Models\Parametros_model;
         $("#ventas-iva").text(dar_formato_millares(ventas_total_iva));
 
 
-        $("#retencion-exenta").text(dar_formato_millares(retencion));
+        //  $("#retencion-exenta").text(dar_formato_millares(retencion));
+        $("#retencion-exenta").text("");
         $("#retencion-iva").text(dar_formato_millares(retencion));
 
         $("#saldo").text(dar_formato_millares(saldo));
@@ -198,13 +236,13 @@ use App\Models\Parametros_model;
         $("#saldo-row").removeClass("table-danger");
         $("#saldo-row").removeClass("table-success");
 
-        if (s_fisco < (s_contri+saldo_a)  ) {
+        if (s_fisco < (s_contri + saldo_a)) {
             $("#saldo-row").addClass("table-success");
             $("#saldo-descri").css("color", "green");
         } else {
-            if (s_fisco < (s_contri+saldo_a)  ) {
-            $("#saldo-row").addClass("table-danger");
-            $("#saldo-descri").css("color", "red");
+            if (s_fisco < (s_contri + saldo_a)) {
+                $("#saldo-row").addClass("table-danger");
+                $("#saldo-descri").css("color", "red");
             }
         }
 
@@ -218,12 +256,18 @@ use App\Models\Parametros_model;
         if (!confirm("Seguro que desea cerrar el mes?")) return;
         let loader = "<img style='z-index: 400000;position: absolute;top: 50%;left: 50%;'  src='<?= base_url("assets/img/loader.gif") ?>'   />";
         $("#loaderplace").html(loader);
-        let req = await fetch(ev.currentTarget.href);
+        //PREPARAR RUTA
+        //CONCAT MES Y ANIO
+        let Mes_ = $("#month").val();
+        let Anio_ = $("#year").val();
+        let Route_to = ev.currentTarget.href + "/" + Mes_ + "/" + Anio_;
+        let req = await fetch(Route_to);
         let resp_json = await req.json();
         $("#loaderplace").html("");
-        if ("data" in resp_json)
-            alert("Mes cerrado");
-        else
+        if ("data" in resp_json) {
+            alert("Mes cerrado exitosamente");
+            window.location.reload();
+        } else
             alert(resp_json.msj);
 
     }

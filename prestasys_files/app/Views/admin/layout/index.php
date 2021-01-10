@@ -157,7 +157,7 @@
 
             <div class="header-menu">
 
-                <div class="col-sm-7">
+                <div class="col-sm-7" id="NOVEDADES">
 
                 </div>
 
@@ -219,11 +219,27 @@
 
             let req = await fetch("<?= base_url('admin/clientes/novedades') ?>");
             let resp = await req.json();
-            if ("data" in resp)
-                alert("Novedades");
-        }
-        recoger_novedades();
+            if ("data" in resp) {
+                let notifi = `
+                   
+                   <a href='<?= base_url("admin/clientes") ?>'>
+                   <h4 style='color:red;'>Novedades por cierres de mes
+                   <img  style='width: 70px;height:50px;'  src='<?= base_url("assets/img/notificame.gif") ?>' />
+                   </h4>
+                   </a>
+                   
+                    `;
+                $("#NOVEDADES").html(notifi);
 
+            }
+        }
+
+
+       
+
+
+
+        recoger_novedades();
     </script>
 
     <?= $this->renderSection("scripts") ?>

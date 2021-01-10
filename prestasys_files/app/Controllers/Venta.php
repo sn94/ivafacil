@@ -341,14 +341,17 @@ class Venta extends ResourceController {
 				$ultimo_numero =  preg_replace( "/-/", "", $ultimo_numero );
 			 
 				//guardar los primeros 3
-				//$fv1 =  intval(substr($ultimo_numero,  0, 3));
-				//$fv2 = intval(substr($ultimo_numero, 3,  3));
+				$fv1 =  intval(substr($ultimo_numero,  0, 3));
+				$fv2 = intval(substr($ultimo_numero, 3,  3));
 				//obtener los ultimos 7
-				//$ultimo_numero =  substr($ultimo_numero,  6 , 7);
+				$ultimo_numero =  substr($ultimo_numero,  6 , 7);
 				$ultimo_numero = intval($ultimo_numero)  + 1;
 				//rellenar con ceros
-				//$ultimo_numero = str_pad($ultimo_numero, 7, "0", STR_PAD_LEFT);
-				//$ultimo_numero = (str_pad($fv1, 3, "0", STR_PAD_LEFT)) . (str_pad($fv2, 3, "0", STR_PAD_LEFT)) . $ultimo_numero;
+				$ultimo_numero = str_pad($ultimo_numero, 7, "0", STR_PAD_LEFT);
+				$PAD1= (str_pad($fv1, 3, "0", STR_PAD_LEFT));
+				$PAD2= (str_pad($fv2, 3, "0", STR_PAD_LEFT));
+			 
+				$ultimo_numero =  $PAD1 .$PAD2 . $ultimo_numero;
 				 
 			}catch( Exception $d ){  $ultimo_numero= ""; }
 		} return $ultimo_numero;
@@ -373,11 +376,16 @@ class Venta extends ResourceController {
 		$this->API_MODE =  $this->isAPI();
 		$usu = new Ventas_model();
 		$data = $this->request->getRawInput();
+		$fecha_compro=  $data['fecha'];
+		$mes_fecha_compro=   date("m",   strtotime( $fecha_compro ) );
+		$anio_fecha_anio=   date("Y",   strtotime( $fecha_compro ) );
 
+		if(  (new Cierres())->esta_cerrado(   $mes_fecha_compro,  $anio_fecha_anio  )  )
+		return  $this->response->setJSON(  ['msj'=>  "El mes ya esta cerrado",  "code"=>  "500"]);
 		//Verificar si el periodo-ejercicio esta cerrado o fuera de rango
 	 
-		$Operacion_fecha_invalida= (new Cierres())->fecha_operacion_invalida(  $data['fecha'] );
-		if (  !is_null($Operacion_fecha_invalida))  return $Operacion_fecha_invalida;
+		//$Operacion_fecha_invalida= (new Cierres())->fecha_operacion_invalida(  $data['fecha'] );
+		//if (  !is_null($Operacion_fecha_invalida))  return $Operacion_fecha_invalida;
 		//***** Fin check tiempo*/
 
 		if( $this->API_MODE)  $data['origen']= "A";
@@ -477,10 +485,17 @@ class Venta extends ResourceController {
 		$usu = new Ventas_model();
 
 		$data = $this->request->getRawInput();
+		$fecha_compro=  $data['fecha'];
+		$mes_fecha_compro=   date("m",   strtotime( $fecha_compro ) );
+		$anio_fecha_anio=   date("Y",   strtotime( $fecha_compro ) );
+
 		//Verificar si el periodo-ejercicio esta cerrado o fuera de rango
 	 
-		$Operacion_fecha_invalida= (new Cierres())->fecha_operacion_invalida(  $data['fecha'] );
-		if (  !is_null($Operacion_fecha_invalida))  return $Operacion_fecha_invalida;
+		if(  (new Cierres())->esta_cerrado($mes_fecha_compro, $anio_fecha_anio)  )
+		return  $this->response->setJSON(  ['msj'=>  "El mes ya esta cerrado",  "code"=>  "500"]);
+		
+		//$Operacion_fecha_invalida= (new Cierres())->fecha_operacion_invalida(  $data['fecha'] );
+		//if (  !is_null($Operacion_fecha_invalida))  return $Operacion_fecha_invalida;
 		//***** Fin check tiempo*/
 		
 

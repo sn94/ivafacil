@@ -91,35 +91,32 @@ Bienvenido
 
 
 <script>
-
-
-
-
-    async function buscarRegs( ev ){
-       let argumento =  $("#argumento").val();
-       let url_ =  "<?= base_url("admin/clientes")?>";
-       $("#tabla-clientes").html( showLoader() );
-       let req=  await fetch( url_ , 
-        { method: "POST",
-         headers: {
+    async function buscarRegs(ev) {
+        let argumento = $("#argumento").val();
+        let url_ = "<?= base_url("admin/clientes") ?>";
+        $("#tabla-clientes").html(showLoader());
+        let req = await fetch(url_, {
+            method: "POST",
+            headers: {
                 "X-Requested-With": "XMLHttpRequest",
                 "Content-Type": "application/x-form-www-urlencoded"
             },
-            body: "argumento="+argumento }   );
-       let resp= await req.text();
-       $("#tabla-clientes").html(  resp );
+            body: "argumento=" + argumento
+        });
+        let resp = await req.text();
+        $("#tabla-clientes").html(resp);
 
     }
 
-    function showLoader(){
+    function showLoader() {
         let loader = "<img style='z-index: 400000;position: absolute;top: 50%;left: 50%;'  src='<?= base_url("assets/img/loader.gif") ?>'   />";
-      return loader;
+        return loader;
     }
 
 
     //Actualizar tabla
     async function actualizar_grilla() {
-         $("#tabla-clientes").html( showLoader() );
+        $("#tabla-clientes").html(showLoader());
         let form = await fetch("<?= base_url("admin/clientes") ?>", {
             headers: {
                 "X-Requested-With": "XMLHttpRequest"
@@ -134,6 +131,15 @@ Bienvenido
 
 
     // Formulario
+    async function mostrar_form(ev) { //nuevo
+
+        ev.preventDefault();
+        let form = await fetch(ev.currentTarget.href);
+        let form_R = await form.text();
+        $("#message-modal-content").html(form_R);
+        $("#message-modal").modal("show");
+    }
+
     async function cargar_form() { //nuevo
 
         let form = await fetch("<?= base_url("admin/clientes/create") ?>");

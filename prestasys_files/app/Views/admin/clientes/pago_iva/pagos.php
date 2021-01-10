@@ -73,7 +73,7 @@ Bienvenido
             <div class="modal-dialog modal-sm">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel"></h5>
+                        <h5 class="modal-title" id="exampleModalLabel">PAGO DE IVA</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -103,78 +103,12 @@ Bienvenido
                     <div class="card-header" style="border-radius: 15px 15px 0px 0px; background-color: #d1d1d1;">
                         <div class="row">
                             <div class="col-12">
-                                <h3 class="text-center"> PAGOS: <?= $NOMBRE_CLIENTE ?></h3>
+                                <h3 class="text-center"> PAGOS DEL I.V.A: <?= $NOMBRE_CLIENTE ?></h3>
                             </div>
                         </div>
                     </div>
                     <div class="card-body">
-                        <?php
-
-                        use App\Helpers\Utilidades;
-
-                        $CLIENTE = isset($CLIENTE) ? $CLIENTE : "";
-                        echo  form_open(
-                            "admin/clientes/pagos",
-                            [
-                                'id' => 'user-form',
-                                'class' => 'container p-0 p-md-2',
-                                'onsubmit' => 'registro(event)'
-                            ]
-                        ); ?>
-
-                        <input type="hidden" name="cliente" value="<?= $CLIENTE ?>">
-                        <input type="hidden" name="estado" value="A">
-
-                        <div class="row">
-                            <div class="col-12 col-md-4">
-                                <div class="row form-group">
-                                    <div class="col-12 col-md-4">
-                                        <label class=" form-control-label form-control-sm -label">Comprobante:</label>
-                                    </div>
-                                    <div class="col-12 col-md-8">
-                                        <input maxlength="20" type="text" name="comprobante" class="  form-control form-control-inline form-control-sm ">
-
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-3 pl-0">
-
-                                <div class="row form-group">
-                                    <div class="col-12 col-md-3 pr-0 ">
-                                        <label class=" form-control-label form-control-sm -label">Fecha:</label>
-                                    </div>
-                                    <div class="col-12 col-md-9">
-                                        <input size="10" value="<?= date("Y-m-d") ?>" type="date" name="fecha" class="  form-control form-control-inline form-control-sm ">
-
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-5 pl-0">
-                                <div class="row form-group">
-                                    <div class="col-12 col-md-3 ">
-                                        <label class=" form-control-label form-control-sm -label">Concepto:</label>
-                                    </div>
-                                    <div class="col-12 col-md-9 ">
-                                        <input " type=" text" name="concepto" class="  form-control form-control-inline form-control-sm ">
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-
-
-
-                        <div class="row form-group">
-                            <div class="col-12   col-md-2  mb-2 ">
-                                <button style="font-size: 12px;font-weight: 600;width:100%;" type="submit" class="btn btn-success btn-sm">
-                                    <i class="fa fa-dot-circle-o"></i> GUARDAR
-                                </button>
-                            </div>
-                        </div>
-
-
-                        </form>
+                      
                     </div>
 
                 </div>
@@ -183,7 +117,7 @@ Bienvenido
             </div>
 
             <div class="col-12">
-<?=view("admin/clientes/informe_pagos") ?>
+ 
             </div>
 
         </div>
@@ -194,7 +128,7 @@ Bienvenido
         ?>
         <!-- TABLA PAGOS -->
         <div class="row" id="tabla-pagos">
-            <?= view("admin/clientes/grill_pagos") ?>
+            <?= view("admin/clientes/pago_iva/grill_pagos_pendientes") ?>
         </div>
         <!-- end PAGOS -->
 
@@ -204,15 +138,7 @@ Bienvenido
 
                 **/
 
-            function phone_input(ev) {
-                if (ev.data == undefined || ev.data == null) return;
-
-                if ((ev.data.charCodeAt() < 48 || ev.data.charCodeAt() > 57) && ev.data.charCodeAt() != 32) {
-                    ev.target.value =
-                        ev.target.value.substr(0, ev.target.selectionStart - 1) + " " +
-                        ev.target.value.substr(ev.target.selectionStart);
-                }
-            }
+             
 
 
             function formatear(ev) {
@@ -259,35 +185,10 @@ Bienvenido
 
 
 
-            function clave_no_coincide(ev) {
-                let rep = ev.target.value;
-                if (rep == $("input[name=pass]").val()) {
-                    $(ev.target).removeClass("empty-field");
-                    $(ev.target).removeClass("password-wrong");
-                    $(ev.target).addClass("password-ok");
-                    $("input[name=pass]").addClass("password-ok");
-                } else {
-                    $("input[name=pass]").removeClass("password-ok");
-                    $(ev.target).removeClass("password-ok");
-                    $(ev.target).addClass("password-wrong");
-                }
-            }
+            
 
 
-
-
-
-            function control_campo_vacio(ev) {
-                if (ev.target.value == "") {
-                    $(ev.target).addClass("empty-field");
-                    if (ev.target.name != "dv")
-                        $("#" + ev.target.name).text("Campo obligatorio");
-
-                } else {
-                    $(ev.target).removeClass("empty-field");
-                    $("#" + ev.target.name).text("");
-                }
-            }
+ 
 
 
 
@@ -314,10 +215,7 @@ Bienvenido
 
 
 
-            function show_loader() {
-                let loader = "<img style='z-index: 400000;position: absolute;top: 50%;left: 50%;'  src='<?= base_url("assets/img/loader.gif") ?>'   />";
-                $("#loaderplace").html(loader);
-            }
+             
 
             function hide_loader() {
                 $("#loaderplace").html("");
@@ -340,39 +238,7 @@ Bienvenido
             }
 
 
-            function limpiar_campos() {
-                $("input[name=comprobante]").val("");
-                $("input[name=concepto]").val("");
-            }
-            async function registro(ev) {
-
-                ev.preventDefault();
-                if (campos_vacios()) return;
-
-                let datos = $("#user-form").serialize();
-                show_loader();
-                let req = await fetch($("#user-form").attr("action"), {
-                    method: "POST",
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    body: datos
-                });
-                let respuesta = await req.json();
-                hide_loader();
-                if (("data" in respuesta) && parseInt(respuesta.code) == 200) {
-
-
-                    alert("REGISTRADO");
-                    limpiar_campos();
-                    //actualizar grilla de pagos
-                    actualizar_grilla();
-                } else {
-                    $("#message-modal-content").html(procesar_errores(respuesta.msj));
-                    $("#message-modal").modal("show");
-                }
-            }
-
+           
 
 
             //- GRILLA DE PAGOS 
@@ -390,7 +256,7 @@ Bienvenido
                 let ANIO = $("#pagos-reports select[name=year]").val();
 
                 $("#tabla-pagos").html(showLoader());
-                let form = await fetch("<?= base_url("admin/clientes/list-pagos/" . $CLIENTE) ?>/" + MES + "/" + ANIO, {
+                let form = await fetch("<?= base_url("admin/clientes/list-pagos-iva/" . $CLIENTE) ?>", {
                     headers: {
                         "X-Requested-With": "XMLHttpRequest"
                     },
@@ -401,6 +267,17 @@ Bienvenido
                 $("ul.pagination li").addClass("btn btn-dark btn-sm").css("font-weight", "600");
             }
 
+
+
+
+
+            async function mostrar_form(  ev){
+                ev.preventDefault();
+                let form = await fetch(  ev.currentTarget.href);
+                let form_R = await form.text();
+                $("#message-modal-content").html(form_R);
+                $("#message-modal").modal("show");
+            }
 
 
             window.onload = function() {

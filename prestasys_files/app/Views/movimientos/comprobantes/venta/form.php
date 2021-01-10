@@ -8,7 +8,7 @@ $ruc = isset($venta) ?  $venta->ruc :  session("ruc");
 $dv = isset($venta) ?  $venta->dv :  session("dv");
 $codcliente = isset($venta) ?  $venta->codcliente :  session("id");
 $fecha = isset($venta) ?  $venta->fecha : date("Y-m-d");
-$factura = isset($ultimo_numero) ?  $ultimo_numero : (isset($venta) ?  $venta->factura :  "");
+$factura = isset($ultimo_numero) ?  Utilidades::formato_factura($ultimo_numero) : (isset($venta) ?  $venta->factura :  "");
 $moneda = isset($venta) ?  $venta->moneda : "";
 $tcambio = isset($venta) ?  Utilidades::number_f($venta->tcambio) : "0";
 $importe1 = isset($venta) ?  Utilidades::number_f($venta->importe1) : "0";
@@ -51,7 +51,7 @@ $estado=  isset( $venta)  ? ( $venta->estado =="A" ? "" : "checked" )  : "";
                     <label for="nf-password" class="mb-0 form-control-label form-control-sm -label">Fact. N°:</label>
                 </div>
                 <div class="col-8 col-md-8 pb-0 mb-0">
-                    <input oninput="solo_numeros(event)" value="<?= $factura ?>" placeholder="000-000-0000000" maxlength="15" type="text" id="nf-password" name="factura" class=" form-control form-control-label form-control-sm mb-0 ">
+                    <input oninput="solo_numeros_guiones(event)" value="<?= $factura ?>" placeholder="000-000-0000000" maxlength="15" type="text" id="nf-password" name="factura" class=" form-control form-control-label form-control-sm mb-0 ">
                   
                     <span style="font-size: 11px; font-weight: 600;color: red;">
                         ANULADO <input   <?=$estado?> type="checkbox" name="estado" value="B">
@@ -198,6 +198,17 @@ Validaciones
     function formato_valido_factura(valor) {
         let valido = /(\d{3})-(\d{3})-(\d{7})/.test(valor);
         return valido;
+    }
+
+
+    function solo_numeros_guiones(ev) {
+        //0 48   9 57
+        if (ev.data == null) return;
+        if (   ev.data.charCodeAt() != 45   &&  (ev.data.charCodeAt() < 48 || ev.data.charCodeAt() > 57)) {
+            let cad = ev.target.value;
+            let cad_n = cad.substr(0, ev.target.selectionStart - 1) + cad.substr(ev.target.selectionStart + 1);
+            ev.target.value = cad_n;
+        }
     }
 
 
@@ -429,10 +440,10 @@ Validaciones
         ev.preventDefault();
         if (campos_vacios()) return;
 
-        /* if (!formato_valido_factura($("input[name=factura]").val())) {
-             alert("Formato de Numero de factura no valido");
-             return;
-         }*/
+        if ($("input[name=factura]").val() ==  "") {
+              alert("Por favor ingrese el número de factura");
+              return;
+          }
         //limpiar numero de factura
         //  let factu = $("input[name=factura]").val().replaceAll(/-+/g, "");
         // $("input[name=factura]").val(factu);

@@ -30,6 +30,12 @@ class Cierres extends Controller {
 
 	 
 
+	private function isAdminView(){
+		$request = \Config\Services::request();
+		$uri = $request->uri; 
+		return (   sizeof($uri->getSegments()) > 0  && $uri->getSegment(1) == "admin"  );
+	}
+
 
 
 	private function isAPI(){
@@ -68,8 +74,10 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 }
 
 	
-	public function totales( $cod_cliente = NULL, $MES= NULL, $ANIO= NULL){
-		$CODCLIENTE=  is_null($cod_cliente) ?  $this->getClienteId()  :   $cod_cliente;
+	public function totales( $CODCLIENTE = NULL, $MES= NULL, $ANIO= NULL,  $RETORNO=  "JSON"){
+
+
+		//$CODCLIENTE=  is_null($cod_cliente) ?  $this->getClienteId()  :   $cod_cliente;
 		$cf=  (new Compra())->total_( $CODCLIENTE, $MES, $ANIO );
 		$df= (new Venta())->total_(   $CODCLIENTE, $MES, $ANIO);
 		$reten= (new Retencion())->total_( $CODCLIENTE, $MES, $ANIO );
@@ -79,30 +87,32 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 		 //A favor de hacienda
 		 $s_fisco=  intval(  $df->iva1) +  intval($df->iva2 );
 		 //Saldo
-		 $saldo_a= $this->__saldo_anterior(); 
+		 $saldo_a= $this->__saldo_anterior(   $CODCLIENTE, $MES, $ANIO); 
 		 $saldo=  $s_contri -  $s_fisco;
 		 $response=  \Config\Services::response();
 		
-		 return  $response->setJSON(  
-			[
+		 $Montos= [
 				 
-				'compras_total_10'=> intval($cf->total10) ,
-				'compras_total_5'=> intval($cf->total5) ,
-				'compras_total_exe'=> intval($cf->totalexe) ,
-				'compras_iva10'=> intval($cf->iva1) ,
-				'compras_iva5'=> intval($cf->iva2) ,
+			'compras_total_10'=> intval($cf->total10) ,
+			'compras_total_5'=> intval($cf->total5) ,
+			'compras_total_exe'=> intval($cf->totalexe) ,
+			'compras_iva10'=> intval($cf->iva1) ,
+			'compras_iva5'=> intval($cf->iva2) ,
 
-				'ventas_total_10'=> intval($df->total10) ,
-				'ventas_total_5'=> intval($df->total5) ,
-				'ventas_total_exe'=> intval($df->totalexe) ,
-				'ventas_iva10'=> intval($df->iva1) ,
-				'ventas_iva5'=> intval($df->iva2) ,
+			'ventas_total_10'=> intval($df->total10) ,
+			'ventas_total_5'=> intval($df->total5) ,
+			'ventas_total_exe'=> intval($df->totalexe) ,
+			'ventas_iva10'=> intval($df->iva1) ,
+			'ventas_iva5'=> intval($df->iva2) ,
 
-				'retencion' => (intval($reten->importe)),
-				'saldo' => $saldo,
-				'saldo_anterior'=>  $saldo_a
-			]
-		  );
+			'retencion' => (intval($reten->importe)),
+			'saldo' => $saldo,
+			'saldo_anterior'=>  $saldo_a
+		 ];
+		  
+		 if(  $RETORNO !=  "JSON")   return  $Montos;
+		 else
+		 return  $response->setJSON(  $Montos);
 	}
 
 
@@ -131,20 +141,23 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 		}
 	}
 
-	private function __saldo_anterior()
+	private function __saldo_anterior(  $CODCLIENTE, $MES,  $ANIO)
 	{
-		$this->API_MODE = $this->isAPI();
-		$CODCLIENTE =  $this->API_MODE ?  $this->getClienteId() :    session("id");
+		//$this->API_MODE = $this->isAPI();
+	//	$CODCLIENTE =  $this->API_MODE ?  $this->getClienteId() :    session("id");
+
+
 		$ANTERIOR_S = (new Estado_mes_model())
 		->where("codcliente", $CODCLIENTE)
-		->where("anio", date("Y"))
-		->where("mes", date("m") - 1 )
+		->where("anio", $ANIO)
+		->where("mes",  intval($MES) - 1 )
 		->first();
 		//Aun no hay cierres
 		if (is_null($ANTERIOR_S)) {
 
+		 
 			$estadoanio= (new Estado_anio_model())->where("codcliente", $CODCLIENTE)
-			->where("anio", date("Y"))->first();
+			->where("anio",  $ANIO)->first();
 
 			return  $estadoanio->saldo_inicial;
 			//$SALDO_INI = (new Usuario_model())->find($CODCLIENTE);
@@ -156,10 +169,7 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 
 
 
-	public function saldo_anterior( ){
-		$sa=  $this->__saldo_anterior();
-		return $this->response->setJSON(['data' => $sa,  'code' => "200"]);
-	}
+
 
 
 
@@ -184,7 +194,7 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 				$parametros['s_contri']=  (intval($cierre_mes->t_i_compras) + intval($cierre_mes->t_retencion)  );
 				$parametros['s_fisco']=  intval( $cierre_mes->t_i_ventas);
 				$parametros['saldo']=  $parametros['s_contri'] -  $parametros['s_fisco'];
-				$parametros['saldo_anterior']= $this->__saldo_anterior();
+				$parametros['saldo_anterior']= $this->__saldo_anterior( $CLIENTE->regnro,  $cierre_mes->mes,  $cierre_mes->anio);
 			}
 			//******** */
 			$correo= new Correo();
@@ -202,8 +212,18 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 
 	
 
-	public function view_cierre_mes(){
+	public function view_cierre_mes(  $CLIENTE=   NULL, $MES= NULL,  $ANIO=  NULL  ){
+		if( ! $this->isAdminView())
 		$this->crear_ejercicio();
+		elseif(    !is_null($CLIENTE)      )
+		{
+			 
+			$ultimo_cierre=(new Estado_mes_model())->where("codcliente", $CLIENTE)->where("estado", "C")->orderBy("mes", "DESC")->first();
+			$MES_=   $ultimo_cierre->mes; 
+			$ANIO_=   $ultimo_cierre->anio;
+			$TOTALS= $this->totales( $CLIENTE, $MES_, $ANIO_, "ARRAY" );
+			return view("movimientos/cierre_ajax", [ "mes"=> $MES_,  'anio'=>  $ANIO_,  'totales'=> $TOTALS ]);
+		}
 		
 		$estado_anio= (new Estado_anio_model())
 		->where("ruc", session("ruc"))
@@ -211,7 +231,6 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 		->where("anio",  date("Y"))
 		->first();
  
-
 		$estado_meses= (new Estado_mes_model())
 		->where("ruc", session("ruc"))
 		->where("dv", session("dv"))
@@ -220,12 +239,16 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 	
 		$habilitar_edicion=  	!$this->esta_cerrado();
 	
-		return view("movimientos/cierre", ['edicion_saldo_inicial'=>  $habilitar_edicion ]);
+		$codcliente=  $this->getClienteId();
+		$anios=  (new Estado_anio_model())->select("anio")->where("codcliente",   $codcliente)->get()->getResult();
+		return view("movimientos/cierre", ['edicion_saldo_inicial'=>  $habilitar_edicion, "ANIOS"=> $anios ]);
 	}
 
 
+
 	
-	public function  cierre_mes()
+	//recibir mes y anio como parametros get
+	public function  cierre_mes(  $MES ,  $ANIO)
 	{
 
 		$this->API_MODE = $this->isAPI();
@@ -233,10 +256,15 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 		//no cerrar si no se esta al dia con el pago
 		if (!  ((new Usuario())->servicio_habilitado($CODCLIENTE))  )
 			return $this->response->setJSON(['msj' => "Operación no disponible. Revise su estado de pago",  'code' => "500"]);
-		//no cerrar un mes dos veces
-		if( $this->esta_cerrado() )
+		
+		
+		if( $this->mes_anio_fuera_de_tiempo( $MES, $ANIO) )
+		return $this->response->setJSON(['msj' => "No permitido. Mes y año no válidos",  'code' => "500"]);
+
+			//no cerrar un mes dos veces
+		if( $this->esta_cerrado(  $MES,  $ANIO) )
 		{
-			if( $this->esta_cerrado_anio())
+			if( $this->esta_cerrado_anio( $ANIO ))
 			return $this->response->setJSON(['msj' => "No permitido. El Ejercicio ya cerró.",  'code' => "500"]);
 			else {
 				$nom_mes= Utilidades::monthDescr( date("m")  );
@@ -257,7 +285,7 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 			//A favor de hacienda
 			$s_fisco =  intval($df->iva1) +  intval($df->iva2);
 			//Saldo
-			$saldo_ante= $this->__saldo_anterior();
+			$saldo_ante= $this->__saldo_anterior( $CODCLIENTE, $MES, $ANIO);
 			$saldo = ( $s_contri    ) -  $s_fisco;
 			$mes = date("m");
 			$anio = date("Y");
@@ -277,6 +305,7 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 			];
 
 			try {
+				//var_dump(  $DATOS);
 				$id_cierre= $cierre->insert($DATOS);
 				//Notificar
 				// ....
@@ -364,7 +393,7 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 		$MES= is_null( $UltimoCierre) ? ( $MES   )  :   $UltimoCierre->mes;
 		$ANIO= is_null( $UltimoCierre) ? ( $ANIO   )  :   $UltimoCierre->anio;
 		$RESPUESTA=  $this->resumen_mes( $cod_cliente, $Month, $Year);
-		(new Estado_mes_model())->where("regnro", $UltimoCierre->regnro )->set("estado", "R")->update();
+	//	(new Estado_mes_model())->where("regnro", $UltimoCierre->regnro )->set("estado", "R")->update();
 		 return $RESPUESTA;
 	}
 
@@ -396,10 +425,10 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 
 
 
-	private function __saldo_anterior_anio(  $ANIO = NULL  ){
-		$this->API_MODE = $this->isAPI();
+	private function __saldo_anterior_anio(  $CODCLIENTE= NULL,  $ANIO = NULL  ){
+	//	$this->API_MODE = $this->isAPI();
 
-		$CODCLIENTE =  $this->API_MODE ?  $this->getClienteId() :    session("id");
+	//	$CODCLIENTE =  $this->API_MODE ?  $this->getClienteId() :    session("id");
 
 		$anio=  is_null(  $ANIO)  ?  date("Y")  :  $ANIO;
 
@@ -425,9 +454,9 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 	}
 	
 
-	public function saldo_anterior_anio( ){
+	public function saldo_anterior_anio( $cliente, $anio ){
 
-		$sa=  $this->__saldo_anterior_anio();
+		$sa=  $this->__saldo_anterior_anio( $cliente, $anio);
 		return $this->response->setJSON(['data' => $sa,  'code' => "200"]);
 	}
 
@@ -446,7 +475,7 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 		 //Saldo
 		 $saldo=  $s_contri -  $s_fisco;
 		//saldo inicial
-		$saldo_ini=   $this->__saldo_anterior_anio($YEAR)   ;
+		$saldo_ini=   $this->__saldo_anterior_anio(  $CLIENTE, $YEAR)   ;
 		
 		//Anulados En venta
 		$fv_anuladas= (new Venta())->anuladas_( $CLIENTE, NULL,  $YEAR);
@@ -523,7 +552,7 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 
 
 
-	public function  cierre_anio()
+	public function  cierre_anio(  $ANIO )
 	{
 
 		$this->API_MODE = $this->isAPI();
@@ -532,15 +561,14 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 		//no cerrar si no se esta al dia con el pago
 		if (! ((new Usuario())->servicio_habilitado($CODCLIENTE) ) )
 			return $this->response->setJSON(['msj' => "Operación no disponible. Revise su estado de pago",  'code' => "500"]);
-		//no cerrar un mes dos veces
-		$ANIO=date("Y");
-		$cerrado = (new Estado_anio_model())->where("codcliente", $CODCLIENTE)
-		->where("anio", $ANIO)->first();
+		//no cerrar un ejercicio dos veces
+		if( $this->mes_anio_fuera_de_tiempo( NULL,  $ANIO) )
+		return $this->response->setJSON(['msj' => "No permitido. Mes y año no válidos",  'code' => "500"]);
+		if( $this->esta_cerrado_anio(  $ANIO))
+		return $this->response->setJSON(['msj' => "No permitido. El Año $ANIO ya está cerrado.",  'code' => "500"]);
+
 		 
-		if ( $cerrado->estado != "P")  {
-			$year = date("Y");
-			return $this->response->setJSON(['msj' => "No permitido. El Año $year ya está cerrado.",  'code' => "500"]);
-		}
+		$cerrado = (new Estado_anio_model())->where("codcliente", $CODCLIENTE)->where("anio", $ANIO)->first();
 	
 			//numeros
 			$totales_cierre= $this->__totales_anio( $CODCLIENTE, $ANIO );

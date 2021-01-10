@@ -1,3 +1,8 @@
+<?php
+
+$TERMINACION_RUC=   substr(    session("ruc") , -1,1  );
+ 
+?>
 <!doctype html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
@@ -89,6 +94,8 @@
 
     <?= $this->renderSection("estilos") ?>
 
+
+    <input type="hidden" id="TERMINACION-RUC"  value="<?=$TERMINACION_RUC?>">
     <!-- Left Panel-->
 
     <aside id="left-panel" class="left-panel">
@@ -157,7 +164,7 @@
 
             <div class="header-menu">
 
-                <div class="col-sm-7">
+                <div class="col-sm-7" id="NOVEDADES">
                     <a id="menuToggle" class="menutoggle pull-left"><i class="fa fa fa-tasks"></i></a>
                     <div class="header-left">
 
@@ -219,6 +226,43 @@
     <script src="<?= $base_url_for_resources ?>vendors/jquery/dist/jquery-3.5.1.min.js"></script>
     <script src="<?= $base_url_for_resources ?>vendors/popper.js/dist/umd/popper.min.js"></script>
     <script src="<?= $base_url_for_resources ?>vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script>
+     function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+
+
+        async function recoger_novedades_vencimiento_iva() {
+           let terminacion=  $("#TERMINACION-RUC").val();
+            let fetching_Data = async function( term) { 
+                let req = await fetch("<?= base_url('admin/clientes/novedades-venci-iva') ?>/" + term);
+                let resp = await req.json();
+                if ("data" in resp) {
+                    let mensaje = resp.data;
+                    let notifi = `
+       
+       <a href='<?= base_url("admin/clientes") ?>'>
+       <h5 style='color:red;'>  ${mensaje}
+       <img  style='width: 70px;height:50px;'  src='<?= base_url("assets/img/notificame.gif") ?>' />
+       </h5>
+       </a>
+       
+        `;
+                    $("#NOVEDADES").html(notifi);
+                }
+            };
+
+         //  for( let t=0; t <  terminaciones.length ;  t++ ){
+
+            await fetching_Data(   terminacion );
+         //   await sleep(10000);
+       //    }
+
+        }
+
+        recoger_novedades_vencimiento_iva();
+    </script>
     <?= $this->renderSection("scripts") ?>
 
 

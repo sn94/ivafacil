@@ -3,6 +3,7 @@
 
 use App\Helpers\Utilidades;
 use App\Libraries\Correo;
+use App\Models\Calendario_model;
 use App\Models\Cierre_anio_model;
 use App\Models\Cierre_mes_model;
 use App\Models\Ciudades_model;
@@ -160,71 +161,6 @@ class Usuario extends ResourceController {
 
 
 
-	public function  novedades()
-	{
-		$res = $this->list_priority_("");
-		if (sizeof($res)  >  0)
-		return $this->response->setJSON(['data' => "Hay novedades",  'code' => '200']);
-		else
-		return $this->response->setJSON(['msj' => "Nada",  'code' => '500']);
-	}
-
-
-
-	 private function list_priority_( $argumento){
-		$sql_str=
-		"
-		SELECT `usuarios`.*,
-if( (select DATEDIFF( CURRENT_TIMESTAMP, pagos.validez) from pagos where pagos.ruc = usuarios.ruc and pagos.dv=usuarios.dv order by pagos.fecha DESC limit 1) >=0, 1, 0) as vencido,
-(select DATEDIFF( CURRENT_TIMESTAMP, pagos.validez) from pagos where pagos.ruc = usuarios.ruc and pagos.dv=usuarios.dv order by pagos.fecha DESC limit 1 ) as diasvenci, 
-IF( (select estado_mes.regnro from estado_mes where estado_mes.codcliente= usuarios.regnro and estado_mes.estado='C' order by created_at desc limit 1) IS NULL, 0, 1) AS novedad_c_mes,
-IF( (select estado_anio.regnro from estado_anio where estado_anio.codcliente= usuarios.regnro and estado_anio.estado='C' order by created_at desc limit 1) IS NULL, 0, 1) AS novedad_c_anio 
-FROM `usuarios` 
-			"
-	;
-
-	//fILTRAR
-	if ($argumento !=  "") {
-		$sql_str = 	$sql_str . "   where  usuarios.ruc like '%$argumento%'  or usuarios.cedula like '%$argumento%'  or usuarios.cliente like  '%$argumento%'  ";
-	}
-	//order by
-	$sql_str = $sql_str . "
-ORDER BY
- (select DATEDIFF( CURRENT_TIMESTAMP, pagos.validez) from pagos 
- where pagos.ruc = usuarios.ruc and pagos.dv=usuarios.dv order by pagos.fecha DESC limit 1) DESC,
- 
- IF( (select estado_mes.regnro from estado_mes where estado_mes.codcliente= usuarios.regnro and estado_mes.estado='C' order by created_at desc limit 1) IS NULL, 0 , 1) ,
-
-	IF( (select estado_anio.regnro from estado_anio where estado_anio.codcliente= usuarios.regnro and estado_anio.estado='C' order by created_at desc limit 1) IS NULL , 0 , 1) DESC
-
-	limit 0, 15
-	";
-	 
-
-	$db = \Config\Database::connect();
-	$query = $db->query( $sql_str);
-	$lista_m=  $query->getResult();
-	return  $lista_m;
-	 }
-
-
-	 public function list_priority(){
-
-		/**Parametros POST */
-		$argumento= "";
-		if(  $this->request->getMethod( true )  ==  "POST"){
-			$data=  $this->request->getRawInput();
-			$argumento=  $data['argumento'];
-		}
-		$lista_m=  $this->list_priority_( $argumento);
-//$lista_m = $usu->paginate(10);
-//		$pager =  $usu->pager;
-		if( $this->request->isAJAX())
-		return view("admin/clientes/list", ['clientes'=>  $lista_m ]);
-		else 
-		return view("admin/clientes/index", ['clientes'=> $lista_m  ]);
-		
-	 }
 
 
 
@@ -1040,4 +976,103 @@ dv
 		->set("ultimo_nro",  $numero)
 		->update();
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+//Respecto al cierre de mes
+	public function  novedades()
+	{
+		$res = (new Estado_mes_model())->where("estado", "C")->get()->getResult();
+
+		if (sizeof($res)  >  0)
+		return $this->response->setJSON(['data' => "Hay novedades",  'code' => '200']);
+		else
+		return $this->response->setJSON(['msj' => "Nada",  'code' => '500']);
+	}
+
+//Respecto a la aproximacion del dia de vencimiento para pago de IVA
+	public function verificar_vencimiento_iva(   $ultimo_d){
+
+		$ahora= date("d");
+
+		$dia=(new Calendario_model())->where(  "ultimo_d_ruc",  $ultimo_d )->first();
+		$dia_v= $dia->dia_vencimiento ;
+
+		$diferencia=  $ahora -  $dia_v;
+		$mensaje= "";
+		//si es positivo ya vencio en el mes
+		if(  $diferencia < 0)
+		{
+			$diferencia= abs( $diferencia);
+			$mensaje= "RUC con terminación $ultimo_d: faltan $diferencia dia(s) de tiempo para presentar el IVA " ;
+			return $this->response->setJSON(  ['data'=>   $mensaje ,  'code'=>'200' ]   );
+		}	return $this->response->setJSON(  ['msj'=>  "Nada" ,  'code'=>'500' ]   );
+	}
+
+
+	 private function list_priority_( $argumento){
+		$sql_str=
+		"
+		SELECT `usuarios`.*,
+if( (select DATEDIFF( CURRENT_TIMESTAMP, pagos.validez) from pagos where pagos.ruc = usuarios.ruc and pagos.dv=usuarios.dv order by pagos.fecha DESC limit 1) >=0, 1, 0) as vencido,
+(select DATEDIFF( CURRENT_TIMESTAMP, pagos.validez) from pagos where pagos.ruc = usuarios.ruc and pagos.dv=usuarios.dv order by pagos.fecha DESC limit 1 ) as diasvenci, 
+IF( (select estado_mes.regnro from estado_mes where estado_mes.codcliente= usuarios.regnro and estado_mes.estado<>'L' order by created_at desc limit 1) IS NULL, 0, 1) AS novedad_c_mes,
+IF( (select estado_anio.regnro from estado_anio where estado_anio.codcliente= usuarios.regnro and estado_anio.estado='C' order by created_at desc limit 1) IS NULL, 0, 1) AS novedad_c_anio 
+FROM `usuarios` 
+			"
+	;
+
+	//fILTRAR
+	if ($argumento !=  "") {
+		$sql_str = 	$sql_str . "   where  usuarios.ruc like '%$argumento%'  or usuarios.cedula like '%$argumento%'  or usuarios.cliente like  '%$argumento%'  ";
+	}
+	//order by
+	$sql_str = $sql_str . "
+ORDER BY
+ (select IF(DATEDIFF( CURRENT_TIMESTAMP, pagos.validez) >= 0, 0, 1 ) from pagos 
+ where pagos.ruc = usuarios.ruc and pagos.dv=usuarios.dv order by pagos.fecha DESC limit 1) DESC,
+ 
+ IF( (select estado_mes.regnro from estado_mes where estado_mes.codcliente= usuarios.regnro and estado_mes.estado='C' order by created_at desc limit 1) IS NULL, 0 , 1) DESC,
+
+	IF( (select estado_anio.regnro from estado_anio where estado_anio.codcliente= usuarios.regnro and estado_anio.estado='C' order by created_at desc limit 1) IS NULL , 0 , 1) DESC
+
+	limit 0, 15
+	";
+	 
+
+	$db = \Config\Database::connect();
+	$query = $db->query( $sql_str);
+	$lista_m=  $query->getResult();
+	return  $lista_m;
+	 }
+
+
+	 public function list_priority(){
+
+		/**Parametros POST */
+		$argumento= "";
+		if(  $this->request->getMethod( true )  ==  "POST"){
+			$data=  $this->request->getRawInput();
+			$argumento=  $data['argumento'];
+		}
+		$lista_m=  $this->list_priority_( $argumento);
+//$lista_m = $usu->paginate(10);
+//		$pager =  $usu->pager;
+		if( $this->request->isAJAX())
+		return view("admin/clientes/list", ['clientes'=>  $lista_m ]);
+		else 
+		return view("admin/clientes/index", ['clientes'=> $lista_m  ]);
+		
+	 }
+
 }

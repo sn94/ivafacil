@@ -21,7 +21,7 @@ echo $estilo;
 
 <input type="hidden" id="info-compras" value="<?= base_url("compra/index") ?>">
 <input type="hidden" id="info-ventas" value="<?= base_url("venta/index") ?>">
-<input type="hidden" id="info-ventas-a" value="<?= base_url("venta/index/B") ?>">
+<input type="hidden" id="info-ventas-a" value="<?= base_url("venta/index") ?>">
 <input type="hidden" id="info-retencion" value="<?= base_url("retencion/index") ?>">
 
 <!-- Menu de Usuario -->
@@ -150,7 +150,9 @@ echo $estilo;
 
     async function informe_ventas_anuladas() {
         //Parametros Anio, mes
-        let params = $("#ventas-a-reports").serialize()+"&anulados=B";
+        
+        let params = ($("#ventas-a-reports").serialize()  !=  "") ? $("#ventas-a-reports").serialize() : "";
+        params+=  (  params == ""  ? params : "&") +"anulados=B";
         let loader = "<img  src='<?= base_url("assets/img/loader.gif") ?>'   />";
         $("#tabla-ventas-a").html(loader);
         let req = await fetch($("#info-ventas-a").val(), {

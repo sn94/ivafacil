@@ -231,6 +231,11 @@ $origen = isset($retencion) ?  Utilidades::number_f($retencion->origen) : "W";
     async function guardar(ev) {
         ev.preventDefault();
 
+
+        if ($("input[name=retencion]").val() ==  "") {
+              alert("Por favor ingrese el número de retención");
+              return;
+          }
         //limpiar numericos
         $("input[name=tcambio]").val(
             $("input[name=tcambio]").val().replaceAll(new RegExp(/\.+/g), "").replaceAll(new RegExp(/,+/g), ".")

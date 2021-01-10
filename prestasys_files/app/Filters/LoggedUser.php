@@ -16,6 +16,7 @@ class LoggedUser implements FilterInterface
         $request = \Config\Services::request();
        $uri = $request->uri;
         if (sizeof($uri->getSegments()) > 0 &&  $uri->getSegment(1) == "api") {
+            
             return true;
         } return false;
       /*
@@ -62,7 +63,7 @@ class LoggedUser implements FilterInterface
  
             //&&   $no_acceso_a_login && $auxi  &&  $creacion_usuario
      
-        if (!$session->has('ruc')  ){
+       if (!$session->has('ruc')  ){
             if(  $principal )
             return redirect()->to(base_url("welcome/publico"));
             else

@@ -286,10 +286,18 @@ class Compra extends ResourceController
 		$usu = new Compras_model();
 
 		$data = $this->request->getRawInput();
+		$fecha_compro=  $data['fecha'];
+		$mes_fecha_compro=   date("m",   strtotime( $fecha_compro ) );
+		$anio_fecha_anio=   date("Y",   strtotime( $fecha_compro ) );
+
+
+		if(  (new Cierres())->esta_cerrado($mes_fecha_compro, $anio_fecha_anio)  )
+		return  $this->response->setJSON(  ['msj'=>  "El mes ya esta cerrado",  "code"=>  "500"]);
+
 
 		//Verificar si el periodo-ejercicio esta cerrado o fuera de rango
-		$Operacion_fecha_invalida = (new Cierres())->fecha_operacion_invalida($data['fecha']);
-		if (!is_null($Operacion_fecha_invalida))  return $Operacion_fecha_invalida;
+	//	$Operacion_fecha_invalida = (new Cierres())->fecha_operacion_invalida($data['fecha']);
+	//	if (!is_null($Operacion_fecha_invalida))  return $Operacion_fecha_invalida;
 		//***** Fin check tiempo*/
 
 		if ($this->API_MODE)  $data['origen'] = "A";
@@ -387,10 +395,17 @@ class Compra extends ResourceController
 		$usu = new Compras_model();
 
 		$data = $this->request->getRawInput();
+		$fecha_compro=  $data['fecha'];
+		$mes_fecha_compro=   date("m",   strtotime( $fecha_compro ) );
+		$anio_fecha_anio=   date("Y",   strtotime( $fecha_compro ) );
 
+
+		if(  (new Cierres())->esta_cerrado( $mes_fecha_compro, $anio_fecha_anio)  )
+		return  $this->response->setJSON(  ['msj'=>  "El mes ya esta cerrado",  "code"=>  "500"]);
+		
 		//Verificar si el periodo-ejercicio esta cerrado o fuera de rango
-		$Operacion_fecha_invalida = (new Cierres())->fecha_operacion_invalida($data['fecha']);
-		if (!is_null($Operacion_fecha_invalida))  return $Operacion_fecha_invalida;
+	//	$Operacion_fecha_invalida = (new Cierres())->fecha_operacion_invalida($data['fecha']);
+	//	if (!is_null($Operacion_fecha_invalida))  return $Operacion_fecha_invalida;
 		//***** Fin check tiempo*/
 
 

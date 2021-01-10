@@ -146,9 +146,9 @@ public  static function monthDescr($m=""){
  public static function formato_factura( $arg){
    if( $arg == "" ) return $arg;
    if( strlen( $arg)  == 15 ) return $arg;
-   $p1=  substr( $arg, 0, 3 );
-   $p2= substr(  $arg,  3, 3);
-   $p3= substr( $arg, 6, 7 );
+   $p1=   str_pad(    substr( $arg, 0, 3 )  ,  3  , "0",  STR_PAD_LEFT);
+   $p2=   str_pad(  substr(  $arg,  3, 3),  3,  "0", STR_PAD_LEFT  );
+   $p3=  str_pad( substr( $arg, 6, 7 ),  3,  "0",  STR_PAD_LEFT);
    return "$p1-$p2-$p3";
  }
  

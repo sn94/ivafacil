@@ -153,7 +153,13 @@ echo $estilo;
 
     async function informe_ventas_anuladas() {
         //Parametros Anio, mes
-        let params = $("#ventas-a-reports").serialize()+ "&cliente="+getClienteId()+"&anulados=B";
+
+        let params = ($("#ventas-a-reports").serialize()  !=  "") ? $("#ventas-a-reports").serialize() : "";
+        params+=  (  params == ""  ? params : "&") + "cliente="+getClienteId()+"&anulados=B";
+
+
+
+       // let params = $("#ventas-a-reports").serialize()+ "&cliente="+getClienteId()+"&anulados=B";
         let loader = "<img  src='<?= base_url("assets/img/loader.gif") ?>'   />";
         $("#tabla-ventas-a").html(loader);
         let req = await fetch($("#info-ventas-a").val(), {

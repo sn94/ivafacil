@@ -166,6 +166,8 @@
 <body style="background: #060606c9;">
 
 
+    <input type="hidden" id="ADMIN_INDEX" value="<?= base_url("admin/index") ?>">
+
     <div class="sufee-login d-flex align-content-center flex-wrap">
         <div class="container">
             <div class="login-content">
@@ -175,7 +177,7 @@
                 <div class="login-form pt-0  bg-light ">
 
                     <?php echo view("plantillas/message");  ?>
-                    <form class="pt-0 pr-0 m-0 bg-light pb-2" action="<?= base_url('admin/sign-in') ?>" method="POST">
+                    <form onsubmit="login(event)" class="pt-0 pr-0 m-0 bg-light pb-2" action="<?= base_url('admin/sign-in') ?>" method="POST">
 
                         <div class="row m-0 " style="background-color: #dfe8df;">
                             <div class="col-12 col-md-6">
@@ -212,7 +214,7 @@
                         <button type="submit" class="btn btn-success btn-flat m-b-30 m-t-30">INGRESAR</button>
                         <div class="checkbox">
                             <label>
-                                <input  onchange="olvidar(event)" <?= isset($remember) ? 'checked' : '' ?> type="checkbox" name="remember" value="S"> <span style="font-weight: 600;color: #555555;">Recordar contraseña</span>
+                                <input onchange="olvidar(event)" <?= isset($remember) ? 'checked' : '' ?> type="checkbox" name="remember" value="S"> <span style="font-weight: 600;color: #555555;">Recordar contraseña</span>
                             </label>
                             <label class="pull-right">
                                 <a style="color: #fd4040; font-weight: 600;" href="<?= base_url("admin/olvido-password") ?>">Olvidaste tu contraseña?</a>
@@ -235,10 +237,30 @@
     <script src="<?= base_url("assets/template/assets/js/main.js") ?>"></script>
 
     <script>
+    $= jQuery;
         function olvidar(ev) {
 
             if (!ev.target.checked)
                 document.querySelector("input[name=pass]").value = "";
+        }
+
+
+        async function login(ev) {
+
+            ev.preventDefault();
+            let setting = {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-urlencoded"
+                },
+                body: $(ev.target).serialize()
+            };
+
+            let req = await fetch(ev.target.action, setting);
+            let resp = await req.json();
+            if ("data" in resp)
+                window.location = $("#ADMIN_INDEX").val();
+            else alert(resp.msj);
         }
     </script>
 

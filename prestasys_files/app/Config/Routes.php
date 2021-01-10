@@ -78,6 +78,7 @@ $routes->get('/api/estados-mes/(:num)/(:num)', 'Cierres::resumen_mes_session/$1/
 $routes->get('/api/estados-anio/(:num)/(:num)', 'Cierres::resumen_anio/$1/$2'); 
 $routes->get('/api/estados-anio/(:num)', 'Cierres::resumen_anio_session/$1'); 
 $routes->get('/api/cierre-mes', 'Cierres::cierre_mes'); 
+$routes->get('/api/cierre-mes/(:num)/(:num)', 'Cierres::cierre_mes/$1/$2'); // Nueva
 $routes->get('/api/cierre-anio', 'Cierres::cierre_anio'); 
 $routes->get('/api/totales-mes/(:num)/(:num)',   'Cierres::totales_mes_session/$1/$2');
 $routes->get('/api/totales-anio/(:num)',   'Cierres::totales_anio_session/$1');
@@ -142,9 +143,15 @@ $routes->post('/admin/clientes/pagos', 'Pagos::create');
 $routes->get("/admin/clientes/list-pagos/(:num)",  'Pagos::index/$1');
 $routes->get("/admin/clientes/list-pagos/(:num)/(:num)/(:num)",  'Pagos::index/$1/$2/$3');
 $routes->post("/admin/clientes/informes/(:alpha)/(:num)",  'Pagos::informes/$1/$2');
+$routes->get('/admin/clientes/pagos-iva/(:num)', 'Pagos_iva::index/$1'); 
+$routes->get("/admin/clientes/list-pagos-iva/(:num)",  'Pagos_iva::index/$1');
+$routes->get('/admin/clientes/pagos-iva/procesar/(:num)', 'Pagos_iva::create/$1'); 
+$routes->post('/admin/clientes/pagos-iva/procesar', 'Pagos_iva::create'); 
 //admin clientes novedades
 $routes->get('/admin/clientes/novedades', 'Usuario::novedades'); 
+$routes->get('/admin/clientes/novedades-venci-iva/(:num)', 'Usuario::verificar_vencimiento_iva/$1'); 
  //admin cierres
+ $routes->get('/admin/view-cierre-mes/(:num)', 'Cierres::view_cierre_mes/$1'); //HTML
 $routes->get('/admin/cierre-mes/(:num)', 'Cierres::info_mes_cierre/$1'); 
 $routes->get('/admin/cierre-mes/(:num)/(:num)/(:num)', 'Cierres::info_mes_cierre/$1/$2/$3'); 
 $routes->get('/admin/estados-mes/(:num)/(:num)/(:num)', 'Cierres::resumen_mes/$1/$2/$3'); 

@@ -1,14 +1,12 @@
 <?php
  namespace App\Controllers;
-
-use App\Helpers\Utilidades;
+ 
 use App\Libraries\Correo;
 use App\Libraries\pdf_gen\PDF;
-use App\Models\Ciudades_model;
-use App\Models\Estado_anio_model; 
-use App\Models\Pago_model; 
-use App\Models\Planes_model;
-use App\Models\Rubro_model;
+use App\Models\Estado_mes_model;
+use App\Models\Pago_model;
+use App\Models\Pagos_iva_model;
+use App\Models\Planes_model; 
 use App\Models\Usuario_model;
 use CodeIgniter\Controller; 
 use Exception;
@@ -17,10 +15,10 @@ use Exception;
 /**
  * 
  * 
- * Pagos de clientes por los servicios
+ * Pagos del IVA por el proveedor de servicios
  */
 
-class Pagos extends Controller {
+class Pagos_iva extends Controller {
  
  
 
@@ -66,112 +64,56 @@ class Pagos extends Controller {
 		}else{      return session("id"); }
 		
 	}
-	 
-
-	 
- 
-
-	 
- 
-	/**
-	 * 
-	 * PRIMER PAGO (VERSION TRIAL)
-	 */
-
-	 private function prueba_gratuita( $CODCLIENTE){
-		$data = $this->request->getRawInput();
-		$PLAN= (new Planes_model())->join("usuarios", "usuarios.tipoplan=planes.regnro")
-		->where("usuarios.regnro", $CODCLIENTE)
-		->first();
-
-		$DIASPLAN=  $PLAN->dias;
-		//CALCULO DE FECHA CADUCIDAD PRUEBA GRATIS
-		$validez= date("Y-m-d H:i:s",  strtotime( date("Y-m-d H:i:s")." + $DIASPLAN days"  )  );
-		$datos = [
-			'ruc'=> $data['ruc'],
-			'dv'=> $data['dv'],
-			'fecha' => date("Y-m-d H:i:s"),
-			"validez"=>  $validez,
-			"plan" => $data['tipoplan'],
-			"concepto" => "PRUEBA GRATUITA",
-			"precio" => "0",
-			"cliente" => $CODCLIENTE, 
-			"estado" => "A"
-		];
-		$pago = new Pago_model();
-		$pago->insert( $datos);
-	 }
-
-
- 
-
- 
- 
 
 
 
 
 
- 
 
- 
-	
-	public function index($id=NULL, $MES= NULL, $ANIO= NULL)
-	{						//cliente id   mes  anio
-		$mes= is_null(  $MES )?  date("m") :  $MES;
-		$anio=  is_null(  $ANIO ) ?  date("Y") : $ANIO ;
+	public function index($id = NULL)
+	{
+		//pendientes de pago
 
-		
-		$pagos =	(new Pago_model())->where("cliente",  $id)
-			->select(" pagos.regnro, pagos.comprobante, pagos.fecha, pagos.created_at, planes.descr as plan")
-			->where("month(pagos.fecha)", $mes)
-			->where("year(pagos.fecha)", $anio)
-			->join(
-				"planes",
-				"planes.regnro=pagos.plan"
-			);
-		$lista_m = $pagos->paginate(10);
-		$pager =  $pagos->pager;
-
-		if(  $this->isAPI())
-		return $this->response->setJSON(  ['data'=>  $lista_m  ,  'code'=>  '200'  ]);
-		else
-		return view("admin/clientes/pago_servicio/grill_pagos",  ['pagos' =>  $lista_m, "pager" =>  $pager,  'year'=>  $anio, 'month'=>  $mes]);
-
+		$pendientes = (new Estado_mes_model())->where("estado <>", "L")
+		->where("codcliente", $id)->get()->getResult();
+		 
+		if (
+			$this->request->isAJAX()
+		)
+		return view("admin/clientes/pago_iva/grill_pagos_pendientes",  ['pagos_pendientes' =>  $pendientes]);
+		else {
+			return view("admin/clientes/pago_iva/pagos",  ['pagos_pendientes' =>  $pendientes, 'CLIENTE' => $id]);
+		}
 	}	
 	
 	
-	public function create(  $id= null){
+	public function create(  $id= null){//ID ESTADO MES
 
 		if( $this->request->getMethod( true) == "GET")
 		{	
-			$mes=  date("m") ;
-			$anio=   date("Y") ;
-			return view( "admin/clientes/pago_servicio/pagos", ['CLIENTE'=>  $id,  'year'=>  $anio, 'month'=>  $mes]);}
+			 
+			$estado_mes=  ( new Estado_mes_model())->find(  $id );
+			return view( "admin/clientes/pago_iva/form", ['ESTADO_MES'=>  $estado_mes ]);}
 		else 
 
 		{
-			$data_req = $this->request->getRawInput();
-			$Cliente_cod = $data_req['cliente'];
-			$Cliente_datos = (new Usuario_model())->find($Cliente_cod);
-			$PlanDatos= (new Planes_model())->find(  $Cliente_datos->tipoplan);
-			//CALCULO DE FECHA CADUCIDAD PRUEBA GRATIS
-			$DIASPLAN = $PlanDatos->dias;
-			$validez = date("Y-m-d H:i:s",  strtotime(date("Y-m-d H:i:s") . " + $DIASPLAN days"));
-			$datos_plus = [
-			 
-				"validez" =>  $validez,
-				"plan" => $Cliente_datos->tipoplan, 
-				"precio" => $PlanDatos->precio,
-			];
-			$datos= array_merge( $data_req, $datos_plus );
-			$pago = new Pago_model();
+			$datos = $this->request->getRawInput();
+			$pago = new Pagos_iva_model();
 			//transaccion
 			$db = \Config\Database::connect();
 
 			$db->transStart();
 			try {
 				$pago->insert($datos);
+				//actualizar estado mes a Liquidado
+				(new Estado_mes_model())->where("codcliente", $datos['codcliente'])
+				->where("ruc", $datos['ruc'])
+				->where("dv", $datos['dv'])
+				->where("mes", $datos['mes'])
+				->where("anio", $datos['anio'])
+				->set( ["estado"=> "L"])->update();
+				//Comunicar al cliente su cierre
+				$this->email_iva_pagado(  $datos['codcliente'],  ['fecha_pago'=> $datos['fecha'] , 'mes'=>$datos['mes'],   'anio'=>$datos['anio']  ]  );
 				$db->transCommit();
 				return $this->response->setJSON(['data' => "REGISTRADO",  'code' => "200"]);
 			} catch (Exception $ex) {
@@ -192,23 +134,17 @@ class Pagos extends Controller {
 	/**
 	 * recordatorio de pago
 	 */
-	public function email_recordar_pago( $CODCLIENTE= NULL){
+	public function email_iva_pagado( $CODCLIENTE= NULL, $params){
 		/*******Envio de correo */
 		$Cliente= (new Usuario_model())->find( $CODCLIENTE);
-		
-		$destinatario=  $Cliente->email;
-
-		//obtener fecha de vencimiento del plan segun ultimo pago
-		$ultimopago= (new Pago_model())->where("cliente", $CODCLIENTE)->orderBy("created_at", "DESC")->first();
-		$vencimiento=  $ultimopago->validez;
-		$dest=  $destinatario == "" ? $this->request->getRawInput("email") :  $destinatario;
-		//parametro
-		$parametros= ['vencimiento'=>  $vencimiento ];
+		$destinatario=  $Cliente->email; 
+		//parametro 
+		$parametros=   array_merge( $params   	,['cliente'=> $Cliente->cliente]  );
 		$correo= new Correo();
-		$correo->setDestinatario( $dest);
-		$correo->setAsunto("Recordatorio de pago");
+		$correo->setDestinatario( $destinatario);
+		$correo->setAsunto("Aviso de Liquidación de IVA");
 		$correo->setParametros( $parametros );
-		$correo->setMensaje(   "usuario/recordatorio_email" );
+		$correo->setMensaje(   "admin/clientes/pago_iva/email_iva_pagado" );
 		$correo->enviar();
 		/********* */
 	}
