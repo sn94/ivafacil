@@ -1,5 +1,6 @@
 <?php
 
+use App\Controllers\Pagos_iva;
 use App\Models\Usuario_model;
 
 $NOMBRE_CLIENTE = "";
@@ -8,7 +9,7 @@ if (!is_null($DATA_CLI))
     $NOMBRE_CLIENTE =   $DATA_CLI->cliente . " RUC: " . $DATA_CLI->ruc . "-" . $DATA_CLI->dv;
 ?>
 
-<?= $this->extend("admin/layout/index") ?>
+<?= $this->extend("layouts/index_cliente") ?>
 <?= $this->section("titulo") ?>
 Bienvenido
 <?= $this->endSection() ?>
@@ -110,7 +111,7 @@ Bienvenido
                         </div>
                     </div>
                     <div class="card-body">
-
+                    
                     </div>
 
                 </div>
@@ -130,7 +131,13 @@ Bienvenido
         ?>
         <!-- TABLA PAGOS -->
         <div class="row" id="tabla-pagos">
-            <?= view("admin/clientes/pago_iva/grill_pagos_pendientes") ?>
+            <?php
+
+
+            echo view("pago_iva/grill_pagos_pendientes");
+
+            ?>
+
         </div>
         <!-- end PAGOS -->
 
@@ -258,7 +265,7 @@ Bienvenido
                 let ANIO = $("#pagos-reports select[name=year]").val();
 
                 $("#tabla-pagos").html(showLoader());
-                let form = await fetch("<?= base_url("admin/clientes/list-pagos-iva/" . $CLIENTE) ?>", {
+                let form = await fetch("<?= base_url("pagos-iva/index/" . $CLIENTE) ?>", {
                     headers: {
                         "X-Requested-With": "XMLHttpRequest"
                     },
@@ -272,9 +279,9 @@ Bienvenido
 
             async function actualizar_grilla_pagos_realizados() {
 
-
+                 
                 $("#tabla-pagos").html(showLoader());
-                let form = await fetch("<?= base_url("admin/clientes/list-pagos-iva/" . $CLIENTE) ?>/L", {
+                let form = await fetch("<?= base_url("pagos-iva/index/" . $CLIENTE) ?>/L", {
                     headers: {
                         "X-Requested-With": "XMLHttpRequest"
                     },
@@ -284,6 +291,7 @@ Bienvenido
                 $("#tabla-pagos").html(form_R);
                 $("ul.pagination li").addClass("btn btn-dark btn-sm").css("font-weight", "600");
             }
+
 
 
             async function mostrar_form(ev) {

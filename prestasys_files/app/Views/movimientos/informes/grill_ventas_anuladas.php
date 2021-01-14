@@ -23,7 +23,7 @@ $ventas_t = 0;
 </script>
 <form id="ventas-a-reports" method="POST" action="<?= base_url("venta/informes/PDF") ?>" target="_blank">
     <!--cargar anios -->
-    <select onchange="$('#download-a-1').val('');informe_ventas_anuladas();" name="year" style="font-size: 11px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
+    <select onchange="$('#download-a-1').val('');informe_ventas_anuladas();" name="year" style="display: none;font-size: 11px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
         <?php
         for ($m = 2019; $m <= date("Y"); $m++) {
             if ($year ==  $m)
@@ -35,7 +35,7 @@ $ventas_t = 0;
     </select>
 
     <!--cargar meses -->
-    <select onchange="$('#download-a-1').val('');informe_ventas_anuladas();" name="month" style="font-size: 11px; border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
+    <select onchange="$('#download-a-1').val('');informe_ventas_anuladas();" name="month" style="display: none;font-size: 11px; border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
         <?php
         for ($m = 1; $m <= 12; $m++) {
             $nom_mes = Utilidades::monthDescr($m);

@@ -5,6 +5,7 @@ use App\Helpers\Utilidades;
 $compras_total_10 = 0;
 $compras_total_5 = 0;
 $compras_total_ex = 0;
+$compra_total_iva= 0;
 $compras_t = 0;
 ?>
 
@@ -26,7 +27,7 @@ $compras_t = 0;
 
     <!--cargar anios -->
     <input type="hidden" name="cliente"  value="<?=$CLIENTE?>">
-    <select onchange="$('#download-2').val('');informe_compras();" name="year" style="font-size: 11px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
+    <select onchange="$('#download-2').val('');informe_compras();" name="year" style="display:none;font-size: 11px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
         <?php
         for ($m = 2019; $m <= date("Y"); $m++) {
             if ($year ==  $m)
@@ -38,7 +39,7 @@ $compras_t = 0;
     </select>
 
     <!--cargar meses -->
-    <select onchange="$('#download-2').val('');informe_compras();" name="month" style="font-size: 11px; border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
+    <select onchange="$('#download-2').val('');informe_compras();" name="month" style="display:none;font-size: 11px; border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
         <?php
         for ($m = 1; $m <= 12; $m++) {
             $nom_mes = Utilidades::monthDescr($m);
@@ -75,6 +76,7 @@ $compras_t = 0;
             <th class="p-0 text-right">EX</th>
             <th class="p-0 text-right">5%</th>
             <th class="p-0 text-right">10%</th>
+            <th class="p-0 text-right">IVA</th>
             <th class="p-0 text-right">TOTAL</th>
 
         </tr>
@@ -87,6 +89,7 @@ $compras_t = 0;
                 <td class="pb-0 text-right"> <?= Utilidades::number_f($it->importe3) ?></td>
                 <td class="pb-0 text-right"> <?= Utilidades::number_f($it->importe2) ?> </td>
                 <td class="pb-0 text-right"> <?= Utilidades::number_f($it->importe1) ?></td>
+                <td class="pb-0 text-right"> <?= Utilidades::number_f($it->iva1+ $it->iva2) ?></td>
                 <td class="pb-0 text-right"> <?= Utilidades::number_f($it->total) ?></td>
 
             </tr>
@@ -94,6 +97,7 @@ $compras_t = 0;
             $compras_total_10 +=  intval($it->importe1);
             $compras_total_5 +=  intval($it->importe2);
             $compras_total_ex +=  intval($it->importe3);
+            $compra_total_iva+=  $it->iva1+ $it->iva2;
             $compras_t += intval($it->total);
         endforeach; ?>
     </tbody>
@@ -104,6 +108,7 @@ $compras_t = 0;
             <td class="text-right" id="compra-total-ex"> <?= $compras_total_ex ?> </td>
             <td class="text-right" id="compra-total-5"> <?= $compras_total_5 ?> </td>
             <td class="text-right" id="compra-total-10"> <?= Utilidades::number_f($compras_total_10) ?> </td>
+            <td class="text-right" id="compra-total-iva"> <?= Utilidades::number_f($compra_total_iva) ?> </td>
             <td class="text-right" id="compra-total"> <?= Utilidades::number_f($compras_t) ?> </td>
         </tr>
 

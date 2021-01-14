@@ -74,7 +74,7 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 }
 
 	
-	public function totales( $CODCLIENTE = NULL, $MES= NULL, $ANIO= NULL,  $RETORNO=  "JSON"){
+	public function totales( $CODCLIENTE, $MES, $ANIO,  $RETORNO=  "JSON"){
 
 
 		//$CODCLIENTE=  is_null($cod_cliente) ?  $this->getClienteId()  :   $cod_cliente;
@@ -90,7 +90,10 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 		 $saldo_a= $this->__saldo_anterior(   $CODCLIENTE, $MES, $ANIO); 
 		 $saldo=  $s_contri -  $s_fisco;
 		 $response=  \Config\Services::response();
-		
+		 $total_en_pagos = (new Estado_mes_model())->select('if( SUM(pago) is null, 0, SUM(PAGO) ) AS PAGOS ')
+		 ->where("mes",  $MES)
+		 ->where("codcliente",  $CODCLIENTE)->where("anio",  $ANIO)
+		 ->first();
 		 $Montos= [
 				 
 			'compras_total_10'=> intval($cf->total10) ,
@@ -107,7 +110,8 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 
 			'retencion' => (intval($reten->importe)),
 			'saldo' => $saldo,
-			'saldo_anterior'=>  $saldo_a
+			'saldo_anterior'=>  $saldo_a,
+			'pago'=>  $total_en_pagos->PAGOS
 		 ];
 		  
 		 if(  $RETORNO !=  "JSON")   return  $Montos;
@@ -152,17 +156,24 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 		->where("anio", $ANIO)
 		->where("mes",  intval($MES) - 1 )
 		->first();
-		//Aun no hay cierres
+		//Aun no hay cierres EN EL ANIO
 		if (is_null($ANTERIOR_S)) {
 
 		 
 			$estadoanio= (new Estado_anio_model())->where("codcliente", $CODCLIENTE)
 			->where("anio",  $ANIO)->first();
 
-			return  $estadoanio->saldo_inicial;
-			//$SALDO_INI = (new Usuario_model())->find($CODCLIENTE);
-			//$inicial =  $SALDO_INI->saldo_IVA;//El saldo para comenzar el anio
-			//return   $inicial;
+			if( is_null( $estadoanio)){
+
+				
+			$SALDO_INI = (new Usuario_model())->find($CODCLIENTE);
+			$inicial =  $SALDO_INI->saldo_IVA;//El saldo para comenzar el anio
+			$this->crear_ejercicio($ANIO, $inicial );
+			return   $inicial;
+			}
+			else
+			{ return  $estadoanio->saldo_inicial;}
+			
 		} else
 		return   (intval($ANTERIOR_S->saldo) + intval( $ANTERIOR_S->saldo_inicial));
 	}
@@ -258,8 +269,8 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 			return $this->response->setJSON(['msj' => "Operación no disponible. Revise su estado de pago",  'code' => "500"]);
 		
 		
-		if( $this->mes_anio_fuera_de_tiempo( $MES, $ANIO) )
-		return $this->response->setJSON(['msj' => "No permitido. Mes y año no válidos",  'code' => "500"]);
+		//if( $this->mes_anio_fuera_de_tiempo( $MES, $ANIO) )
+		//return $this->response->setJSON(['msj' => "No permitido. Mes y año no válidos",  'code' => "500"]);
 
 			//no cerrar un mes dos veces
 		if( $this->esta_cerrado(  $MES,  $ANIO) )
@@ -267,7 +278,7 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 			if( $this->esta_cerrado_anio( $ANIO ))
 			return $this->response->setJSON(['msj' => "No permitido. El Ejercicio ya cerró.",  'code' => "500"]);
 			else {
-				$nom_mes= Utilidades::monthDescr( date("m")  );
+				$nom_mes= Utilidades::monthDescr( $MES  );
 				return $this->response->setJSON(['msj' => "No permitido. El Mes de $nom_mes ya está cerrado.",  'code' => "500"]);
 			}
 		
@@ -276,9 +287,13 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 
 			$cierre =  new Estado_mes_model();
 			//numeros
-			$cf =  (new Compra())->total_( $CODCLIENTE);
-			$df = (new Venta())->total_( $CODCLIENTE);
-			$reten = (new Retencion())->total_( $CODCLIENTE);
+			$cf =  (new Compra())->total_( $CODCLIENTE,  $MES);
+			$df = (new Venta())->total_( $CODCLIENTE, $MES);
+			$reten = (new Retencion())->total_( $CODCLIENTE, $MES);
+
+			$total_importe_compras=  $cf->total10 +  $cf->total5;
+			$total_importe_ventas=  $df->total10 +  $df->total5;
+			$total_importe_retencion=  $reten->importe;
 
 			//A favor del contribuyente
 			$s_contri =  intval($cf->iva1) +  intval($cf->iva2) + intval($reten->importe);
@@ -287,34 +302,52 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 			//Saldo
 			$saldo_ante= $this->__saldo_anterior( $CODCLIENTE, $MES, $ANIO);
 			$saldo = ( $s_contri    ) -  $s_fisco;
-			$mes = date("m");
-			$anio = date("Y");
+			 
 			$data_cliente= (new Usuario_model())->find(  $CODCLIENTE );
+			//PAGOS
+			$total_en_pagos = (new Estado_mes_model())->select('if( SUM(pago) is null, 0, SUM(PAGO) ) AS PAGOS ')
+
+			->where("codcliente",  $CODCLIENTE)
+			->where("mes",  $MES)
+			->where("anio",  $ANIO)
+			->first();
 			$DATOS = [
 				'codcliente' => $CODCLIENTE,
 				'ruc'=>  $data_cliente->ruc,
 				'dv'=>   $data_cliente->dv,
-				'mes' => $mes,
-				'anio' => $anio,
+				'mes' => $MES,
+				'anio' => $ANIO,
+				't_impo_compras'=> $total_importe_compras,
+				't_impo_ventas'=> $total_importe_ventas,
+				't_impo_retencion'=>  $total_importe_retencion,
 				't_i_compras' => (intval($cf->iva1) +  intval($cf->iva2)),
 				't_i_ventas' => $s_fisco,
 				't_retencion' => (intval($reten->importe)),
 				'saldo' => $saldo,
 				'saldo_inicial'=>  $saldo_ante,
-				'estado'=> 'C'
+				'estado'=> 'C',
+				'pago'=> $total_en_pagos->PAGOS
 			];
 
+			$db=  \Config\Database::connect();
+			$respuesta="";
+			$db->transStart();
 			try {
-				//var_dump(  $DATOS);
+			 
 				$id_cierre= $cierre->insert($DATOS);
+				if( $MES == "12") //CERRAR ANIO
+				$this->cierre_anio(  $ANIO);
+				$db->transCommit();
 				//Notificar
 				// ....
 				$this->email_cierre_mes(  $id_cierre);
-				return $this->response->setJSON(['data' =>  $id_cierre,  'code' => "200"]);
+				$respuesta= ['data' =>  $id_cierre,  'code' => "200"];
 			} catch (Exception $ex) {
-				return $this->response->setJSON(['msj' => "Comunique este error a su proveedor de servicios: $ex",  'code' => "500"]);
+				$db->transRollback();
+				$respuesta= ['msj' => "Comunique este error a su proveedor de servicios: $ex",  'code' => "500"] ;
 			}
-		
+			$db->transComplete();
+			return $this->response->setJSON(  $respuesta);
 	}
 
 
@@ -341,7 +374,7 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 		 $Condicion
 		union 
 		
-		select  'IVA VENTA' as Descripcion, factura as  comprobante, fecha,importe1 as IVA_10, importe2 as IVA_5, importe3 as EXENTA,  total from ventas 
+		select  if( estado='B', 'IVA VENTA (ANULADA)', 'IVA VENTA' )  as Descripcion, factura as  comprobante, fecha,importe1 as IVA_10, importe2 as IVA_5, importe3 as EXENTA,  total from ventas 
 		  $Condicion 
 		union
 		
@@ -392,6 +425,7 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 		where("estado","C")->orderBy("created_at", "DESC")->first();
 		$MES= is_null( $UltimoCierre) ? ( $MES   )  :   $UltimoCierre->mes;
 		$ANIO= is_null( $UltimoCierre) ? ( $ANIO   )  :   $UltimoCierre->anio;
+
 		$RESPUESTA=  $this->resumen_mes( $cod_cliente, $Month, $Year);
 	//	(new Estado_mes_model())->where("regnro", $UltimoCierre->regnro )->set("estado", "R")->update();
 		 return $RESPUESTA;
@@ -446,11 +480,11 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 				$inicial=  $SALDO_INI->saldo_IVA;
 				return   $inicial;
 			}else 
-			return  $PRESENTE_ANIO->saldo_inicial;
+			return  ($PRESENTE_ANIO->saldo_inicial );
 		
 			
 		}else 
-		return   $ANTERIOR_S->saldo;
+		return   ($ANTERIOR_S->saldo_inicial + $ANTERIOR_S->saldo);
 	}
 	
 
@@ -467,8 +501,13 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 		$reten= (new Retencion())->total_anio( $CLIENTE , $ANIO);
 	 
 		$YEAR= is_null(  $ANIO)  ? date("Y") :   $ANIO ;
+
+		//Total en importes
+		$total_importe_compras= $cf->total10 +  $cf->total5;
+		$total_importe_ventas= $df->total10+  $df->total5;
+		$total_importe_retenci= $reten->importe;
+
 		 //A favor del contribuyente
-		// $saldo_ante_anio= $this->__saldo_anterior_anio();// NO
 		$s_contri=  intval(  $cf->iva1) +  intval($cf->iva2) + intval(  $reten->importe );
 		 //A favor de hacienda
 		 $s_fisco=  intval(  $df->iva1) +  intval($df->iva2 );
@@ -482,9 +521,16 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 		$fv_cant=  $fv_anuladas->cantidad;
 		$fv_tot=  $fv_anuladas->total ;
 		$fv_iva=  $fv_anuladas->total_iva ;
+		//total en pago
+		$total_en_pagos = (new Estado_mes_model())->select('if( SUM(pago) is null, 0, SUM(PAGO) ) AS PAGOS ')
+		->where("codcliente",  $CLIENTE)->where("anio",  $YEAR)
+		->first();
 
 		 return   
 			[
+				'importe_compras'=> $total_importe_compras,
+				'importe_ventas'=> $total_importe_ventas,
+				'importe_retenc'=>  $total_importe_retenci,
 				'compras' => (intval($cf->iva1) +  intval($cf->iva2)),
 				'ventas' => $s_fisco,
 				'ventas_anuladas_cant'=> $fv_cant,
@@ -492,7 +538,8 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 				'ventas_anuladas_iva'=> $fv_iva,
 				'retencion' => (intval($reten->importe)),
 				'saldo' => $saldo,
-				'saldo_inicial'=> $saldo_ini
+				'saldo_inicial'=> $saldo_ini,
+				'pago'=>  $total_en_pagos->PAGOS
 			];
 		  
 	}
@@ -562,8 +609,8 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 		if (! ((new Usuario())->servicio_habilitado($CODCLIENTE) ) )
 			return $this->response->setJSON(['msj' => "Operación no disponible. Revise su estado de pago",  'code' => "500"]);
 		//no cerrar un ejercicio dos veces
-		if( $this->mes_anio_fuera_de_tiempo( NULL,  $ANIO) )
-		return $this->response->setJSON(['msj' => "No permitido. Mes y año no válidos",  'code' => "500"]);
+		//if( $this->mes_anio_fuera_de_tiempo( NULL,  $ANIO) )
+		//return $this->response->setJSON(['msj' => "No permitido. Mes y año no válidos",  'code' => "500"]);
 		if( $this->esta_cerrado_anio(  $ANIO))
 		return $this->response->setJSON(['msj' => "No permitido. El Año $ANIO ya está cerrado.",  'code' => "500"]);
 
@@ -572,6 +619,10 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 	
 			//numeros
 			$totales_cierre= $this->__totales_anio( $CODCLIENTE, $ANIO );
+			$total_importe_compras=  $totales_cierre['importe_compras'];
+			$total_importe_ventas=  $totales_cierre['importe_ventas'];
+			$total_importe_retenc=  $totales_cierre['importe_retenc'];
+
 			$cf =  $totales_cierre['compras'];
 			$df = $totales_cierre['ventas'];
 			$reten = $totales_cierre['retencion'];
@@ -583,8 +634,13 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 			//Saldo
 			$saldo_ante= $cerrado->saldo_inicial; // $this->__saldo_anterior();
 			$saldo = ( $s_contri   ) -  $s_fisco; 
-			$anio = date("Y");
+			$anio = $ANIO;
 			$data_cliente= (new Usuario_model())->find(  $CODCLIENTE );
+			//Obtener total en pagos
+			$total_en_pagos = (new Estado_mes_model())->select('if( SUM(pago) is null, 0, SUM(PAGO) ) AS PAGOS ')
+			->where("codcliente",  $CODCLIENTE)->where("anio",  $ANIO)
+			->first();
+			 
 			$DATOS = [
 				'codcliente' => $CODCLIENTE, 
 				'ruc'=>  $data_cliente->ruc,
@@ -593,8 +649,12 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 				't_i_compras' => $cf,
 				't_i_ventas' => $df,
 				't_retencion' => $reten ,
-				'saldo' => $saldo,
-				'estado'=> "C"
+				't_impo_compras'=> $total_importe_compras,
+				't_impo_ventas'=> $total_importe_ventas,
+				't_impo_retencion'=> $total_importe_retenc,
+				'saldo' => $saldo ,
+				'estado'=> "C",
+				'pago'=>  $total_en_pagos->PAGOS
 			];
 			$db= \Config\Database::connect();
 
@@ -607,6 +667,9 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 			(new Usuario_model())->where("regnro", $this->getClienteId())->set(['saldo_IVA' =>  $anio_a_Cerrar])
 				->update();
 			$db->transCommit();
+			//Crear otro ejercicio
+			$SaldoInicialNuevo= $saldo + $saldo_ante;
+			$this->crear_ejercicio(   $ANIO+1 , $SaldoInicialNuevo);
 			//Notificar 
 			$this->email_cierre_anio($cerrado->regnro);
 			$respuesta = $this->response->setJSON(['data' =>  $cerrado->regnro,  'code' => "200"]);
@@ -641,15 +704,18 @@ public function resumen_anio_session(  $Year ){
 
 		//el mes actual ya se cerro? sino es asi, calcular su total, porque aun no se incluye en la tabla de estados_meses
 		if(  ! $this->esta_cerrado( date("m"), $ANIO)){
+			//----------LOS SALDOS EN ESTE MES, totales del mes actual aun no cerrado
 			$TOTAL_COMPRA_m= (new Compra())->total_mes( $cod_cliente,  date("m"),  $ANIO);
-			$TOTAL_VENTA_m= (new Venta())->total_anio( $cod_cliente,  date("m"), $ANIO);
-			$TOTAL_RETENCION_m= (new Retencion())->total_anio( $cod_cliente,  date("m"), $ANIO);
+			$TOTAL_VENTA_m= (new Venta())->total_mes( $cod_cliente,  date("m"), $ANIO);
+			$TOTAL_RETENCION_m= (new Retencion())->total_mes( $cod_cliente,  date("m"), $ANIO);
 
 			$total_ahora_compras= ( intval($TOTAL_COMPRA_m->iva1) +  intval($TOTAL_COMPRA_m->iva2) );
 			$total_ahora_ventas=  ( intval($TOTAL_VENTA_m->iva1) +  intval($TOTAL_VENTA_m->iva2) );
 			$total_retencion=  intval($TOTAL_RETENCION_m->importe );
 			$saldo= ( $total_ahora_compras+$total_retencion)  -  $total_ahora_ventas;
 			$saldo_anterior_a_este=  $this->saldo_mes_anterior( $cod_cliente,  date("m"),   $ANIO);
+			/************** END TOTAL DEL MES ACTUAL */
+
 			$ESTADO_ESTE_MES= [
 				'mes'=>  date("m"),
 				'anio'=> $ANIO,
@@ -747,21 +813,25 @@ public function resumen_anio_session(  $Year ){
 
 	
 	//Agrega un registro para nuevo ejercicio si aun no existe uno
-	public function crear_ejercicio(){
+	public function crear_ejercicio(  $ANIO=  NULL,  $SALDO_INICIAL = NULL){
+
+		$Anio=  is_null( $ANIO) ? date("Y") :   $ANIO;
+		$SaldoIni= is_null( $SALDO_INICIAL) ? 0  :  $SALDO_INICIAL;
+
 		$cliente= $this->getClienteId();
 		$cliente_obj= (new Usuario_model())->find(  $cliente );
-		$ejercicio_listo= (new Estado_anio_model())->where( "codcliente", $cliente)->where("anio", date("Y"))->first();
+		$ejercicio_listo= (new Estado_anio_model())->where( "codcliente", $cliente)->where("anio", $Anio)->first();
 		if( is_null( $ejercicio_listo )){
 			$nuevo_ejercicio = [
 				'codcliente' => $cliente, 
 				'ruc'=> $cliente_obj->ruc,
 				'dv'=> $cliente_obj->dv,
-				'anio' => date("Y"),
+				'anio' =>  $Anio,
 				't_i_compras' => 0,
 				't_i_ventas' => 0,
 				't_retencion' => 0 ,
 				'saldo'=> 0,
-				'saldo_inicial' => 0
+				'saldo_inicial' => $SaldoIni
 			];
 			(new Estado_anio_model())->insert(   $nuevo_ejercicio); 
 		}
@@ -845,6 +915,144 @@ public function resumen_anio_session(  $Year ){
 
 
 
+
+	
+
+
+	//Undo
+
+
+	public function  deshacer_cierre_mes(  $CLIENTE, $MES, $ANIO ){
+		$db= \Config\Database::connect();
+
+		$db->transStart();
+		$respuesta = "";
+		try {
+			(new Estado_mes_model())->where("codcliente", $CLIENTE)
+				->where("mes",  $MES)
+				->where("anio", $ANIO)
+				->delete();
+			if ($MES ==  "12") (new Estado_anio_model())->where("codcliente", $CLIENTE)
+					->where("anio", $ANIO)
+					->set(  ['estado' =>  'P'])
+					->update();
+			$db->transCommit();
+			$respuesta =  ['data' => "El mes ($MES), año ($ANIO) ha sido reabierto", 'code'=>'200'];
+		} catch (Exception $e) {
+			$db->transRollback();
+			$respuesta =  ['msj' => "Error de servidor",  'code'=> '500'];
+		}
+		$db->transComplete();
+		return $this->response->setJSON($respuesta);
+	}
+
+
+
+
+
+
+
+
+	public function  comparativo_anio( $CLIENTE,  $ANIO ){
+
+		$TodosLosMeses= [];
+		for ($_mes_ = 1; $_mes_  <= 12; $_mes_++) {
+			$totales_mes = $this->totales($CLIENTE,  $_mes_,  $ANIO, "ARRAY");
+
+			$t_compras= $totales_mes['compras_total_10']+ $totales_mes['compras_total_5'];
+			$t_ventas=  $totales_mes['ventas_total_10']+ $totales_mes['ventas_total_5'];
+			$t_retencion=  $totales_mes['retencion'];
+			$t_i_compras=  $totales_mes['compras_iva10']+$totales_mes['compras_iva5'];
+			$t_i_ventas=  $totales_mes['ventas_iva10']+$totales_mes['ventas_iva5'];
+			$saldo= $totales_mes['saldo'];
+			$pagos= $totales_mes['pago'];
+			//evaluar saldo inicial
+			$saldo_ini= $totales_mes['saldo_anterior'];
+			if(   $t_compras == "0"  &&  $t_ventas =="0" && $t_retencion =="0") $saldo_ini= 0;
+			$cada_mes = [	
+				'mes' => $_mes_,  	't_impo_compras'=>  $t_compras,  't_impo_ventas'=> $t_ventas, 't_impo_retencion'=> $t_retencion,
+				't_i_compras'=>  $t_i_compras,  't_i_ventas'=> $t_i_ventas, 't_retencion'=> $t_retencion, 'saldo'=> $saldo ,
+				'saldo_inicial'=> $saldo_ini,
+				'pago'=>  $pagos
+			];
+			array_push(   $TodosLosMeses,  $cada_mes );
+		} 
+		return $TodosLosMeses;
+	}
+
+	public function  comparativo_anio_view_sess(  $ANIO ){
+		$res= $this->comparativo_anio(  $this->getClienteId(),  $ANIO);
+		return view("movimientos/resumen_anio_form_compa1",  [  'ANIO'=>$ANIO, 'comparativo1' =>  $res ] );
+	}
+
+	public function  comparativo_anio_sess(   $ANIO ){
+
+		$res= $this->comparativo_anio(  $this->getClienteId(),  $ANIO );
+		return $this->response->setJSON(   ['data'=>  $res , 'code'=>'200'] );
+	}
+
+
+
+
+
+	public function  comparativo_ejercicios_view(  $CLIENTE= NULL ){
+ 
+		$Cliente=   is_null($CLIENTE) ?  $this->getClienteId()  : $CLIENTE;
+	$ejercicios=(new Estado_anio_model())->select("anio")->where("codcliente", $Cliente)
+		->get()->getResult();
+
+		$comparativo= [];
+		foreach( $ejercicios as   $ANIO ):
+			$totales_cierre= $this->__totales_anio( $Cliente, $ANIO->anio );
+			$totales_cierre['anio']= $ANIO->anio;
+			/*
+			'importe_compras' 'importe_ventas' 'importe_retenc' 
+			'compras' 'ventas'  'ventas_anuladas_cant' 'ventas_anuladas_tot' 'ventas_anuladas_iva' 	'retencion' 
+			 	'saldo'  'saldo_inicial' 
+			*/
+			array_push( $comparativo,  $totales_cierre );
+		endforeach;
+		return view("movimientos/resumen_anio_form_compa2",  ['comparativo2'=>  $comparativo] );
+
+		 
+	}
+
+
+
+
+
+	public function mes_activo()
+	{
+		$cliente = $this->getClienteId();
+		$db=  \Config\Database::connect();
+		$ULT = "";
+		try{
+			$ULT= $db->query("
+		select month(fecha) as mes from ventas where ventas.codcliente=$cliente and 
+		if((select  mes  from estado_mes where codcliente=ventas.codcliente and mes=month(ventas.fecha) 
+		and anio=year(ventas.fecha) limit 0,1 ) is null,0, 1)=0   order by ventas.created_at DESC " )->getRow();
+  
+		}catch(Exception $e){}
+		//FECHA INGRESADA POR USUARIO
+		//FECHA REGISTRO EN EL SISTEMA
+		if (is_null($ULT)) {
+		 
+			$incremen= (new Estado_mes_model())
+			->where("codcliente",  $cliente)
+			->select("(mes+1) as activo, mes")
+			->orderBy("mes", "DESC")
+			->orderBy("anio", "DESC")
+			->first(); 
+			if( is_null( $incremen ) )
+			return  $this->response->setJSON(['data' => date("m") ,  'code' => '200']);
+			else
+			return  $this->response->setJSON(['data' => $incremen->activo,  'code' => '200']);
+		} else
+		return  $this->response->setJSON(
+			['data' =>    $ULT->mes,   'code' => '200'
+			]
+		);
+	}
 
 	
 }

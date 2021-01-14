@@ -1,10 +1,6 @@
-<?= $this->extend("admin/layout/index") ?>
+<?= $this->extend("layouts/index_cliente") ?>
 <?= $this->section("estilos") ?>
 <?php
-
-use App\Helpers\Utilidades;
-use App\Models\Usuario_model;
-
 $estilo = <<<EOF
 <style>
 
@@ -22,70 +18,17 @@ echo $estilo;
 <?= $this->section("contenido") ?>
 
 
- 
-<input type="hidden" id="IDCLIENTE" value="<?= $CLIENTE ?>">
-<input type="hidden" id="info-compras" value="<?= base_url("admin/clientes/compras") ?>">
-<input type="hidden" id="info-ventas" value="<?= base_url("admin/clientes/ventas") ?>">
-<input type="hidden" id="info-ventas-a" value="<?= base_url("admin/clientes/ventas") ?>">
-<input type="hidden" id="info-retencion" value="<?= base_url("admin/clientes/retencion") ?>">
+
+<input type="hidden" id="info-compras" value="<?= base_url("compra/index") ?>">
+<input type="hidden" id="info-ventas" value="<?= base_url("venta/index") ?>">
+<input type="hidden" id="info-ventas-a" value="<?= base_url("venta/index") ?>">
+<input type="hidden" id="info-retencion" value="<?= base_url("retencion/index") ?>">
 
 <!-- Menu de Usuario -->
 
 
 
 <div class="row ml-1">
-
-
-    <div class="col-12">
-        <!--cargar anios -->
-
-        <h3>
-        <?php 
-         $cliente_ruc_= (new Usuario_model())->find( $CLIENTE); 
-         echo "RUC: ". $cliente_ruc_->ruc."-". $cliente_ruc_->dv;
-        ?>
-        </h3>
-
-
-        <input type="hidden" name="cliente" value="<?= $CLIENTE ?>">
-        <select onchange=" cargar_tablas();" id="ANIO-REFER" style="font-size: 11px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
-            <?php
-            for ($m = 2019; $m <= date("Y"); $m++) {
-                if ($ANIO_REFER ==  $m)
-                    echo "<option selected value='$m'>$m</option>";
-                else
-                    echo "<option value='$m'>$m</option>";
-            }
-            ?>
-        </select>
-
-        <!--cargar meses -->
-        <select onchange=" cargar_tablas();" id="MES-REFER" style="font-size: 11px; border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
-            <?php
-            for ($m = 1; $m <= 12; $m++) {
-                $nom_mes = Utilidades::monthDescr($m);
-                if ($MES_REFER ==  $m)
-                    echo "<option selected value='$m'>$nom_mes</option>";
-                else
-                    echo "<option value='$m'>$nom_mes</option>";
-            }
-            ?>
-        </select>
-
-    </div>
-
-
-    <div class="col-12 col-md-12"> 
-    <table class="table" style="font-family: mainfont; font-weight: 600;">
-    <thead><tr><td  class="text-right"  >Compras</td> <td  class="text-right" >Ventas</td> 
-    <td  class="text-right" >Retención</td><td  class="text-right" >Saldo</td></tr></thead>
-    <tbody>
-    <tr> <td class="text-right" id="TOTAL_C"></td> <td  class="text-right"  id="TOTAL_V"> </td>  
-    <td  class="text-right" id="TOTAL_R"> </td>  <td  class="text-right" id="TOTAL_S"> </td>  </tr>
-    </tbody>
-    </table>
-    </div>
-
 
     <div class="col-12 col-md-12">
 
@@ -154,19 +97,21 @@ echo $estilo;
         total_ex = 0;
 
 
-    function getClienteId() {
-        return $("#IDCLIENTE").val();
-    }
     async function informe_compras() {
         //Obtener el resumen de compras
         //Parametros Anio, mes
-        let mes = $("#MES-REFER").val();
-        let anio = $("#ANIO-REFER").val();
-        let url__= $("#info-compras").val()+"/"+getClienteId()+"/"+mes+"/"+anio;
+        let params = $("#compras-reports").serialize();
+
         let loader = "<img  src='<?= base_url("assets/img/loader.gif") ?>'   />";
         $("#tabla-compras").html(loader);
 
-        let req = await fetch(  url__);
+        let req = await fetch($("#info-compras").val(), {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: params
+        });
 
         let resp_html = await req.text();
         $("#tabla-compras").html(resp_html);
@@ -180,12 +125,16 @@ echo $estilo;
 
     async function informe_ventas() {
         //Parametros Anio, mes
-        let mes = $("#MES-REFER").val();
-        let anio = $("#ANIO-REFER").val();
+        let params = $("#ventas-reports").serialize();
         let loader = "<img  src='<?= base_url("assets/img/loader.gif") ?>'   />";
         $("#tabla-ventas").html(loader);
-        let url__= $("#info-ventas").val() +"/"+getClienteId()+"/"+mes+"/"+anio;
-        let req = await fetch(  url__ );
+        let req = await fetch($("#info-ventas").val(), {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: params
+        });
 
         let resp_html = await req.text();
         $("#tabla-ventas").html(resp_html);
@@ -201,14 +150,18 @@ echo $estilo;
 
     async function informe_ventas_anuladas() {
         //Parametros Anio, mes
-        let mes = $("#MES-REFER").val();
-        let anio = $("#ANIO-REFER").val();
- 
-        // let params = $("#ventas-a-reports").serialize()+ "&cliente="+getClienteId()+"&anulados=B";
+        
+        let params = ($("#ventas-a-reports").serialize()  !=  "") ? $("#ventas-a-reports").serialize() : "";
+        params+=  (  params == ""  ? params : "&") +"anulados=B";
         let loader = "<img  src='<?= base_url("assets/img/loader.gif") ?>'   />";
         $("#tabla-ventas-a").html(loader);
-        let url__=$("#info-ventas-a").val()+"/"+getClienteId()+"/"+mes+"/"+anio+"/B" ;
-        let req = await fetch(  url__);
+        let req = await fetch($("#info-ventas-a").val(), {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: params
+        });
 
         let resp_html = await req.text();
         $("#tabla-ventas-a").html(resp_html);
@@ -223,17 +176,22 @@ echo $estilo;
 
 
     async function informe_retencion() {
-//parametros
-        let mes = $("#MES-REFER").val();
-        let anio = $("#ANIO-REFER").val();  
-        //loader image
+
+        // let req = await fetch($("#info-retencion").val());
+        let params = $("#retencion-reports").serialize();
         let loader = "<img  src='<?= base_url("assets/img/loader.gif") ?>'   />";
-        //URL
-        let url__=$("#info-retencion").val()+"/"+getClienteId()+"/"+mes+"/"+anio ;
         $("#tabla-retencion").html(loader);
-        let req = await fetch( url__);
+        let req = await fetch($("#info-retencion").val(), {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: params
+        });
+
         let resp_html = await req.text();
         $("#tabla-retencion").html(resp_html);
+
     }
 
 
@@ -247,37 +205,12 @@ echo $estilo;
     }
 
 
-    function totales(){
-    let c= $("#compra-total-iva").text();
-    let v= $("#venta-total-iva").text();
-    let r= $("#retencion-total").text();
-   
-    let c_= limpiar_numero(  c );
-    let v_= limpiar_numero( v );
-    let r_= limpiar_numero(  r );
-    let saldo= parseInt(  c_) + parseInt( r_)  -  parseInt(  v_) ;
-
-    $("#TOTAL_C").text(  c);
-    $("#TOTAL_V").text( v);
-    $("#TOTAL_R").text(  r);
-     
-    $("#TOTAL_S").text(    dar_formato_millares(saldo) );
-    if( saldo > 0)
-   { $("#TOTAL_S").css("color", "green");
-    $("#TOTAL_S").addClass("table-success");}
-    else{
-        $("#TOTAL_S").css("color", "red");
-    $("#TOTAL_S").addClass("table-danger");
-    }
-}
-
 
     async function cargar_tablas() {
         await informe_ventas();
         await informe_ventas_anuladas();
         await informe_compras();
         await informe_retencion();
-        totales();
         $("ul.pagination li").addClass("btn btn-dark btn-sm").css("font-weight", "600");
     }
 

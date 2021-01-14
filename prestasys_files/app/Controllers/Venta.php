@@ -5,7 +5,8 @@ use App\Helpers\Utilidades;
 use App\Libraries\pdf_gen\PDF;
 use App\Models\Monedas_model; 
 use App\Models\Usuario_model;
-use App\Models\Ventas_model; 
+use App\Models\Ventas_model;
+use CodeIgniter\Database\Database;
 use CodeIgniter\RESTful\ResourceController;
 use Exception;
 
@@ -571,7 +572,18 @@ class Venta extends ResourceController {
 	}
 
 
-
+	public function anular( $cod_venta= NULL ){
+		try{
+			(new Ventas_model())->where("codcliente", $this->getClienteId())
+			->where("regnro",   $cod_venta)
+			->set(  ['estado'=>  'B'] )
+			->update();
+			return $this->response->setJSON(  [ "data"=> "La factura ha sido anulada",  "code"=> "200"]);
+		}catch( Exception $ex){
+			return $this->response->setJSON(  [ "msj"=> $ex,  "code"=> "500"]);
+		}
+		
+	}
 
 	public function show($id = null)
 	{
@@ -707,6 +719,35 @@ public function pdf( $lista, $CLIENTE= NULL){
 
 
 
-     
-	  
+
+
+
+
+	//Ultima fecha de factura venta en el mes activo
+	public function ultima_fecha_carga()
+	{
+
+		$cliente = $this->getClienteId();
+		$db=  \Config\Database::connect();
+	
+		$ULT = "";
+		try{
+			$ULT= $db->query("
+		select fecha from ventas where ventas.codcliente=$cliente and 
+		if((select  mes  from estado_mes where codcliente=ventas.codcliente and mes=month(ventas.fecha) 
+		and anio=year(ventas.fecha) limit 0,1 ) is null,0, 1)=0   order by ventas.created_at DESC " )->getRow();
+ 
+		}catch(Exception $e){}
+		
+	 
+		//FECHA INGRESADA POR USUARIO
+		//FECHA REGISTRO EN EL SISTEMA
+		if (is_null($ULT))
+		return  $this->response->setJSON(['msj' => 'Aun no se registran facturas',  'code' => '500']);
+		else
+		return  $this->response->setJSON(
+			['data' =>    $ULT->fecha,   'code' => '200'
+			]
+		);
+	}
 }

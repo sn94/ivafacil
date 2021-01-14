@@ -13,17 +13,18 @@ $adaptativo = new Mobile_Detect();
 
 <table class="table table-secondary text-dark">
     <thead>
-        <th></th>
+        <tr style="font-family: mainfont;">
+            <th class="pb-0"></th>
 
-        <th>RUC</th>
-        <th>CÉDULA</th>
-        <th>NOMBRES</th>
-        <th>REGISTRADO</th>
-        <th>ACTUALIZADO</th>
-        <th>ESTADO DE PAGO</th>
-        <th>NOVEDADES</th>
+            <th class="pb-0">RUC</th>
+            <th class="pb-0">CÉDULA</th>
+            <th class="pb-0">NOMBRES</th>
+            <th class="pb-0">REGISTRADO</th>
+            <th class="pb-0">ACTUALIZADO</th>
+            <th class="pb-0">ESTADO DE PAGO</th>
+            <th class="pb-0">NOVEDADES</th>
 
-
+        </tr>
     </thead>
 
     <tbody>
@@ -84,8 +85,8 @@ $adaptativo = new Mobile_Detect();
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 
                                 <?php if ($mo->novedad_c_mes == "1") : ?>
-                                    <a class="dropdown-item" onclick="descargar_estado_cierre(event)" href="<?= base_url("admin/cierre-mes/" . $mo->regnro) ?>"> Exportar<i class="fa fa-download" aria-hidden="true"></i> </a>
-                                    <a class="dropdown-item" onclick="mostrar_form(event)" href="<?= base_url("admin/view-cierre-mes/" . $mo->regnro) ?>"> Abrir<i class="fa fa-eye" aria-hidden="true"></i> </a>
+                                    <a class="dropdown-item" onclick="descargar_estado_cierre(event)" href="<?= base_url("admin/cierre-mes/$mo->regnro/$mo->c_mes/$mo->c_anio") ?>"> Exportar<i class="fa fa-download" aria-hidden="true"></i> </a>
+                                    <a class="dropdown-item" onclick="reapertura_mes(event)" href="<?= base_url("admin/deshacer-cierre-mes/$mo->regnro/$mo->c_mes/$mo->c_anio") ?>"> Abrir<i class="fa fa-eye" aria-hidden="true"></i> </a>
                                 <?php else : ?>
                                     Sin novedad
                                 <?php endif; ?>
@@ -125,5 +126,19 @@ $adaptativo = new Mobile_Detect();
         let req = await fetch(res_xls);
         let resp = await req.json();
         callToXlsGen_with_data(resp.title, resp.data);
+    }
+
+
+    async function reapertura_mes(ev) {
+        ev.preventDefault();
+        if (!confirm("Reabrir período?")) return;
+        let url__ = ev.currentTarget.href;
+        let req = await fetch(url__);
+        let resp = await req.json();
+        if ("data" in resp) {
+            alert(resp.data);
+            if ("actualizar_grilla" in window)
+                actualizar_grilla();
+        } else alert(resp.msj);
     }
 </script>

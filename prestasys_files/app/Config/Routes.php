@@ -59,11 +59,12 @@ $routes->get('/api/compras/list/(:num)/(:num)', 'Compra::index/$1/$2');
 $routes->get('/api/ventas', 'Venta::index'); 
 $routes->post('/api/ventas/create', 'Venta::create'); 
 $routes->put('/api/ventas', 'Venta::update'); 
+$routes->get('/api/ventas/anular/(:num)', 'Venta::anular/$1'); 
 $routes->get('/api/ventas/(:num)', 'Venta::show/$1'); 
 $routes->delete('/api/ventas/(:num)', 'Venta::delete/$1');
 $routes->get('/api/ventas/list/(:num)/(:num)/(:alpha)', 'Venta::index/$1/$2/$3'); 
 $routes->post('/api/ventas/list', 'Venta::index'); 
-
+$routes->get('/api/ventas/ultima-fecha-carga',   'Venta::ultima_fecha_carga');
 
 $routes->get('/api/retencion', 'Retencion::index'); 
 $routes->post('/api/retencion/create', 'Retencion::create'); 
@@ -79,9 +80,11 @@ $routes->get('/api/estados-anio/(:num)/(:num)', 'Cierres::resumen_anio/$1/$2');
 $routes->get('/api/estados-anio/(:num)', 'Cierres::resumen_anio_session/$1'); 
 $routes->get('/api/cierre-mes', 'Cierres::cierre_mes'); 
 $routes->get('/api/cierre-mes/(:num)/(:num)', 'Cierres::cierre_mes/$1/$2'); // Nueva
-$routes->get('/api/cierre-anio', 'Cierres::cierre_anio'); 
+$routes->get('/api/cierre-anio/(:num)', 'Cierres::cierre_anio/$1'); 
 $routes->get('/api/totales-mes/(:num)/(:num)',   'Cierres::totales_mes_session/$1/$2');
 $routes->get('/api/totales-anio/(:num)',   'Cierres::totales_anio_session/$1');
+$routes->get('/api/comparativo-anio/(:num)',   'Cierres::comparativo_anio_sess/$1');
+
 
 //cierre_mes
 $routes->get('/api/usuario', 'Usuario::index'); 
@@ -92,12 +95,18 @@ $routes->get('/api/usuario/(:num)', 'Usuario::show/$1');
 $routes->post('/api/usuario/sign-in', 'Usuario::sign_in'); 
 $routes->post('/api/email-usuario-registered', 'Usuario::email_bienvenida'); 
 $routes->get('/api/usuario/ruc/(:num)', 'Usuario::ruc/$1'); 
+$routes->get('/api/usuario/mes-activo',   'Cierres::mes_activo');
+$routes->get('/api/usuario/digito-verificador/(:num)', 'Usuario::calcular_digito_verificador/$1'); 
+
 
 
 //Administrativo 
 
 $routes->get('/admin/parametros/create', 'Parametros::create'); 
 $routes->post('/admin/parametros/create', 'Parametros::create'); 
+
+$routes->get('/admin/calendario', 'Calendario::update'); 
+$routes->post('/admin/calendario', 'Calendario::update'); 
 
 $routes->get('/admin/monedas', 'Monedas::index'); 
 $routes->get('/admin/monedas/create', 'Monedas::create'); 
@@ -121,6 +130,7 @@ $routes->get('/admin/clientes/update/(:num)', 'Usuario::update/$1');
 $routes->put('/admin/clientes/update', 'Usuario::update');
 $routes->get('/admin/clientes/delete/(:num)', 'Usuario::delete/$1'); 
 $routes->get('/admin/clientes/movimientos/(:num)', 'Movimiento::informe_mes_/$1'); //vista de mov. en compras, ventas de un cliente
+$routes->get('/admin/clientes/movimientos/(:num)/(:num)/(:num)', 'Movimiento::informe_mes_/$1/$2/$3');
 //admin clientes operaciones
 $routes->get('/admin/clientes/compras/(:num)', 'Compra::index_se/$1'); 
 $routes->get('/admin/clientes/compras/(:num)/(:num)/(:num)', 'Compra::index_se/$1/$2/$3'); 
@@ -145,6 +155,7 @@ $routes->get("/admin/clientes/list-pagos/(:num)/(:num)/(:num)",  'Pagos::index/$
 $routes->post("/admin/clientes/informes/(:alpha)/(:num)",  'Pagos::informes/$1/$2');
 $routes->get('/admin/clientes/pagos-iva/(:num)', 'Pagos_iva::index/$1'); 
 $routes->get("/admin/clientes/list-pagos-iva/(:num)",  'Pagos_iva::index/$1');
+$routes->get("/admin/clientes/list-pagos-iva/(:num)/(:alpha)",  'Pagos_iva::index/$1/$2');
 $routes->get('/admin/clientes/pagos-iva/procesar/(:num)', 'Pagos_iva::create/$1'); 
 $routes->post('/admin/clientes/pagos-iva/procesar', 'Pagos_iva::create'); 
 //admin clientes novedades
@@ -157,7 +168,8 @@ $routes->get('/admin/cierre-mes/(:num)/(:num)/(:num)', 'Cierres::info_mes_cierre
 $routes->get('/admin/estados-mes/(:num)/(:num)/(:num)', 'Cierres::resumen_mes/$1/$2/$3'); 
 $routes->get('/admin/estados-mes/(:num)', 'Cierres::resumen_mes/$1'); 
 $routes->get('/admin/cierre-anio/(:num)', 'Cierres::info_anio_cierre/$1'); 
-
+//eliminar 
+$routes->get("/admin/deshacer-cierre-mes/(:num)/(:num)/(:num)",   "Cierres::deshacer_cierre_mes/$1/$2/$3");
 $routes->get('/admin/recordar-pago/(:num)', 'Usuario::email_recordar_pago/$1'); 
 
 /**

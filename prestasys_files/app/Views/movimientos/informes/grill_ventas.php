@@ -5,6 +5,7 @@ use App\Helpers\Utilidades;
 $ventas_total_10 = 0;
 $ventas_total_5 = 0;
 $ventas_total_ex = 0;
+$ventas_total_iva=0;
 $ventas_t = 0;
 ?>
 
@@ -23,7 +24,7 @@ $ventas_t = 0;
 </script>
 <form id="ventas-reports" method="POST" action="<?= base_url("venta/informes/PDF") ?>" target="_blank">
     <!--cargar anios -->
-    <select onchange="$('#download-1').val('');informe_ventas();" name="year" style="font-size: 11px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
+    <select onchange="$('#download-1').val('');informe_ventas();" name="year" style="display: none;font-size: 11px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
         <?php
         for ($m = 2019; $m <= date("Y"); $m++) {
             if ($year ==  $m)
@@ -35,7 +36,7 @@ $ventas_t = 0;
     </select>
 
     <!--cargar meses -->
-    <select onchange="$('#download-1').val('');informe_ventas();" name="month" style="font-size: 11px; border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
+    <select onchange="$('#download-1').val('');informe_ventas();" name="month" style="display: none;font-size: 11px; border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
         <?php
         for ($m = 1; $m <= 12; $m++) {
             $nom_mes = Utilidades::monthDescr($m);
@@ -47,7 +48,7 @@ $ventas_t = 0;
         ?>
     </select>
 
-    <span>ANULADOS?&nbsp; 
+    
   
     <select id="download-1" onchange="descarga_archivo_ventas(event)" style="font-size: 11px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
         <option value="">Descargar como..</option>
@@ -71,6 +72,7 @@ $ventas_t = 0;
             <th class="p-0 text-right">EX</th>
             <th class="p-0 text-right">5%</th>
             <th class="p-0 text-right">10%</th>
+            <th class="p-0 text-right">IVA</th>
             <th class="p-0 text-right">TOTAL</th>
 
         </tr>
@@ -85,6 +87,7 @@ $ventas_t = 0;
                 <td class="pb-0 text-right"> <?= Utilidades::number_f($it->importe3) ?></td>
                 <td class="pb-0 text-right"> <?= Utilidades::number_f($it->importe2) ?> </td>
                 <td class="pb-0 text-right"> <?= Utilidades::number_f($it->importe1) ?></td>
+                <td class="pb-0 text-right"> <?= Utilidades::number_f($it->iva1+ $it->iva2 ) ?></td>
                 <td class="pb-0 text-right"> <?= Utilidades::number_f($it->total) ?></td>
 
             </tr>
@@ -92,6 +95,7 @@ $ventas_t = 0;
             $ventas_total_10 +=  intval($it->importe1);
             $ventas_total_5 +=  intval($it->importe2);
             $ventas_total_ex +=  intval($it->importe3);
+            $ventas_total_iva+= intval($it->iva1)+intval($it->iva2);
             $ventas_t += intval($it->total);
         endforeach; ?>
     </tbody>
@@ -103,6 +107,7 @@ $ventas_t = 0;
             <td class="text-right" id="venta-total-ex"> <?= $ventas_total_ex ?> </td>
             <td class="text-right" id="venta-total-5"> <?= $ventas_total_5 ?> </td>
             <td class="text-right" id="venta-total-10"> <?= Utilidades::number_f($ventas_total_10) ?> </td>
+            <td class="text-right" id="venta-total-iva"> <?= Utilidades::number_f($ventas_total_iva) ?> </td>
             <td class="text-right" id="venta-total"> <?= Utilidades::number_f($ventas_t) ?> </td>
         </tr>
 

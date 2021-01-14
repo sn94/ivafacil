@@ -143,6 +143,11 @@ $TERMINACION_RUC=   substr(    session("ruc") , -1,1  );
 
                     </li>
                     <li class="menu-item-has-children dropdown">
+                        <a href="<?= base_url("pagos-iva/index") ?>" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Pagos de IVA</a>
+
+                    </li>
+
+                    <li class="menu-item-has-children dropdown">
                         <a href="<?= base_url("usuario/sign-out") ?>" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Cerrar sesión</a>
 
                     </li>

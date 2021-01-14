@@ -221,8 +221,7 @@ class Compra extends ResourceController
 		if( sum(importe1) is null, 0, sum(importe1) ) as total10, 
 		if( sum(importe2) is null, 0, sum(importe2) ) as total5,
 		if( sum(importe3) is null, 0, sum(importe3) ) as totalexe
-		')
-			->first();
+		')->first();
 		return  $lista_co;
 	}
 

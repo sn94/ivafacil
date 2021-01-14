@@ -26,7 +26,8 @@ class Filters extends BaseConfig
 			'logged_user' =>
 			['except' => [
 				"/",
-				'usuario/create', 'usuario/sign-in', 'usuario/sign_in', 'api/usuario/sign-in', 'api/usuario/create',
+				'usuario/create', 'usuario/sign-in', 'usuario/sign_in', 
+				'api/usuario/sign-in', 'api/usuario/create',
 				'auxiliar/*', 'api/ciudades', 'api/planes', 'api/monedas',
 				'admin',  'admin/*', 'home', 'welcome/publico',
 				'usuario/olvido-password','usuario/recuperar-password', 'usuario/recuperar-password/*',
@@ -36,10 +37,9 @@ class Filters extends BaseConfig
 			['except' => [ 
 				'admin/sign-in', 'home', 'welcome/publico', 
 				'usuario/*', 
-				'api/usuario','api/usuario/*',
-				'auxiliar/*', 'api/ciudades', 'api/planes', 'api/monedas',
-				'api/compras', 'api/compras/*',	'api/ventas', 'api/ventas/*','api/retencion', 'api/retencion/*' ,
-				'usuario/olvido-password', 'usuario/recuperar-password', 'usuario/recuperar-password/*',
+				  
+				'api/*',
+				'auxiliar/*',  
 				'admin/olvido-password', 'admin/recuperar-password', 'admin/recuperar-password/*'
 				
 			]]

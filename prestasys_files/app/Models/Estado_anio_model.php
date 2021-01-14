@@ -13,8 +13,11 @@ class Estado_anio_model extends Model {
    protected $primaryKey = 'regnro';
    protected $useTimestamps = true;
    protected $allowedFields = [
-      'codcliente','anio','estado',  't_i_compras',  't_i_ventas', 't_retencion', 'saldo', 'saldo_inicial', 'ruc', 'dv',
-      'fecha_pago'
+      'codcliente','anio','estado',  
+      't_impo_compras',  't_impo_ventas', 't_impo_retencion',
+      't_i_compras',  't_i_ventas', 't_retencion',
+       'saldo', 'saldo_inicial', 'ruc', 'dv',
+      'fecha_pago', 'pago'
    ];
 
     

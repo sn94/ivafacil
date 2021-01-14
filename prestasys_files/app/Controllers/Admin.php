@@ -39,19 +39,26 @@ class Admin extends Controller {
 	public function list(){
 		
 		$adminis= (new Admin_model());
+		 
 		$lista_m= $adminis->paginate(10);
 		$pager=  $adminis->pager;
  
-		if(  $this->request->isAJAX()){
-			return view("admin/admin/list",  ['adminis'=>  $lista_m, "pager"=>$pager] );
-		}else{
-			return view("admin/admin/index",  ['adminis'=>  $lista_m, "pager"=>$pager] );
+		//Desde api?
+		$request = \Config\Services::request();
+        $IVASESSION= is_null($request->getHeader("Ivasession")) ? "" :  $request->getHeader("Ivasession")->getValue();
+		if(  $IVASESSION != "")  
+		return  $this->response->setJSON(  $adminis->get()->getResult());
+		else{
+			if(  $this->request->isAJAX()){
+				return view("admin/admin/list",  ['adminis'=>  $lista_m, "pager"=>$pager] );
+			}else{
+				return view("admin/admin/index",  ['adminis'=>  $lista_m, "pager"=>$pager] );
+			}
 		}
-	
 	}
 
 
-
+ 
 
 
 	/********************************
@@ -296,11 +303,14 @@ class Admin extends Controller {
 	public function create()
 	{
 		if( $this->request->getMethod( true) == "GET") return view("admin/admin/create");
+
+		 
 		$usu = new Admin_model();
-		$data = $this->request->getPost();
+		$data =  ( sizeof(  $this->request->getJSON(true)) > 0   )?  $this->request->getJSON(true) :  $this->request->getPost();
+		
  
 		$validation =  \Config\Services::validation();
-	 
+		
 
 		if ( $this->validate("admins") ) {
 
@@ -313,7 +323,7 @@ class Admin extends Controller {
   
 			//transaccion
 			$db= \Config\Database::connect();
-
+			$resposta= [];
 			$db->transStart();
 			try {
 				//Preparar passw 
@@ -321,18 +331,19 @@ class Admin extends Controller {
 				$data['pass'] = password_hash($data['pass'],  PASSWORD_BCRYPT); 
 				$id = $usu->insert($data);  
 				$db->transCommit(); 
-				return $this->response->setJSON( array("data"=>  (new Admin_model())->find( $id) , "code"=> 200) );
+				$resposta=  array("data"=>  (new Admin_model())->find( $id) , "code"=> 200) ;
 			} catch (Exception $e) {
 				$db->transRollback();
-				return $this->response->setJSON( array("msj"=> "Error al guardar" , "code"=> 500) );
+				$resposta= array("msj"=> "Error al guardar" , "code"=> 500);
 			}
 			$db->transComplete();
-			 
+			 return $this->response->setJSON( $resposta);
 			
 		}
 		//Hubo errores de validacion
 	//	$validation = \Config\Services::validation();
-		return $this->response->setJSON( array("msj"=>   $validation->getErrors() , "code"=> 500) );
+		$errores_de_val=   join(", ",   array_values( $validation->getErrors()  ));
+		return $this->response->setJSON( array("msj"=>   $errores_de_val   , "code"=> 500) );
 	  
 	}
 

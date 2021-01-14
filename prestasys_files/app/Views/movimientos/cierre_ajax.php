@@ -19,7 +19,7 @@ $TOTAL_IVA_VENTAS=  Utilidades::number_f(intval($totales['ventas_total_10']) + i
 $RETENCION=Utilidades::number_f($totales['retencion']);
 
 $SALDO=  Utilidades::number_f($totales['saldo'] );
-$SALDO_DESCR= (  intval($totales['saldo']) < 0  ) ? "A Favor del fisco" :  (    intval($totales['saldo']) > 0 ?  "A Favor del contribuyente":  "IVA C.F= IVA D.F");
+$SALDO_DESCR= (  intval($totales['saldo']) < 0  ) ? "A FAVOR DE LA SET" :  (    intval($totales['saldo']) > 0 ?  "A Favor del contribuyente":  "IVA C.F= IVA D.F");
 $SALDO_COLOR= (  intval($totales['saldo']) < 0  ) ? "table-danger" :  (    intval($totales['saldo']) > 0 ?  "table-success":  "table-secondary");
 
 

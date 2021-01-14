@@ -129,6 +129,12 @@
                         <a href="<?= base_url("admin/parametros/create") ?>" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Parametros</a>
 
                     </li>
+
+                    <li class="menu-item-has-children dropdown">
+                        <a href="<?= base_url("admin/calendario") ?>" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Calendario perpetuo</a>
+
+                    </li>
+
                     <li class="menu-item-has-children dropdown">
                         <a href="<?= base_url("admin/monedas") ?>" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Monedas</a>
                     </li>

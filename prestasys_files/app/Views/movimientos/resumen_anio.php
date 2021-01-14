@@ -45,9 +45,9 @@ use App\Models\Parametros_model;
 
     <div id="loaderplace" class="col-12"></div>
 
-    <div  class="col-12 offset-md-3 col-md-6 " >
+    <div class="col-12 offset-md-2 col-md-8 ">
         <!--cargar anios -->
-        <select onchange="totales_cierre(event)" name="year" style="font-size: 15px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
+        <select onchange="totales_cierre(event);comparativo_meses_del_anio();" name="year" style="font-size: 15px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
             <?php
             $year = date("Y");
             foreach ($ANIOS as $m) {
@@ -56,10 +56,12 @@ use App\Models\Parametros_model;
                 else
                     echo "<option value='$m->anio'>$m->anio</option>";
             }
+            if (sizeof($ANIOS) == 0)
+                echo "<option selected value='$year'>$year</option>";;
             ?>
         </select>
     </div>
-    <div class="col-12 offset-md-3 col-md-6 ">
+    <div class="col-12  offset-md-2 col-md-8 ">
         <div class="card">
             <div class="card-header">
                 <h4 class="text-center">Resumen del año: <span id="ANIO-LABEL"><?= date("Y") ?></span> </h4>
@@ -77,6 +79,22 @@ use App\Models\Parametros_model;
         </div>
     </div>
 
+    <div class="col-12  offset-md-2 col-md-8 ">
+        <h3 class="text-center">Cuadros comparativos</h3>
+
+        <!--cuadro comparativo de totales por cada mes en un año determinado-->
+        <div id="comparativo-anio">
+
+
+        </div>
+
+
+        <!--cuadro comparativo de totales por cada año-->
+        <div id="comparativo-anio-2">
+
+
+        </div>
+    </div>
 
 
 </div>
@@ -94,7 +112,7 @@ use App\Models\Parametros_model;
     async function totales_cierre(ev) {
 
 
-        let ejercicio =  $("select[name=year]").val();
+        let ejercicio = $("select[name=year]").val();
         if (ev != undefined) ejercicio = ev.target.value;
 
 
@@ -150,7 +168,8 @@ use App\Models\Parametros_model;
         if (!confirm("Seguro que desea cerrar el año?")) return;
         let loader = "<img style='z-index: 400000;position: absolute;top: 50%;left: 50%;'  src='<?= base_url("assets/img/loader.gif") ?>'   />";
         $("#loaderplace").html(loader);
-        let req = await fetch(ev.currentTarget.href);
+        let url___=  ev.currentTarget.href+"/"+$("select[name=year]").val();
+        let req = await fetch( url___);
         let resp_json = await req.json();
         $("#loaderplace").html("");
         if ("data" in resp_json)
@@ -173,9 +192,34 @@ use App\Models\Parametros_model;
 
 
 
+
+    async function comparativo_meses_del_anio() {
+        let loader = "<img style='z-index: 400000;position: absolute;top: 50%;left: 50%;'  src='<?= base_url("assets/img/loader.gif") ?>'   />";
+        $("#comparativo-anio").html(loader);
+        let url__ = "<?= base_url('cierres/comparativo-anio-view-sess') ?>";
+        let ElAnio = $("select[name=year]").val();
+        let req = await fetch(url__ + "/" + ElAnio);
+        let resp_html = await req.text();
+        $("#comparativo-anio").html(resp_html);
+    }
+
+    async function comparativo_por_ejercicio() {
+        let loader = "<img style='z-index: 400000;position: absolute;top: 50%;left: 50%;'  src='<?= base_url("assets/img/loader.gif") ?>'   />";
+        $("#comparativo-anio-2").html(loader);
+        let url__ = "<?= base_url('cierres/comparativo-ejercicios-view') ?>";
+        let ElAnio = $("select[name=year]").val();
+        let req = await fetch(url__);
+        let resp_html = await req.text();
+        $("#comparativo-anio-2").html(resp_html);
+    }
+
+
+
     window.onload = function() {
         //saldo_anterior_anio();
         totales_cierre();
+        comparativo_meses_del_anio();
+        comparativo_por_ejercicio();
     };
 </script>
 

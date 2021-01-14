@@ -1027,7 +1027,9 @@ dv
 if( (select DATEDIFF( CURRENT_TIMESTAMP, pagos.validez) from pagos where pagos.ruc = usuarios.ruc and pagos.dv=usuarios.dv order by pagos.fecha DESC limit 1) >=0, 1, 0) as vencido,
 (select DATEDIFF( CURRENT_TIMESTAMP, pagos.validez) from pagos where pagos.ruc = usuarios.ruc and pagos.dv=usuarios.dv order by pagos.fecha DESC limit 1 ) as diasvenci, 
 IF( (select estado_mes.regnro from estado_mes where estado_mes.codcliente= usuarios.regnro and estado_mes.estado<>'L' order by created_at desc limit 1) IS NULL, 0, 1) AS novedad_c_mes,
-IF( (select estado_anio.regnro from estado_anio where estado_anio.codcliente= usuarios.regnro and estado_anio.estado='C' order by created_at desc limit 1) IS NULL, 0, 1) AS novedad_c_anio 
+IF( (select estado_anio.regnro from estado_anio where estado_anio.codcliente= usuarios.regnro and estado_anio.estado='C' order by created_at desc limit 1) IS NULL, 0, 1) AS novedad_c_anio, 
+(select estado_mes.mes from estado_mes where estado_mes.codcliente= usuarios.regnro and estado_mes.estado<>'L' order by created_at desc limit 1) AS c_mes,
+(select estado_mes.anio from estado_mes where estado_mes.codcliente= usuarios.regnro and estado_mes.estado<>'L' order by created_at desc limit 1) AS c_anio 
 FROM `usuarios` 
 			"
 	;
@@ -1039,12 +1041,14 @@ FROM `usuarios`
 	//order by
 	$sql_str = $sql_str . "
 ORDER BY
- (select IF(DATEDIFF( CURRENT_TIMESTAMP, pagos.validez) >= 0, 0, 1 ) from pagos 
- where pagos.ruc = usuarios.ruc and pagos.dv=usuarios.dv order by pagos.fecha DESC limit 1) DESC,
+ 
  
  IF( (select estado_mes.regnro from estado_mes where estado_mes.codcliente= usuarios.regnro and estado_mes.estado='C' order by created_at desc limit 1) IS NULL, 0 , 1) DESC,
 
-	IF( (select estado_anio.regnro from estado_anio where estado_anio.codcliente= usuarios.regnro and estado_anio.estado='C' order by created_at desc limit 1) IS NULL , 0 , 1) DESC
+	IF( (select estado_anio.regnro from estado_anio where estado_anio.codcliente= usuarios.regnro and estado_anio.estado='C' order by created_at desc limit 1) IS NULL , 0 , 1) DESC,
+
+	(select IF(DATEDIFF( CURRENT_TIMESTAMP, pagos.validez) >= 0, 0, 1 ) from pagos 
+ where pagos.ruc = usuarios.ruc and pagos.dv=usuarios.dv order by pagos.fecha DESC limit 1) DESC 
 
 	limit 0, 15
 	";
@@ -1074,5 +1078,43 @@ ORDER BY
 		return view("admin/clientes/index", ['clientes'=> $lista_m  ]);
 		
 	 }
+
+
+
+
+
+
+	public  function calcular_digito_verificador( $tcNumero, $tnBaseMax= 11) {
+		$lcCaracter="";  ; $lnDigito="";
+		$lcNumeroAl = "";
+
+		for ($i = 0; $i < strlen($tcNumero)  ; $i++) {
+			$lcCaracter = strtoupper(substr(  $tcNumero, $i,1));
+			if (  ord($lcCaracter)  < 48 ||  ord($lcCaracter) > 57)
+				$lcNumeroAl = $lcNumeroAl . $lcCaracter;
+			else
+				$lcNumeroAl = $lcNumeroAl .$lcCaracter;
+		}
+		 
+		$k = 2;
+		$lnTotal = 0;
+		for ( $i = strlen($lcNumeroAl ) - 1; $i >= 0; $i--) {
+			if ( $k > $tnBaseMax)
+				$k = 2;
+
+			$lnNumeroAux = intval(  substr( $lcNumeroAl, $i, 1)); //VAL
+			$lnTotal = $lnTotal + ( $lnNumeroAux * $k);
+			$k = $k + 1;
+		}
+		$lnResto = $lnTotal % 11;
+		if ( $lnResto > 1)
+			$lnDigito = 11 - $lnResto;
+		else
+			$lnDigito = 0;
+		return $this->response->setJSON(  ['data'=>  $lnDigito,  'code'=>'200' ] );
+
+	}
+
+
 
 }

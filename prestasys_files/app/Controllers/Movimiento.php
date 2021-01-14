@@ -41,14 +41,19 @@ class Movimiento extends Controller {
 //de retencion 
 //en el mes
 	public function informe_mes(){
-		return view("movimientos/informes/index");
+		return view("movimientos/informes/index", ['year'=>date("Y"),   'month'=> date("m")]);
 	}
 	 
 	 
 
 
-	public function informe_mes_(  $CLIENTE ){
-		return view("admin/clientes/movimientos/index",  ['CLIENTE'=>  $CLIENTE]);
+	public function informe_mes_(  $CLIENTE,  $MES= NULL, $ANIO= NULL ){
+
+		$mes= is_null( $MES)  ?   date("m")  :   $MES;
+		$anio= is_null( $ANIO) ?  date("Y") :  $ANIO;
+
+		return view("admin/clientes/movimientos/index", 
+		 ['CLIENTE'=>  $CLIENTE,  'MES_REFER'=>  $mes,  'ANIO_REFER'=>  $anio]);
 	}
 	
 	 

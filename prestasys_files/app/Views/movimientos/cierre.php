@@ -35,7 +35,7 @@ use App\Models\Parametros_model;
 
 <div class="row">
 
-    <div id="loaderplace" class="col-12"></div>
+  
     <div class="col-12 offset-md-3 col-md-6 ">
         <div class="card">
             <div class="card-header">
@@ -80,10 +80,10 @@ use App\Models\Parametros_model;
                             <tr>
                                 <th></th>
                                 <th></th>
-                                <th>Exenta</th>
-                                <th>5%</th>
-                                <th>10%</th>
-                                <th>IVA</th>
+                                <th class="text-center">Exenta</th>
+                                <th class="text-center">5%</th>
+                                <th class="text-center">10%</th>
+                                <th class="text-center">IVA</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -144,7 +144,7 @@ use App\Models\Parametros_model;
                         if ($MSJ_PANT_CIERRE_M !=  "") :
                         ?>
                             <div class="col-12">
-                                <p style="color: #026804; font-weight: 600;"><?= $MSJ_PANT_CIERRE_M ?> </p>
+                                <p style="text-align: center;color: #026804; font-weight: 600;"><?= $MSJ_PANT_CIERRE_M ?> </p>
                             </div>
                         <?php endif; ?>
                     </div>
@@ -154,6 +154,7 @@ use App\Models\Parametros_model;
 
                 </form>
             </div>
+            <div id="loaderplace" class="col-12"></div>
             <div class="card-footer">
 
                 <a onclick="cerrar( event)" style="font-size: 10px;font-weight: 600;" href="<?= base_url("cierres/cierre-mes") ?>" class="btn btn-success">
@@ -206,7 +207,7 @@ use App\Models\Parametros_model;
 
         let saldo = parseInt(resp_json.saldo) + saldo_a;
         let saldo_descri =
-            (s_fisco > s_contri) ? "a favor del fisco " :
+            (s_fisco > s_contri) ? "A FAVOR DE LA SET " :
             ((s_fisco < s_contri) ? "a favor del contribuyente" : (s_fisco == 0 ? "-" : "IVA C,F = IVA D.F"));
 
 
@@ -236,11 +237,11 @@ use App\Models\Parametros_model;
         $("#saldo-row").removeClass("table-danger");
         $("#saldo-row").removeClass("table-success");
 
-        if (s_fisco < (s_contri + saldo_a)) {
+        if (s_fisco < (s_contri )) {
             $("#saldo-row").addClass("table-success");
             $("#saldo-descri").css("color", "green");
         } else {
-            if (s_fisco < (s_contri + saldo_a)) {
+            if (s_fisco > (s_contri )) {
                 $("#saldo-row").addClass("table-danger");
                 $("#saldo-descri").css("color", "red");
             }

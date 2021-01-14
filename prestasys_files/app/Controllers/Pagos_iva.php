@@ -35,6 +35,13 @@ class Pagos_iva extends Controller {
 	}
 
 	 
+	public function isAdminView()
+	{
+		$request = \Config\Services::request();
+		$uri = $request->uri;
+		return (sizeof($uri->getSegments()) > 0  && $uri->getSegment(1) == "admin");
+	}
+
 
 
 
@@ -70,19 +77,41 @@ class Pagos_iva extends Controller {
 
 
 
-	public function index($id = NULL)
+	public function index($id = NULL, $estado= "P")
 	{
 		//pendientes de pago
 
-		$pendientes = (new Estado_mes_model())->where("estado <>", "L")
-		->where("codcliente", $id)->get()->getResult();
-		 
-		if (
-			$this->request->isAJAX()
-		)
-		return view("admin/clientes/pago_iva/grill_pagos_pendientes",  ['pagos_pendientes' =>  $pendientes]);
-		else {
-			return view("admin/clientes/pago_iva/pagos",  ['pagos_pendientes' =>  $pendientes, 'CLIENTE' => $id]);
+		$CLIENTE= is_null( $id )?  $this->getClienteId() :   $id;
+		$pendientes = (new Estado_mes_model());
+		
+		if( $estado == "P")
+		$pendientes= $pendientes->where("estado <>", "L");
+		else 
+		$pendientes= $pendientes->where("estado", "L");
+
+		$pendientes= $pendientes->where("codcliente", $CLIENTE)->get()->getResult();
+
+		if ($this->request->isAJAX()) {
+			if(  $this->isAdminView()) {
+				if( $estado == "P")
+				return view("admin/clientes/pago_iva/grill_pagos_pendientes",  ['pagos_pendientes' =>  $pendientes]);
+				else
+				return view("admin/clientes/pago_iva/grill_pagos_hechos",  ['pagos_pendientes' =>  $pendientes]);
+				
+
+			} else {
+				if(  $estado == "P")
+				return view("pago_iva/grill_pagos_pendientes",  ['pagos_pendientes' =>  $pendientes]);
+				else
+				return view("pago_iva/grill_pagos_hechos",  ['pagos_pendientes' =>  $pendientes]);
+			}
+		} else {
+			if(  $this->isAdminView()) {
+			 
+				return view("admin/clientes/pago_iva/pagos",  ['pagos_pendientes' =>  $pendientes, 'CLIENTE' => $CLIENTE]);
+			} else {
+				return view("pago_iva/pagos",  ['pagos_pendientes' =>  $pendientes, 'CLIENTE' => $CLIENTE]);
+			}
 		}
 	}	
 	
@@ -91,9 +120,13 @@ class Pagos_iva extends Controller {
 
 		if( $this->request->getMethod( true) == "GET")
 		{	
-			 
+			
 			$estado_mes=  ( new Estado_mes_model())->find(  $id );
-			return view( "admin/clientes/pago_iva/form", ['ESTADO_MES'=>  $estado_mes ]);}
+			if( $this->isAdminView())
+			return view( "admin/clientes/pago_iva/form", ['ESTADO_MES'=>  $estado_mes ]);
+			else
+			return view( "pago_iva/form", ['ESTADO_MES'=>  $estado_mes ]);
+		}
 		else 
 
 		{
@@ -111,7 +144,9 @@ class Pagos_iva extends Controller {
 				->where("dv", $datos['dv'])
 				->where("mes", $datos['mes'])
 				->where("anio", $datos['anio'])
-				->set( ["estado"=> "L"])->update();
+				->set( ["estado"=> "L",  'pago'=>  $datos['importe'] ])->update();
+
+				 
 				//Comunicar al cliente su cierre
 				$this->email_iva_pagado(  $datos['codcliente'],  ['fecha_pago'=> $datos['fecha'] , 'mes'=>$datos['mes'],   'anio'=>$datos['anio']  ]  );
 				$db->transCommit();

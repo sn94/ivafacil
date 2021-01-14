@@ -1,6 +1,9 @@
 <?= $this->extend("layouts/index_cliente") ?>
 <?= $this->section("estilos") ?>
 <?php
+
+use App\Helpers\Utilidades;
+
 $estilo = <<<EOF
 <style>
 
@@ -30,6 +33,51 @@ echo $estilo;
 
 <div class="row ml-1">
 
+
+<div class="col-12">
+<h3  class="text-center">Movimientos del Mes</h3>
+</div>
+    <div class="col-12">
+        <!--cargar anios -->
+        <select onchange="$('#download-2').val('');cargar_tablas();" name="year" style="font-size: 11px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
+            <?php
+            for ($m = 2019; $m <= date("Y"); $m++) {
+                if ($year ==  $m)
+                    echo "<option selected value='$m'>$m</option>";
+                else
+                    echo "<option value='$m'>$m</option>";
+            }
+            ?>
+        </select>
+
+        <!--cargar meses -->
+        <select onchange="$('#download-2').val('');cargar_tablas();" name="month" style="font-size: 11px; border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
+            <?php
+            for ($m = 1; $m <= 12; $m++) {
+                $nom_mes = Utilidades::monthDescr($m);
+                if ($month ==  $m)
+                    echo "<option selected value='$m'>$nom_mes</option>";
+                else
+                    echo "<option value='$m'>$nom_mes</option>";
+            }
+            ?>
+        </select>
+
+        <button type="submit" style="display: none;"></button>
+
+       
+    </div>
+
+    <div class="col-12 col-md-12"> 
+    <table class="table" style="font-family: mainfont;font-weight: 600;">
+    <thead><tr><td  class="text-right"  >Compras</td> <td  class="text-right" >Ventas</td> 
+    <td  class="text-right" >Retención</td><td  class="text-right" >Saldo</td></tr></thead>
+    <tbody>
+    <tr> <td class="text-right" id="TOTAL_C"></td> <td  class="text-right"  id="TOTAL_V"> </td>  
+    <td  class="text-right" id="TOTAL_R"> </td>  <td  class="text-right" id="TOTAL_S"> </td>  </tr>
+    </tbody>
+    </table>
+    </div>
     <div class="col-12 col-md-12">
 
         <h5 class="text-center">VENTAS</h5>
@@ -100,22 +148,14 @@ echo $estilo;
     async function informe_compras() {
         //Obtener el resumen de compras
         //Parametros Anio, mes
-        let params = $("#compras-reports").serialize();
+        let mes_ = $("select[name=month]").val();
+        let anio_ = $("select[name=year]").val();
 
         let loader = "<img  src='<?= base_url("assets/img/loader.gif") ?>'   />";
         $("#tabla-compras").html(loader);
-
-        let req = await fetch($("#info-compras").val(), {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: params
-        });
-
+        let req = await fetch($("#info-compras").val() + "/" + mes_ + "/" + anio_);
         let resp_html = await req.text();
         $("#tabla-compras").html(resp_html);
-
         let saldo = parseInt($("#SALDO-CONTRI").text());
         let s5 = parseInt(limpiar_numero($("#compra-total-5").text()));
         let s10 = parseInt(limpiar_numero($("#compra-total-10").text()));
@@ -125,16 +165,12 @@ echo $estilo;
 
     async function informe_ventas() {
         //Parametros Anio, mes
-        let params = $("#ventas-reports").serialize();
+        let mes_ = $("select[name=month]").val();
+        let anio_ = $("select[name=year]").val();
+
         let loader = "<img  src='<?= base_url("assets/img/loader.gif") ?>'   />";
         $("#tabla-ventas").html(loader);
-        let req = await fetch($("#info-ventas").val(), {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: params
-        });
+        let req = await fetch($("#info-ventas").val() + "/" + mes_ + "/" + anio_);
 
         let resp_html = await req.text();
         $("#tabla-ventas").html(resp_html);
@@ -150,18 +186,13 @@ echo $estilo;
 
     async function informe_ventas_anuladas() {
         //Parametros Anio, mes
-        
-        let params = ($("#ventas-a-reports").serialize()  !=  "") ? $("#ventas-a-reports").serialize() : "";
-        params+=  (  params == ""  ? params : "&") +"anulados=B";
+
+        let mes_ = $("select[name=month]").val();
+        let anio_ = $("select[name=year]").val();
+
         let loader = "<img  src='<?= base_url("assets/img/loader.gif") ?>'   />";
         $("#tabla-ventas-a").html(loader);
-        let req = await fetch($("#info-ventas-a").val(), {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: params
-        });
+        let req = await fetch($("#info-ventas-a").val() + "/" + mes_ + "/" + anio_ + "/B");
 
         let resp_html = await req.text();
         $("#tabla-ventas-a").html(resp_html);
@@ -178,16 +209,12 @@ echo $estilo;
     async function informe_retencion() {
 
         // let req = await fetch($("#info-retencion").val());
-        let params = $("#retencion-reports").serialize();
+        let mes_ = $("select[name=month]").val();
+        let anio_ = $("select[name=year]").val();
+
         let loader = "<img  src='<?= base_url("assets/img/loader.gif") ?>'   />";
         $("#tabla-retencion").html(loader);
-        let req = await fetch($("#info-retencion").val(), {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: params
-        });
+        let req = await fetch($("#info-retencion").val() + "/" + mes_ + "/" + anio_);
 
         let resp_html = await req.text();
         $("#tabla-retencion").html(resp_html);
@@ -195,6 +222,30 @@ echo $estilo;
     }
 
 
+
+function totales(){
+    let c= $("#compra-total-iva").text();
+    let v= $("#venta-total-iva").text();
+    let r= $("#retencion-total").text();
+   
+    let c_= limpiar_numero(  c );
+    let v_= limpiar_numero( v );
+    let r_= limpiar_numero(  r );
+    let saldo= parseInt(  c_) + parseInt( r_)  -  parseInt(  v_) ;
+
+    $("#TOTAL_C").text(  c);
+    $("#TOTAL_V").text( v);
+    $("#TOTAL_R").text(  r);
+     
+    $("#TOTAL_S").text(    dar_formato_millares(saldo) );
+    if( saldo > 0)
+   { $("#TOTAL_S").css("color", "green");
+    $("#TOTAL_S").addClass("table-success");}
+    else{
+        $("#TOTAL_S").css("color", "red");
+    $("#TOTAL_S").addClass("table-danger");
+    }
+}
     function dar_formato_millares(val_float) {
         return new Intl.NumberFormat("de-DE").format(val_float);
     }
@@ -211,6 +262,7 @@ echo $estilo;
         await informe_ventas_anuladas();
         await informe_compras();
         await informe_retencion();
+        totales();
         $("ul.pagination li").addClass("btn btn-dark btn-sm").css("font-weight", "600");
     }
 
