@@ -24,6 +24,10 @@ $origen = isset($retencion) ?  Utilidades::number_f($retencion->origen) : "W";
 <input type="hidden" name="codcliente" value="<?= $codcliente ?>">
 <input type="hidden" name="origen" value="<?= $origen ?>">
 
+<div class="row">
+        <?= view("plantillas/message") ?>
+
+    </div>
 
 <div class="row form-group">
     <div class="col-3 col-md-3 pl-md-3 pl-0">

@@ -17,6 +17,7 @@ $ciudad =  isset($usuario) ?  $usuario->ciudad :  "";
 $tipoplan =  isset($usuario) ?  $usuario->tipoplan :  "";
 $rubro =  isset($usuario) ?  $usuario->rubro :  "";
 $ultimo_nro = isset($usuario) ?     $usuario->ultimo_nro : "";
+$clave_marangatu=  isset(  $usuario) ?  $usuario->clave_marangatu  : "";
 ?>
 
 <input type="hidden" name="tipo" value="C"><!-- C= cliente  -->
@@ -174,6 +175,18 @@ $ultimo_nro = isset($usuario) ?     $usuario->ultimo_nro : "";
                 <input oninput="solo_num_guiones(event)" value="<?= $ultimo_nro ?>"   maxlength="15" type="text" name="ultimo_nro" class=" form-control form-control-label form-control-sm ">
             </div>
         </div>
+
+        <div class="row form-group">
+            <div class="col-12 col-md-6 pl-md-3 pl-0">
+                <label for="nf-password" class=" form-control-label form-control-sm -label" style="font-weight: 600;">
+                    Clave de acceso Marangatu: <span></span></label>
+            </div>
+            <div class="col-12 col-md-6">
+                <input maxlength="80" value="<?= $clave_marangatu ?>"     type="text" name="clave_marangatu" class=" form-control form-control-label form-control-sm ">
+            </div>
+        </div>
+
+
     </div>
 
 

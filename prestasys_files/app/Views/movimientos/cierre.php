@@ -35,7 +35,7 @@ use App\Models\Parametros_model;
 
 <div class="row">
 
-  
+
     <div class="col-12 offset-md-3 col-md-6 ">
         <div class="card">
             <div class="card-header">
@@ -73,6 +73,10 @@ use App\Models\Parametros_model;
                 </h4>
             </div>
             <div class="card-body card-block p-0">
+            <div class="alert">
+                    <?= view("plantillas/message") ?>
+
+                </div>
                 <form action="" method="post" class="container">
 
                     <table class="table table-light">
@@ -144,7 +148,7 @@ use App\Models\Parametros_model;
                         if ($MSJ_PANT_CIERRE_M !=  "") :
                         ?>
                             <div class="col-12">
-                                <p style="text-align: center;color: #026804; font-weight: 600;"><?= $MSJ_PANT_CIERRE_M ?> </p>
+                                <p style="text-align: center;color: #ae0000; font-weight: 600;"><?= $MSJ_PANT_CIERRE_M ?> </p>
                             </div>
                         <?php endif; ?>
                     </div>
@@ -237,11 +241,11 @@ use App\Models\Parametros_model;
         $("#saldo-row").removeClass("table-danger");
         $("#saldo-row").removeClass("table-success");
 
-        if (s_fisco < (s_contri )) {
+        if (s_fisco < (s_contri)) {
             $("#saldo-row").addClass("table-success");
             $("#saldo-descri").css("color", "green");
         } else {
-            if (s_fisco > (s_contri )) {
+            if (s_fisco > (s_contri)) {
                 $("#saldo-row").addClass("table-danger");
                 $("#saldo-descri").css("color", "red");
             }

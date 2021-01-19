@@ -323,10 +323,10 @@ class Venta extends ResourceController {
 
 
 
-	private function generar_numero_factura()
+	public function generar_numero_factura()
 	{
 		$ultimo_numero = "";
-		$cli_cod = session("id");
+		$cli_cod = $this->getClienteId();
 		$cli_obj = (new Usuario_model())->find($cli_cod);
 		if (!is_null($cli_obj)) {
 			try{
@@ -355,7 +355,13 @@ class Venta extends ResourceController {
 				$ultimo_numero =  $PAD1 .$PAD2 . $ultimo_numero;
 				 
 			}catch( Exception $d ){  $ultimo_numero= ""; }
-		} return $ultimo_numero;
+		} 
+		
+		if( $this->isAPI())
+
+		return $this->response->setJSON(  ['data'=>   $ultimo_numero  ,  "code"=> "200" ] ) ;
+		else
+		return $ultimo_numero;
 	}
 
 
@@ -369,8 +375,15 @@ class Venta extends ResourceController {
 
 		if ($request->getMethod(true) == "GET") {
 
+			
+
 			//Obtener ultimo numero de factura
 			$ultimo_nro= $this->generar_numero_factura();
+			//servicio habilitado
+			$habilitado =  (new Usuario())->servicio_habilitado($this->getClienteId());
+			if (array_key_exists("msj",  $habilitado))
+			return view("movimientos/comprobantes/venta/create", ['ultimo_numero'=> $ultimo_nro , 'error'=> $habilitado['msj']  ]);
+			else
 			return view("movimientos/comprobantes/venta/create", ['ultimo_numero'=> $ultimo_nro ]);
 		}
 		//Manejo POST
@@ -380,6 +393,12 @@ class Venta extends ResourceController {
 		$fecha_compro=  $data['fecha'];
 		$mes_fecha_compro=   date("m",   strtotime( $fecha_compro ) );
 		$anio_fecha_anio=   date("Y",   strtotime( $fecha_compro ) );
+
+		//Al dia
+		$habilitado =  (new Usuario())->servicio_habilitado(  $this->getClienteId());
+		if (  array_key_exists("msj",  $habilitado ) )
+			return $this->response->setJSON(['msj' =>  $habilitado['msj'],  'code' => "500"]);
+		
 
 		if(  (new Cierres())->esta_cerrado(   $mes_fecha_compro,  $anio_fecha_anio  )  )
 		return  $this->response->setJSON(  ['msj'=>  "El mes ya esta cerrado",  "code"=>  "500"]);
@@ -478,7 +497,13 @@ class Venta extends ResourceController {
 		$request = \Config\Services::request();
 		if ($request->getMethod(true) == "GET") {
 			$regis =  (new Ventas_model())->find($cod_venta);
-			return view("movimientos/comprobantes/venta/update",  ['venta' => $regis]);
+
+			//servicio habilitado
+			$habilitado =  (new Usuario())->servicio_habilitado($this->getClienteId());
+			if (array_key_exists("msj",  $habilitado))
+				return view("movimientos/comprobantes/venta/update",  ['venta' => $regis,   "error" => $habilitado['msj']]);
+			else
+				return view("movimientos/comprobantes/venta/update",  ['venta' => $regis]);
 		}
 		//Manejo POST
 

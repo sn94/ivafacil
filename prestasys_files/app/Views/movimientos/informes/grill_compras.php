@@ -106,8 +106,8 @@ $compras_t = 0;
         <td></td>
         <td></td>
             <td>TOTALES</td>
-            <td class="text-right" id="compra-total-ex"> <?= $compras_total_ex ?> </td>
-            <td class="text-right" id="compra-total-5"> <?= $compras_total_5 ?> </td>
+            <td class="text-right" id="compra-total-ex"> <?= Utilidades::number_f($compras_total_ex)  ?> </td>
+            <td class="text-right" id="compra-total-5"> <?= Utilidades::number_f($compras_total_5 )?> </td>
             <td class="text-right" id="compra-total-10"> <?= Utilidades::number_f($compras_total_10) ?> </td>
             <td class="text-right" id="compra-total-iva"> <?= Utilidades::number_f($compras_total_iva) ?> </td>
             <td class="text-right" id="compra-total"> <?= Utilidades::number_f($compras_t) ?> </td>

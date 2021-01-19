@@ -22,7 +22,7 @@ echo $estilo;
 <?= $this->section("contenido") ?>
 
 
- 
+
 <input type="hidden" id="IDCLIENTE" value="<?= $CLIENTE ?>">
 <input type="hidden" id="info-compras" value="<?= base_url("admin/clientes/compras") ?>">
 <input type="hidden" id="info-ventas" value="<?= base_url("admin/clientes/ventas") ?>">
@@ -40,10 +40,10 @@ echo $estilo;
         <!--cargar anios -->
 
         <h3>
-        <?php 
-         $cliente_ruc_= (new Usuario_model())->find( $CLIENTE); 
-         echo "RUC: ". $cliente_ruc_->ruc."-". $cliente_ruc_->dv;
-        ?>
+            <?php
+            $cliente_ruc_ = (new Usuario_model())->find($CLIENTE);
+            echo "RUC: " . $cliente_ruc_->ruc . "-" . $cliente_ruc_->dv;
+            ?>
         </h3>
 
 
@@ -75,15 +75,42 @@ echo $estilo;
     </div>
 
 
-    <div class="col-12 col-md-12"> 
-    <table class="table" style="font-family: mainfont; font-weight: 600;">
-    <thead><tr><td  class="text-right"  >Compras</td> <td  class="text-right" >Ventas</td> 
-    <td  class="text-right" >Retención</td><td  class="text-right" >Saldo</td></tr></thead>
-    <tbody>
-    <tr> <td class="text-right" id="TOTAL_C"></td> <td  class="text-right"  id="TOTAL_V"> </td>  
-    <td  class="text-right" id="TOTAL_R"> </td>  <td  class="text-right" id="TOTAL_S"> </td>  </tr>
-    </tbody>
-    </table>
+    <div class="col-12 col-md-12" style="background-color: #b1d5a0; font-family: mainfont;font-weight: 600;">
+        <div class="row">
+            <div class="col-12 text-center p-0">I.V.A</div>
+        </div>
+        <div class="row">
+
+            <div class="col-12 col-md">
+                <div class="col-4 col-md-12 text-right    pt-0">Saldo inicial</div>
+                <div class="col-8 col-md-12 text-right pr-4 p-md-1" id="TOTAL_SALDO_INICIAL"></div>
+            </div>
+
+            <div class="col-12 col-md">
+                <div class="col-4 col-md-12 text-right  pt-0">Compras</div>
+                <div class="col-8 col-md-12 text-right  pr-4 p-md-1 " id="TOTAL_C"></div>
+            </div>
+
+            <div class="col-12 col-md">
+                <div class="col-4 col-md-12 text-right   pt-0">Ventas</div>
+                <div class="col-8 col-md-12  text-right  pr-4 p-md-1 " id="TOTAL_V"> </div>
+            </div>
+
+            <div class="col-12 col-md">
+                <div class="col-4 col-md-12 text-right pt-0">Retención</div>
+                <div class="col-8 col-md-12  text-right  pr-4 p-md-1  " id="TOTAL_R"> </div>
+            </div>
+
+            <div class="col-12 col-md">
+                <div class="col-4 col-md-12 text-right  pt-0">Saldo </div>
+                <div class="col-8 col-md-12  text-right  pr-4 p-md-1 " id="TOTAL_S"> </div>
+            </div>
+            <div class="col-12 col-md">
+                <div class="col-4 col-md-12 text-right  pt-0">Saldo total</div>
+                <div class="col-8 col-md-12  text-right  pr-4 p-md-1 " id="TOTAL_S_TOTAL"> </div>
+            </div>
+
+        </div>
     </div>
 
 
@@ -162,11 +189,11 @@ echo $estilo;
         //Parametros Anio, mes
         let mes = $("#MES-REFER").val();
         let anio = $("#ANIO-REFER").val();
-        let url__= $("#info-compras").val()+"/"+getClienteId()+"/"+mes+"/"+anio;
+        let url__ = $("#info-compras").val() + "/" + getClienteId() + "/" + mes + "/" + anio;
         let loader = "<img  src='<?= base_url("assets/img/loader.gif") ?>'   />";
         $("#tabla-compras").html(loader);
 
-        let req = await fetch(  url__);
+        let req = await fetch(url__);
 
         let resp_html = await req.text();
         $("#tabla-compras").html(resp_html);
@@ -184,8 +211,8 @@ echo $estilo;
         let anio = $("#ANIO-REFER").val();
         let loader = "<img  src='<?= base_url("assets/img/loader.gif") ?>'   />";
         $("#tabla-ventas").html(loader);
-        let url__= $("#info-ventas").val() +"/"+getClienteId()+"/"+mes+"/"+anio;
-        let req = await fetch(  url__ );
+        let url__ = $("#info-ventas").val() + "/" + getClienteId() + "/" + mes + "/" + anio;
+        let req = await fetch(url__);
 
         let resp_html = await req.text();
         $("#tabla-ventas").html(resp_html);
@@ -203,12 +230,12 @@ echo $estilo;
         //Parametros Anio, mes
         let mes = $("#MES-REFER").val();
         let anio = $("#ANIO-REFER").val();
- 
+
         // let params = $("#ventas-a-reports").serialize()+ "&cliente="+getClienteId()+"&anulados=B";
         let loader = "<img  src='<?= base_url("assets/img/loader.gif") ?>'   />";
         $("#tabla-ventas-a").html(loader);
-        let url__=$("#info-ventas-a").val()+"/"+getClienteId()+"/"+mes+"/"+anio+"/B" ;
-        let req = await fetch(  url__);
+        let url__ = $("#info-ventas-a").val() + "/" + getClienteId() + "/" + mes + "/" + anio + "/B";
+        let req = await fetch(url__);
 
         let resp_html = await req.text();
         $("#tabla-ventas-a").html(resp_html);
@@ -223,15 +250,15 @@ echo $estilo;
 
 
     async function informe_retencion() {
-//parametros
+        //parametros
         let mes = $("#MES-REFER").val();
-        let anio = $("#ANIO-REFER").val();  
+        let anio = $("#ANIO-REFER").val();
         //loader image
         let loader = "<img  src='<?= base_url("assets/img/loader.gif") ?>'   />";
         //URL
-        let url__=$("#info-retencion").val()+"/"+getClienteId()+"/"+mes+"/"+anio ;
+        let url__ = $("#info-retencion").val() + "/" + getClienteId() + "/" + mes + "/" + anio;
         $("#tabla-retencion").html(loader);
-        let req = await fetch( url__);
+        let req = await fetch(url__);
         let resp_html = await req.text();
         $("#tabla-retencion").html(resp_html);
     }
@@ -247,29 +274,51 @@ echo $estilo;
     }
 
 
-    function totales(){
-    let c= $("#compra-total-iva").text();
-    let v= $("#venta-total-iva").text();
-    let r= $("#retencion-total").text();
-   
-    let c_= limpiar_numero(  c );
-    let v_= limpiar_numero( v );
-    let r_= limpiar_numero(  r );
-    let saldo= parseInt(  c_) + parseInt( r_)  -  parseInt(  v_) ;
 
-    $("#TOTAL_C").text(  c);
-    $("#TOTAL_V").text( v);
-    $("#TOTAL_R").text(  r);
-     
-    $("#TOTAL_S").text(    dar_formato_millares(saldo) );
-    if( saldo > 0)
-   { $("#TOTAL_S").css("color", "green");
-    $("#TOTAL_S").addClass("table-success");}
-    else{
-        $("#TOTAL_S").css("color", "red");
-    $("#TOTAL_S").addClass("table-danger");
+    async function totales() {
+
+        //OBTENER SALDO INICIAL
+        let mes = $("select[name=month]").val();
+        let anio = $("select[name=year]").val();
+        let req = await fetch('<?= base_url('admin/clientes/saldo-anterior/') ?>/' +getClienteId()+'/'+  mes + '/' + anio);
+        let resp = await req.json();
+        let saldo_ini = 0;
+        if ("data" in resp) saldo_ini = resp.data;
+
+
+        let c = $("#compra-total-iva").text();
+        let v = $("#venta-total-iva").text();
+        let r = $("#retencion-total").text();
+
+        let c_ = limpiar_numero(c);
+        let v_ = limpiar_numero(v);
+        let r_ = limpiar_numero(r);
+        let saldo = parseInt(c_) + parseInt(r_) - parseInt(v_);
+        $("#TOTAL_SALDO_INICIAL").text(dar_formato_millares(saldo_ini));
+        $("#TOTAL_C").text(c);
+        $("#TOTAL_V").text(v);
+        $("#TOTAL_R").text(r);
+        //Sumar saldo inicial 
+        let saldo_definitivo = saldo + parseInt(saldo_ini);
+
+        $("#TOTAL_S").text(dar_formato_millares(saldo));
+        if (saldo > 0) {
+            $("#TOTAL_S").css("color", "green");
+            $("#TOTAL_S").addClass("table-success");
+        } else {
+            $("#TOTAL_S").css("color", "red");
+            $("#TOTAL_S").addClass("table-danger");
+        }
+
+        $("#TOTAL_S_TOTAL").text(dar_formato_millares(saldo_definitivo));
+        if (saldo_definitivo > 0) {
+            $("#TOTAL_S_TOTAL").css("color", "green");
+            $("#TOTAL_S_TOTAL").addClass("table-success");
+        } else {
+            $("#TOTAL_S_TOTAL").css("color", "red");
+            $("#TOTAL_S_TOTAL").addClass("table-danger");
+        }
     }
-}
 
 
     async function cargar_tablas() {
@@ -277,7 +326,7 @@ echo $estilo;
         await informe_ventas_anuladas();
         await informe_compras();
         await informe_retencion();
-        totales();
+        await totales();
         $("ul.pagination li").addClass("btn btn-dark btn-sm").css("font-weight", "600");
     }
 

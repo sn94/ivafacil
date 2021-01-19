@@ -34,9 +34,9 @@ echo $estilo;
 <div class="row ml-1">
 
 
-<div class="col-12">
-<h3  class="text-center">Movimientos del Mes</h3>
-</div>
+    <div class="col-12">
+        <h3 class="text-center">Movimientos del Mes</h3>
+    </div>
     <div class="col-12">
         <!--cargar anios -->
         <select onchange="$('#download-2').val('');cargar_tablas();" name="year" style="font-size: 11px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
@@ -65,18 +65,47 @@ echo $estilo;
 
         <button type="submit" style="display: none;"></button>
 
-       
+
     </div>
 
-    <div class="col-12 col-md-12"> 
-    <table class="table" style="font-family: mainfont;font-weight: 600;">
-    <thead><tr><td  class="text-right"  >Compras</td> <td  class="text-right" >Ventas</td> 
-    <td  class="text-right" >Retención</td><td  class="text-right" >Saldo</td></tr></thead>
-    <tbody>
-    <tr> <td class="text-right" id="TOTAL_C"></td> <td  class="text-right"  id="TOTAL_V"> </td>  
-    <td  class="text-right" id="TOTAL_R"> </td>  <td  class="text-right" id="TOTAL_S"> </td>  </tr>
-    </tbody>
-    </table>
+    <div class="col-12 col-md-12 " style="background-color: #b1d5a0; font-family: mainfont;font-weight: 600;">
+        
+                <div class="row">
+                    <div  class="col-12 text-center p-0">I.V.A</div>
+                </div>
+                <div class="row">
+                   
+                   <div class="col-12 col-md">
+                   <div class="col-4 col-md-12 text-right    pt-0">Saldo inicial</div>
+                    <div class="col-8 col-md-12 text-right pr-4 p-md-1" id="TOTAL_SALDO_INICIAL"></div>
+                    </div>
+
+                    <div class="col-12 col-md">
+                   <div class="col-4 col-md-12 text-right  pt-0">Compras</div>
+                    <div class="col-8 col-md-12 text-right  pr-4 p-md-1 " id="TOTAL_C"></div>
+                   </div>
+
+                   <div class="col-12 col-md">
+                   <div class="col-4 col-md-12 text-right   pt-0">Ventas</div>
+                    <div class="col-8 col-md-12  text-right  pr-4 p-md-1 " id="TOTAL_V"> </div>
+                    </div>
+
+                    <div class="col-12 col-md">
+                  <div class="col-4 col-md-12 text-right pt-0">Retención</div>
+                    <div class="col-8 col-md-12  text-right  pr-4 p-md-1  " id="TOTAL_R"> </div>
+                    </div>
+
+                    <div class="col-12 col-md">
+                   <div class="col-4 col-md-12 text-right  pt-0">Saldo </div>
+                    <div class="col-8 col-md-12  text-right  pr-4 p-md-1 " id="TOTAL_S"> </div>
+                    </div>
+                    <div class="col-12 col-md">
+                   <div class="col-4 col-md-12 text-right  pt-0">Saldo total</div>
+                    <div class="col-8 col-md-12  text-right  pr-4 p-md-1 " id="TOTAL_S_TOTAL"> </div>
+                    </div>
+
+                </div>  
+        
     </div>
     <div class="col-12 col-md-12">
 
@@ -223,29 +252,51 @@ echo $estilo;
 
 
 
-function totales(){
-    let c= $("#compra-total-iva").text();
-    let v= $("#venta-total-iva").text();
-    let r= $("#retencion-total").text();
-   
-    let c_= limpiar_numero(  c );
-    let v_= limpiar_numero( v );
-    let r_= limpiar_numero(  r );
-    let saldo= parseInt(  c_) + parseInt( r_)  -  parseInt(  v_) ;
+    async function totales() {
 
-    $("#TOTAL_C").text(  c);
-    $("#TOTAL_V").text( v);
-    $("#TOTAL_R").text(  r);
-     
-    $("#TOTAL_S").text(    dar_formato_millares(saldo) );
-    if( saldo > 0)
-   { $("#TOTAL_S").css("color", "green");
-    $("#TOTAL_S").addClass("table-success");}
-    else{
-        $("#TOTAL_S").css("color", "red");
-    $("#TOTAL_S").addClass("table-danger");
+        //OBTENER SALDO INICIAL
+        let mes= $("select[name=month]").val();
+        let anio= $("select[name=year]").val();
+        let req=  await fetch( '<?=base_url('cierres/leer-saldo-anterior-sess')?>/'+mes+'/'+anio);
+        let resp=  await  req.json();
+        let saldo_ini=   0;
+        if(  "data" in resp )  saldo_ini =     resp.data ;
+
+
+        let c = $("#compra-total-iva").text();
+        let v = $("#venta-total-iva").text();
+        let r = $("#retencion-total").text();
+
+        let c_ = limpiar_numero(c);
+        let v_ = limpiar_numero(v);
+        let r_ = limpiar_numero(r);
+        let saldo = parseInt(c_) + parseInt(r_) - parseInt(v_);
+        $("#TOTAL_SALDO_INICIAL").text( dar_formato_millares( saldo_ini)  );
+        $("#TOTAL_C").text(c);
+        $("#TOTAL_V").text(v);
+        $("#TOTAL_R").text(r);
+//Sumar saldo inicial 
+let saldo_definitivo=   saldo +  parseInt( saldo_ini);
+
+        $("#TOTAL_S").text(dar_formato_millares(saldo));
+        if (saldo > 0) {
+            $("#TOTAL_S").css("color", "green");
+            $("#TOTAL_S").addClass("table-success");
+        } else {
+            $("#TOTAL_S").css("color", "red");
+            $("#TOTAL_S").addClass("table-danger");
+        }
+
+        $("#TOTAL_S_TOTAL").text(dar_formato_millares(saldo_definitivo));
+        if (saldo_definitivo > 0) {
+            $("#TOTAL_S_TOTAL").css("color", "green");
+            $("#TOTAL_S_TOTAL").addClass("table-success");
+        } else {
+            $("#TOTAL_S_TOTAL").css("color", "red");
+            $("#TOTAL_S_TOTAL").addClass("table-danger");
+        }
     }
-}
+
     function dar_formato_millares(val_float) {
         return new Intl.NumberFormat("de-DE").format(val_float);
     }
@@ -262,7 +313,7 @@ function totales(){
         await informe_ventas_anuladas();
         await informe_compras();
         await informe_retencion();
-        totales();
+        await totales();
         $("ul.pagination li").addClass("btn btn-dark btn-sm").css("font-weight", "600");
     }
 

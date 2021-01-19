@@ -22,11 +22,19 @@ if (session("id") != "") {
  
  <?= $this->section("estilos") ?>
 
- <style>
+
+
+ 
+
+<style>
         #right-panel {
             background-image: url(<?= $wallpaper ?>) !important;
             background-repeat: no-repeat;
             background-size: cover;
+        }
+
+        .right-panel header.header {
+            margin-bottom: -10px;
         }
 
         html {
@@ -37,8 +45,6 @@ if (session("id") != "") {
             background-size: cover;
         }
     </style>
-
- 
 
 <?= $this->endSection() ?>
 

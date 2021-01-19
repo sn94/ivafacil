@@ -272,8 +272,14 @@ class Retencion extends ResourceController {
 		$this->API_MODE =  $this->isAPI();
 		
 		$request = \Config\Services::request();
-		if ($request->getMethod(true) == "GET")
-		return view("movimientos/comprobantes/retencion/create");
+		if ($request->getMethod(true) == "GET") {
+
+			$habilitado =  (new Usuario())->servicio_habilitado($this->getClienteId());
+			if (array_key_exists("msj",  $habilitado))
+				return view("movimientos/comprobantes/retencion/create",  ["error" =>   $habilitado['msj']]);
+			else
+				return view("movimientos/comprobantes/retencion/create");
+		}
 		//Manejo POST
 		$usu = new Retencion_model();
 		$data = $this->request->getRawInput();
@@ -281,9 +287,14 @@ class Retencion extends ResourceController {
 		$mes_fecha_compro=   date("m",   strtotime( $fecha_compro ) );
 		$anio_fecha_anio=   date("Y",   strtotime( $fecha_compro ) );
 
+		//Al dia
+		$habilitado =  (new Usuario())->servicio_habilitado($this->getClienteId());
+		if (array_key_exists("msj",  $habilitado))
+			return $this->response->setJSON(['msj' =>  $habilitado['msj'],  'code' => "500"]);
 
-		if(  (new Cierres())->esta_cerrado( $mes_fecha_compro,  $anio_fecha_anio)  )
-		return  $this->response->setJSON(  ['msj'=>  "El mes ya esta cerrado",  "code"=>  "500"]);
+
+		if ((new Cierres())->esta_cerrado($mes_fecha_compro,  $anio_fecha_anio))
+		return  $this->response->setJSON(['msj' =>  "El mes ya esta cerrado",  "code" =>  "500"]);
 
 		//Verificar si el periodo-ejercicio esta cerrado o fuera de rango
 		//$Operacion_fecha_invalida = (new Cierres())->fecha_operacion_invalida($data['fecha']);
@@ -361,6 +372,11 @@ class Retencion extends ResourceController {
 
 		if ($request->getMethod(true) == "GET") {
 			$regis =  (new Retencion_model())->find($cod_retencion);
+
+			$habilitado =  (new Usuario())->servicio_habilitado($this->getClienteId());
+			if (array_key_exists("msj",  $habilitado))
+			return view("movimientos/comprobantes/retencion/update",  [ 'error'=>  $habilitado['msj'],  'retencion'=>  $regis ] );
+			else
 			return view("movimientos/comprobantes/retencion/update",  ['retencion'=>  $regis ] );
 		}
 

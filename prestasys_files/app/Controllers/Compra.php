@@ -277,8 +277,14 @@ class Compra extends ResourceController
 	{
 
 		$request = \Config\Services::request();
-		if ($request->getMethod(true) == "GET")
-			return view("movimientos/comprobantes/compra/create");
+		if ($request->getMethod(true) == "GET") {
+			$mensajes= (new Usuario())->servicio_habilitado(  $this->getClienteId())    ;
+			 
+			if( array_key_exists("msj",  $mensajes)  )
+			return view("movimientos/comprobantes/compra/create", ['error'=>  $mensajes['msj'] ]);
+			else
+			return view("movimientos/comprobantes/compra/create"  );
+		}
 		//Manejo POST
 
 		$this->API_MODE =  $this->isAPI();
@@ -289,7 +295,13 @@ class Compra extends ResourceController
 		$mes_fecha_compro=   date("m",   strtotime( $fecha_compro ) );
 		$anio_fecha_anio=   date("Y",   strtotime( $fecha_compro ) );
 
+		//Al dia
+		$habilitado =  (new Usuario())->servicio_habilitado(  $this->getClienteId());
+		if (  array_key_exists("msj",  $habilitado ) )
+			return $this->response->setJSON(['msj' =>  $habilitado['msj'],  'code' => "500"]);
+		
 
+		//verificar mes abierto
 		if(  (new Cierres())->esta_cerrado($mes_fecha_compro, $anio_fecha_anio)  )
 		return  $this->response->setJSON(  ['msj'=>  "El mes ya esta cerrado",  "code"=>  "500"]);
 
@@ -380,8 +392,16 @@ class Compra extends ResourceController
 
 		$request = \Config\Services::request();
 		if ($request->getMethod(true) == "GET") {
-			$regis =  (new Compras_model())->find($cod_compra);
 
+			$regis =  (new Compras_model())->find($cod_compra);
+			//servicio habilitado
+			$habilitado =  (new Usuario())->servicio_habilitado($this->getClienteId());
+			if (array_key_exists("msj",  $habilitado))
+			return view(
+				"movimientos/comprobantes/compra/update",
+				["compra" => $regis,  "error" =>  $habilitado['msj']]
+			);
+			else
 			return view(
 				"movimientos/comprobantes/compra/update",
 				["compra" => $regis]

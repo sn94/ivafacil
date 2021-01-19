@@ -5,27 +5,27 @@ use App\Models\Parametros_model;
 
 
 //mONTOS
-$SALDO_INICIAL=  $totales['saldo_anterior'];
-$IMPORTE_COMPRAS_EXE= Utilidades::number_f($totales['compras_total_exe']);
-$IMPORTE_COMPRAS_10= Utilidades::number_f($totales['compras_total_10']);
-$IMPORTE_COMPRAS_5=  Utilidades::number_f($totales['compras_iva5']); 
-$TOTAL_IVA_COMPRAS=  Utilidades::number_f(intval($totales['compras_total_10']) + intval($totales['compras_iva5']));
+$SALDO_INICIAL =  $totales['saldo_anterior'];
+$IMPORTE_COMPRAS_EXE = Utilidades::number_f($totales['compras_total_exe']);
+$IMPORTE_COMPRAS_10 = Utilidades::number_f($totales['compras_total_10']);
+$IMPORTE_COMPRAS_5 =  Utilidades::number_f($totales['compras_iva5']);
+$TOTAL_IVA_COMPRAS =  Utilidades::number_f(intval($totales['compras_total_10']) + intval($totales['compras_iva5']));
 
-$IMPORTE_VENTAS_EXE= Utilidades::number_f($totales['ventas_total_exe']);
-$IMPORTE_VENTAS_10=  Utilidades::number_f($totales['ventas_total_10']);
-$IMPORTE_VENTAS_5=  Utilidades::number_f( $totales['ventas_iva5']); 
-$TOTAL_IVA_VENTAS=  Utilidades::number_f(intval($totales['ventas_total_10']) + intval($totales['ventas_iva5']));
+$IMPORTE_VENTAS_EXE = Utilidades::number_f($totales['ventas_total_exe']);
+$IMPORTE_VENTAS_10 =  Utilidades::number_f($totales['ventas_total_10']);
+$IMPORTE_VENTAS_5 =  Utilidades::number_f($totales['ventas_iva5']);
+$TOTAL_IVA_VENTAS =  Utilidades::number_f(intval($totales['ventas_total_10']) + intval($totales['ventas_iva5']));
 
-$RETENCION=Utilidades::number_f($totales['retencion']);
+$RETENCION = Utilidades::number_f($totales['retencion']);
 
-$SALDO=  Utilidades::number_f($totales['saldo'] );
-$SALDO_DESCR= (  intval($totales['saldo']) < 0  ) ? "A FAVOR DE LA SET" :  (    intval($totales['saldo']) > 0 ?  "A Favor del contribuyente":  "IVA C.F= IVA D.F");
-$SALDO_COLOR= (  intval($totales['saldo']) < 0  ) ? "table-danger" :  (    intval($totales['saldo']) > 0 ?  "table-success":  "table-secondary");
+$SALDO =  Utilidades::number_f($totales['saldo']);
+$SALDO_DESCR = (intval($totales['saldo']) < 0) ? "A FAVOR DE LA SET" : (intval($totales['saldo']) > 0 ?  "A Favor del contribuyente" :  "IVA C.F= IVA D.F");
+$SALDO_COLOR = (intval($totales['saldo']) < 0) ? "table-danger" : (intval($totales['saldo']) > 0 ?  "table-success" :  "table-secondary");
 
 
 
 ?>
- 
+
 
 <style>
     .card-header>h4:nth-child(1) {
@@ -41,9 +41,8 @@ $SALDO_COLOR= (  intval($totales['saldo']) < 0  ) ? "table-danger" :  (    intva
         border-radius: 15px 15px 0px 0px;
     }
 </style>
- 
 
- 
+
 
 
 <div class="row">
@@ -54,12 +53,17 @@ $SALDO_COLOR= (  intval($totales['saldo']) < 0  ) ? "table-danger" :  (    intva
             <div class="card-header">
                 <h4 class="text-center">Cierre del mes:
                     <!--cargar meses -->
-                    <input  value="<?=Utilidades::monthDescr($mes)?>" id="month" type="text"  readonly style="font-size: 16px; border-radius: 15px;border: 0.5px solid #9f9f9f;color: #000;"> 
+                    <input value="<?= Utilidades::monthDescr($mes) ?>" id="month" type="text" readonly style="font-size: 16px; border-radius: 15px;border: 0.5px solid #9f9f9f;color: #000;">
 
-                    <input value="<?=$anio?>" type="text" id="year" readonly style="font-size: 16px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #000;"> 
+                    <input value="<?= $anio ?>" type="text" id="year" readonly style="font-size: 16px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #000;">
                 </h4>
             </div>
             <div class="card-body card-block p-0">
+            <div class="row">
+                    <?= view("plantillas/message") ?>
+
+                </div>
+
                 <form action="" method="post" class="container">
 
                     <table class="table table-light">
@@ -94,17 +98,17 @@ $SALDO_COLOR= (  intval($totales['saldo']) < 0  ) ? "table-danger" :  (    intva
                                 <td></td>
                                 <td>Compras</td>
                                 <td id="compras-exenta" class="text-right"> <?= $IMPORTE_COMPRAS_EXE ?> </td>
-                                <td id="compras-5" class="text-right">  <?= $IMPORTE_COMPRAS_5 ?> </td>
-                                <td id="compras-10" class="text-right">  <?= $IMPORTE_COMPRAS_10 ?> </td>
-                                <td id="compras-iva" class="text-right">  <?= $TOTAL_IVA_COMPRAS ?>  </td>
+                                <td id="compras-5" class="text-right"> <?= $IMPORTE_COMPRAS_5 ?> </td>
+                                <td id="compras-10" class="text-right"> <?= $IMPORTE_COMPRAS_10 ?> </td>
+                                <td id="compras-iva" class="text-right"> <?= $TOTAL_IVA_COMPRAS ?> </td>
                             </tr>
                             <tr>
                                 <td></td>
                                 <td>Ventas</td>
-                                <td id="ventas-exenta" class="text-right">  <?= $IMPORTE_VENTAS_EXE ?> </td>
+                                <td id="ventas-exenta" class="text-right"> <?= $IMPORTE_VENTAS_EXE ?> </td>
                                 <td id="ventas-5" class="text-right"> <?= $IMPORTE_VENTAS_5 ?> </td>
-                                <td id="ventas-10" class="text-right">  <?= $IMPORTE_VENTAS_10 ?> </td>
-                                <td id="ventas-iva" class="text-right"> <?= $TOTAL_IVA_VENTAS ?>  </td>
+                                <td id="ventas-10" class="text-right"> <?= $IMPORTE_VENTAS_10 ?> </td>
+                                <td id="ventas-iva" class="text-right"> <?= $TOTAL_IVA_VENTAS ?> </td>
                             </tr>
                             <tr>
                                 <td></td>
@@ -112,18 +116,18 @@ $SALDO_COLOR= (  intval($totales['saldo']) < 0  ) ? "table-danger" :  (    intva
                                 <td id="retencion-exenta" class="text-right"></td>
                                 <td></td>
                                 <td></td>
-                                <td id="retencion-iva" class="text-right"> <?= $RETENCION ?>   </td>
+                                <td id="retencion-iva" class="text-right"> <?= $RETENCION ?> </td>
                             </tr>
 
-                            <tr id="saldo-row"  class="<?=$SALDO_COLOR?>" >
+                            <tr id="saldo-row" class="<?= $SALDO_COLOR ?>">
                                 <td></td>
                                 <td>Saldo final</td>
-                                <td id="saldo-descri" colspan="3"> <?= $SALDO_DESCR ?>  </td>
-                                <td id="saldo" class="text-right">   <?= $SALDO ?> </td>
+                                <td id="saldo-descri" colspan="3"> <?= $SALDO_DESCR ?> </td>
+                                <td id="saldo" class="text-right"> <?= $SALDO ?> </td>
                             </tr>
                         </tbody>
                     </table>
-                     
+
 
 
 
@@ -131,7 +135,7 @@ $SALDO_COLOR= (  intval($totales['saldo']) < 0  ) ? "table-danger" :  (    intva
                 </form>
             </div>
             <div class="card-footer">
- 
+
 
             </div>
         </div>
@@ -140,8 +144,3 @@ $SALDO_COLOR= (  intval($totales['saldo']) < 0  ) ? "table-danger" :  (    intva
 
 
 </div>
- 
-
-
-
- 

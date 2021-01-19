@@ -662,14 +662,14 @@ dv
 			setcookie("ivafacil_user_dv", $dv,  time() + 365 * 24 * 60 * 60,  "/ivafacil",  env("DOMINIO"));
 			//Crear cookie para password
 			setcookie("ivafacil_user_pa", $SESSIONID,  time() + 365 * 24 * 60 * 60,  "/ivafacil",  env("DOMINIO"));
-			return redirect()->to(base_url("/"));
+			return redirect()->to(base_url("welcome/index"));
 		} else { 
 			$usu_ = new Usuario_model();
 			$usu_->where("regnro", $CODCLIENTE);
 			$usu_->set([  'remember' => 'N']);
 			$usu_->update();
 			
-			return redirect()->to(base_url("/")); }
+			return redirect()->to(base_url("welcome/index")); }
 
 	}
 
@@ -723,12 +723,25 @@ dv
 		$usuarioObject = (new Usuario_model())->find( $CODCLIENTE);
 	 
 		$pagos=  (new Pago_model())->where("cliente",  $usuarioObject->regnro )->orderBy("fecha", "DESC")->first();
-		if(  is_null( $pagos ) ) 	return  array("msj"=>"Servicio no habilitado", "code"=> 500 );
+		if(  is_null( $pagos ) ) 	return  array("msj"=>"Servicio no habilitado. Debe estar al día con el pago de los servicios", "code"=> 500 );
 		else{
 			if( strtotime( date("Y-m-d H:i:s") )      <= strtotime( $pagos->validez) ) 
 			return array("data"=>"Habilitado", "code"=> 200 );
-			else{ 	return  array("msj"=>"Servicio no habilitado", "code"=> 500 );}
+			else{ 	return  array("msj"=>"Servicio no habilitado. Debe estar al día con el pago de los servicios", "code"=> 500 );}
 		} 
+	}
+
+	public function clave_marangatu_definida( $CODCLIENTE){
+		$usuarioObject = (new Usuario_model())->find( $CODCLIENTE);
+		 return  !(  $usuarioObject->clave_marangatu == ""   ||    is_null(  $usuarioObject->clave_marangatu  )   );
+		
+	}
+
+	public function servicio_habilitado_sess(){
+		$cli=  $this->getClienteId();
+		$mensa= $this->servicio_habilitado(   $cli );
+		return $this->response->setJSON(   $mensa );
+
 	}
 
 
@@ -968,6 +981,22 @@ dv
 
 
 
+	public function set_marangatu_key(){
+
+		$cli= $this->getClienteId();
+		$clave=  $this->request->getRawInput("clave_marangatu");
+		try{
+			(new Usuario_model())->where(  "regnro",  $cli )
+			->set(  ["clave_marangatu"=>  $clave]  )
+			->update();
+			return $this->response->setJSON(  ['data'=> "Clave Marangatu Actualizada", "code"=>"200"  ]  );
+		}catch( Exception $e){	
+			return $this->response->setJSON(  ['msj'=> "Error al actualizar", "code"=>"500"  ]  );
+
+		}
+	
+	}
+
 	public function actualizar_ultimo_nro_fv($numero)
 	{
 		$codcli = $this->getClienteId();
@@ -1014,7 +1043,7 @@ dv
 		if(  $diferencia < 0)
 		{
 			$diferencia= abs( $diferencia);
-			$mensaje= "RUC con terminación $ultimo_d: faltan $diferencia dia(s) de tiempo para presentar el IVA " ;
+			$mensaje= "Vto. de IVA: Faltan $diferencia dia(s)" ;
 			return $this->response->setJSON(  ['data'=>   $mensaje ,  'code'=>'200' ]   );
 		}	return $this->response->setJSON(  ['msj'=>  "Nada" ,  'code'=>'500' ]   );
 	}

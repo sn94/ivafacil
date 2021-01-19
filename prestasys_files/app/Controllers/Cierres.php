@@ -145,7 +145,19 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 		}
 	}
 
+	public function leer_saldo_anterior( $CODCLIENTE,  $MES,  $ANIO ){
+	 
+		$saldo=  $this->__saldo_anterior(  $CODCLIENTE,   $MES,    $ANIO);
+		return $this->response->setJSON(  ['data'=>  $saldo,   'code'=>'200'] );
+	}
+
+	public function leer_saldo_anterior_sess(  $MES,  $ANIO ){
+		$cliente =    $this->getClienteId()  ;
+		$saldo=  $this->__saldo_anterior(  $cliente,   $MES,    $ANIO);
+		return $this->response->setJSON(  ['data'=>  $saldo,   'code'=>'200'] );
+	}
 	private function __saldo_anterior(  $CODCLIENTE, $MES,  $ANIO)
+	
 	{
 		//$this->API_MODE = $this->isAPI();
 	//	$CODCLIENTE =  $this->API_MODE ?  $this->getClienteId() :    session("id");
@@ -252,7 +264,15 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 	
 		$codcliente=  $this->getClienteId();
 		$anios=  (new Estado_anio_model())->select("anio")->where("codcliente",   $codcliente)->get()->getResult();
-		return view("movimientos/cierre", ['edicion_saldo_inicial'=>  $habilitar_edicion, "ANIOS"=> $anios ]);
+
+		$habilitado =  (new Usuario())->servicio_habilitado($this->getClienteId());
+		if (array_key_exists("msj",  $habilitado))
+		return view(
+			"movimientos/cierre",
+			['edicion_saldo_inicial' =>  $habilitar_edicion, "ANIOS" => $anios, "error" =>  $habilitado['msj']]
+		);
+		else
+		return view("movimientos/cierre", ['edicion_saldo_inicial' =>  $habilitar_edicion, "ANIOS" => $anios]);
 	}
 
 
@@ -265,10 +285,13 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 		$this->API_MODE = $this->isAPI();
 		$CODCLIENTE =  $this->API_MODE ?  $this->getClienteId() :    session("id");
 		//no cerrar si no se esta al dia con el pago
-		if (!  ((new Usuario())->servicio_habilitado($CODCLIENTE))  )
+		$habilitado =  (new Usuario())->servicio_habilitado($CODCLIENTE);
+		if (  array_key_exists("msj",  $habilitado ) )
 			return $this->response->setJSON(['msj' => "Operación no disponible. Revise su estado de pago",  'code' => "500"]);
 		
-		
+	
+
+
 		//if( $this->mes_anio_fuera_de_tiempo( $MES, $ANIO) )
 		//return $this->response->setJSON(['msj' => "No permitido. Mes y año no válidos",  'code' => "500"]);
 
@@ -283,6 +306,12 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 			}
 		
 		}
+		
+			
+		//Clave de marangatu
+		$clave_marangatu= (new Usuario())->clave_marangatu_definida( $CODCLIENTE );
+		if( ! $clave_marangatu )
+		return $this->response->setJSON(['msj' => "Para cerrar este mes, proporcione su clave de acceso de Marangatu para continuar",  'code' => "500"]);
 		
 
 			$cierre =  new Estado_mes_model();

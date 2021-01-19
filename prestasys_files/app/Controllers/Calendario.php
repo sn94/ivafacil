@@ -26,7 +26,24 @@ class Calendario extends Controller {
 
 
 
+	public function index(){
+		$lst=  (new Calendario_model())->findAll();
+		return $this->response->setJSON( 
+			['data'=>  $lst ,   'code'=> '200'] 
+		);
+	}
 
+
+	public function get(  $RUC ){
+
+		$ultimo_digi=   substr(  $RUC,  -1, 1);
+		$dia= (new Calendario_model())
+		->where("ultimo_d_ruc", $ultimo_digi )->first();
+		return $this->response->setJSON( 
+			['data'=>  $dia ,   'code'=> '200'] 
+		);
+
+	}
 
 	public function update()
 	{ 

@@ -74,18 +74,40 @@ class Pagos_iva extends Controller {
 
 
 
-
-
-
-	public function index($id = NULL, $estado= "P")
+	public function index_sess( $ESTADO,  $ANIO )
 	{
 		//pendientes de pago
 
+		$Ejercicio= is_null(  $ANIO ) ? date("Y")  :  $ANIO ;
+		$CLIENTE=   $this->getClienteId() ;
+		$REGISTROS= [];
+		if( $ESTADO  == "P"){
+
+			$REGISTROS = (new Estado_mes_model())->where("anio",  $Ejercicio)
+			->where("estado", "C")
+			->where("codcliente", $CLIENTE)->get()->getResult();
+	
+		}else{
+			$REGISTROS = (new Pagos_iva_model())->where("year(fecha)",  $Ejercicio)
+			->where("codcliente", $CLIENTE)->get()->getResult();
+		}
+	return $this->response->setJSON(  [ "data"=> $REGISTROS,  'code'=>'200'] );
+	 
+	}	
+
+
+
+	public function index($id = NULL, $estado= "P", $ANIO= NULL )
+	{
+		//pendientes de pago
+
+		$Ejercicio= is_null(  $ANIO ) ? date("Y")  :  $ANIO ;
+
 		$CLIENTE= is_null( $id )?  $this->getClienteId() :   $id;
-		$pendientes = (new Estado_mes_model());
+		$pendientes = (new Estado_mes_model())->where("anio",  $Ejercicio) ;
 		
 		if( $estado == "P")
-		$pendientes= $pendientes->where("estado <>", "L");
+		$pendientes= $pendientes->where("estado", "C");
 		else 
 		$pendientes= $pendientes->where("estado", "L");
 
@@ -110,6 +132,10 @@ class Pagos_iva extends Controller {
 			 
 				return view("admin/clientes/pago_iva/pagos",  ['pagos_pendientes' =>  $pendientes, 'CLIENTE' => $CLIENTE]);
 			} else {
+
+				if( $this->isAPI())
+				return $this->response->setJSON(  ['data'=>  $pendientes,  'code'=> '200'] );
+				else
 				return view("pago_iva/pagos",  ['pagos_pendientes' =>  $pendientes, 'CLIENTE' => $CLIENTE]);
 			}
 		}
@@ -131,6 +157,16 @@ class Pagos_iva extends Controller {
 
 		{
 			$datos = $this->request->getRawInput();
+			//Desde la api
+			if( $this->isAPI())
+			{
+				$ApiClientId= $this->getClienteId();
+				$ApiClientData= (new Usuario_model())->find(  $ApiClientId);
+				$datos['ruc']=  $ApiClientData->ruc;
+				$datos['dv']=  $ApiClientData->dv;
+				$datos['codcliente']=  $ApiClientId;
+			}
+
 			$pago = new Pagos_iva_model();
 			//transaccion
 			$db = \Config\Database::connect();
@@ -148,7 +184,9 @@ class Pagos_iva extends Controller {
 
 				 
 				//Comunicar al cliente su cierre
+				if( $this->isAdminView() )
 				$this->email_iva_pagado(  $datos['codcliente'],  ['fecha_pago'=> $datos['fecha'] , 'mes'=>$datos['mes'],   'anio'=>$datos['anio']  ]  );
+				
 				$db->transCommit();
 				return $this->response->setJSON(['data' => "REGISTRADO",  'code' => "200"]);
 			} catch (Exception $ex) {

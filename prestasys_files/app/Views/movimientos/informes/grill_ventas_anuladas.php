@@ -102,8 +102,8 @@ $ventas_t = 0;
             <td></td>
             <td></td>
             <td>TOTALES</td>
-            <td class="text-right" id="venta-total-ex"> <?= $ventas_total_ex ?> </td>
-            <td class="text-right" id="venta-total-5"> <?= $ventas_total_5 ?> </td>
+            <td class="text-right" id="venta-total-ex"> <?= Utilidades::number_f($ventas_total_ex) ?> </td>
+            <td class="text-right" id="venta-total-5"> <?= Utilidades::number_f($ventas_total_5) ?> </td>
             <td class="text-right" id="venta-total-10"> <?= Utilidades::number_f($ventas_total_10) ?> </td>
             <td class="text-right" id="venta-total"> <?= Utilidades::number_f($ventas_t) ?> </td>
         </tr>

@@ -13,10 +13,11 @@ class Usuario_model extends Model {
    protected $primaryKey = 'regnro';
    protected $useTimestamps = true;
    protected $allowedFields = [
-      'ruc','dv','pass','tipo','fechainicio','demo','tipoplan','estado','email','cliente','cedula','celular','telefono',
-      'domicilio','rubro','ciudad','pass_anterior', 'origen',
-       'session_id', 'session_expire', 'remember', 'remember_pass', 'remember_expire', 'fondo',
-      'ultimo_nro', 'saldo_IVA', 'token_recu', 'token_validez'
+      'ruc', 'dv', 'pass', 'tipo', 'fechainicio', 'demo', 'tipoplan', 'estado', 'email', 'cliente', 'cedula', 'celular', 'telefono',
+      'domicilio', 'rubro', 'ciudad', 'pass_anterior', 'origen',
+      'session_id', 'session_expire', 'remember', 'remember_pass', 'remember_expire', 'fondo',
+      'ultimo_nro', 'saldo_IVA', 'token_recu', 'token_validez',
+      'clave_marangatu'
    ];
 
     

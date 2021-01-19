@@ -2,7 +2,7 @@
     <thead>
 
         <tr>
-            <th>AÑO</th>
+            <th class="text-left">AÑO</th>
             <th>SALDO INICIAL</th>
             <th>VENTA</th>
             <th>COMPRA</th>
@@ -41,7 +41,7 @@
         ?>
 
             <tr>
-                <td class="text-right"><?= $anio ?></td>
+                <td class="text-left"><?= $anio ?></td>
                 <td class="text-right"><?= $saldo_ini ?></td>
                 <td class="text-right"><?= $venta ?></td>
                 <td class="text-right"><?= $compra ?></td>
@@ -61,7 +61,7 @@
 
     </tbody>
     <tfoot>
-    <tr class="bg-dark text-light"><td colspan="2">Totales</td><td class="text-right"><?=$T_1?></td><td class="text-right"><?=$T_2?></td> 
+    <tr class="bg-dark text-light"><td colspan="2" class="text-left">Totales</td><td class="text-right"><?=$T_1?></td><td class="text-right"><?=$T_2?></td> 
     <td class="text-right"><?=$T_3?></td><td class="text-right"><?=$T_4?></td><td class="text-right"><?=$T_5?></td>
     <td class="text-right">-</td>
     </tr>

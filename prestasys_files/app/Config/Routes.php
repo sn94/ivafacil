@@ -65,6 +65,11 @@ $routes->delete('/api/ventas/(:num)', 'Venta::delete/$1');
 $routes->get('/api/ventas/list/(:num)/(:num)/(:alpha)', 'Venta::index/$1/$2/$3'); 
 $routes->post('/api/ventas/list', 'Venta::index'); 
 $routes->get('/api/ventas/ultima-fecha-carga',   'Venta::ultima_fecha_carga');
+$routes->get('/api/ventas/ultimo-numero',   'Venta::generar_numero_factura');
+
+
+
+
 
 $routes->get('/api/retencion', 'Retencion::index'); 
 $routes->post('/api/retencion/create', 'Retencion::create'); 
@@ -96,8 +101,17 @@ $routes->post('/api/usuario/sign-in', 'Usuario::sign_in');
 $routes->post('/api/email-usuario-registered', 'Usuario::email_bienvenida'); 
 $routes->get('/api/usuario/ruc/(:num)', 'Usuario::ruc/$1'); 
 $routes->get('/api/usuario/mes-activo',   'Cierres::mes_activo');
-$routes->get('/api/usuario/digito-verificador/(:num)', 'Usuario::calcular_digito_verificador/$1'); 
+$routes->get('api/usuario/digito-verificador/(:num)', 'Usuario::calcular_digito_verificador/$1'); 
+$routes->get('/api/usuario/servicio-habilitado', 'Usuario::servicio_habilitado_sess'); 
+$routes->post('/api/usuario/nuevo-pago-iva', 'Pagos_iva::create'); 
+$routes->get('/api/usuario/pagos-iva/(:alpha)/(:num)', 'Pagos_iva::index_sess/$1/$2'); 
+$routes->post('api/usuario/marangatu', 'Usuario::set_marangatu_key'); 
 
+
+ 
+//Params
+$routes->get('/api/calendario', 'Calendario::index'); 
+$routes->get('/api/calendario/(:num)', 'Calendario::get/$1'); 
 
 
 //Administrativo 
@@ -158,6 +172,8 @@ $routes->get("/admin/clientes/list-pagos-iva/(:num)",  'Pagos_iva::index/$1');
 $routes->get("/admin/clientes/list-pagos-iva/(:num)/(:alpha)",  'Pagos_iva::index/$1/$2');
 $routes->get('/admin/clientes/pagos-iva/procesar/(:num)', 'Pagos_iva::create/$1'); 
 $routes->post('/admin/clientes/pagos-iva/procesar', 'Pagos_iva::create'); 
+//saldo
+$routes->get('/admin/clientes/saldo-anterior/(:num)/(:num)/(:num)', 'Cierres::leer_saldo_anterior/$1/$2/$3');
 //admin clientes novedades
 $routes->get('/admin/clientes/novedades', 'Usuario::novedades'); 
 $routes->get('/admin/clientes/novedades-venci-iva/(:num)', 'Usuario::verificar_vencimiento_iva/$1'); 

@@ -169,7 +169,7 @@ $TERMINACION_RUC=   substr(    session("ruc") , -1,1  );
 
             <div class="header-menu">
 
-                <div class="col-sm-7" id="NOVEDADES">
+                <div class="col-sm-7 col-md-7" id="NOVEDADES">
                     <a id="menuToggle" class="menutoggle pull-left"><i class="fa fa fa-tasks"></i></a>
                     <div class="header-left">
 
@@ -179,7 +179,7 @@ $TERMINACION_RUC=   substr(    session("ruc") , -1,1  );
                     </div>
                 </div>
 
-                <div class="col-sm-5">
+                <div class="col-sm-5 col-md-5">
                     <div class="user-area dropdown float-right">
                         <a style="color: black; text-transform: uppercase;" href="<?= base_url("usuario/update/" . session("id")) ?>" aria-haspopup="true" aria-expanded="false">
                             <i class="fa fa-user"></i> MIS DATOS
@@ -241,15 +241,15 @@ $TERMINACION_RUC=   substr(    session("ruc") , -1,1  );
         async function recoger_novedades_vencimiento_iva() {
            let terminacion=  $("#TERMINACION-RUC").val();
             let fetching_Data = async function( term) { 
-                let req = await fetch("<?= base_url('admin/clientes/novedades-venci-iva') ?>/" + term);
+                let req = await fetch("<?= base_url('usuario/verificar-vencimiento-iva') ?>/" + term);
                 let resp = await req.json();
                 if ("data" in resp) {
                     let mensaje = resp.data;
                     let notifi = `
        
-       <a href='<?= base_url("admin/clientes") ?>'>
-       <h5 style='color:red;'>  ${mensaje}
-       <img  style='width: 70px;height:50px;'  src='<?= base_url("assets/img/notificame.gif") ?>' />
+       <a href='<?= base_url("pagos-iva/index") ?>'>
+       <h5 style='font-weight: 600;color:red;font-size: 14px;'>  ${mensaje}
+       <img  style='width: 70px;height:50px;margin: 0px;'  src='<?= base_url("assets/img/notificame.gif") ?>' />
        </h5>
        </a>
        

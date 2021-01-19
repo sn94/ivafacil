@@ -35,10 +35,7 @@ h4.text-center {
 
     <div class="col-12" id="loaderplace">
     </div>
-    <div class="col-12">
-        <?= view("plantillas/message") ?>
-
-    </div>
+    
 
     <div class="col-12  offset-md-3 col-md-6 ">
         <div class="container p-0 bg-light">

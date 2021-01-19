@@ -27,7 +27,7 @@ class Filters extends BaseConfig
 			['except' => [
 				"/",
 				'usuario/create', 'usuario/sign-in', 'usuario/sign_in', 
-				'api/usuario/sign-in', 'api/usuario/create',
+				'api/usuario/sign-in', 'api/usuario/create', 'api/usuario/digito-verificador/*',
 				'auxiliar/*', 'api/ciudades', 'api/planes', 'api/monedas',
 				'admin',  'admin/*', 'home', 'welcome/publico',
 				'usuario/olvido-password','usuario/recuperar-password', 'usuario/recuperar-password/*',
@@ -37,7 +37,7 @@ class Filters extends BaseConfig
 			['except' => [ 
 				'admin/sign-in', 'home', 'welcome/publico', 
 				'usuario/*', 
-				  
+				"compra/*", 'venta/*', 'retencion/*',  'movimiento/*' ,'welcome/*','cierres/*', 'pagos/*', 'pagos-iva/*',
 				'api/*',
 				'auxiliar/*',  
 				'admin/olvido-password', 'admin/recuperar-password', 'admin/recuperar-password/*'
@@ -61,15 +61,17 @@ class Filters extends BaseConfig
 	public $filters = [
 		'logged_user'=> 
 		['before'=> [ 
-			"/", "api/purchase/*", "compra/*", 'venta/*', 'retencion/*',  'movimiento/*'
+			"/", "compra/*", 'venta/*', 'retencion/*',  'movimiento/*' , 'cierres/*', 'pagos/*', 'pagos-iva/*',
+			'welcome/index'
 			 ]
 		],
 
 		'admin_user'=> 
 		['before'=> [ 
-			"/", "admin/create",  "admin/update",  "admin/delete",
-			"admin/clientes",
-			"admin/parametros/create", "admin/planes/*", "admin/monedas"
+			  "admin/parametros/*",  "admin/calendario/*",  "admin/monedas/*",  "admin/planes/*",  "admin/clientes/*",
+			"admin/view-cierre-mes/*",  "admin/cierre-mes/*",  "admin/estados-mes/*",  "admin/cierre-anio/*",
+			"admin/deshacer-cierre-mes/*",  "admin/recordar-pago/*", 
+
 			 ]
 		 ]
 
