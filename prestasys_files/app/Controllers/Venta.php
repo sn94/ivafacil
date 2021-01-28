@@ -15,8 +15,7 @@ class Venta extends ResourceController {
  
 
 	protected $modelName = "App\Models\Ventas_model";
-	protected $format = "json";
-	private $API_MODE= true;
+	protected $format = "json"; 
 	private $array_response=  [];
 
 
@@ -34,12 +33,12 @@ class Venta extends ResourceController {
 
 		if ($code == 200) {
 			$this->array_response= array("data" => $data, "code" => $code);
-			if ($this->API_MODE)
+			if ($this->isAPI())
 			return $this->respond( $this->array_response ); //, 500, "No hay nada"
 			else return $this->array_response;
 		} else {
 			$this->array_response=  array("msj" => $msj, "code" => $code);
-			if ($this->API_MODE) return $this->respond(  $this->array_response );
+			if ($this->isAPI()) return $this->respond(  $this->array_response );
 			else return $this->array_response;
 
 		}
@@ -91,65 +90,67 @@ class Venta extends ResourceController {
 
 
 	
-	public function index_se(  $CLIENTE= NULL,  $MES= NULL,   $ANIO=   NULL,  $estado_ = "A")
+	public function index_se(  $CLIENTE,  $MES,   $ANIO,  $estado_ = "A")
 	{
-
-		$this->API_MODE =  $this->isAPI(); 
-
-		$ventas = (new Ventas_model());
-
-	
 		//Segun los parametros
 		//Parametros: mes y anio
-		$parametros = [];
+	
 		$cliente=  $CLIENTE;
-		$year =   is_null($ANIO) ?  date("Y")  :  $ANIO;
-		$month = is_null($MES)?  date("m") :  $MES;
-		$estado= "A";
-
-		if ($this->request->getMethod(true) == "POST") {
-			$parametros = $this->request->getRawInput();
-			$cliente = isset($parametros['cliente'])  ? $parametros['cliente'] : $cliente;
-			$month = isset($parametros['month'])  ? $parametros['month'] : $month;
-			$year =  isset($parametros['year']) ? $parametros['year'] : $year;
-			if (array_key_exists("anulados",  $parametros))  $estado =  $parametros['anulados'];
-			else 	$estado = $estado_;
-		} else {
-			$estado = $estado_;
-		}
-		$lista_co =  $ventas
+		$year =    $ANIO;
+		$month =   $MES;
+		$estado=  $estado_;
+		$ventas = (new Ventas_model());
+		$ventas = $ventas
 		->where("codcliente", $cliente)->where("year(fecha)", $year)
 		->where("month(fecha)", $month)
 		->where("estado", $estado);
-
-		if ($this->API_MODE) {
-			$lista_co = $lista_co->get()->getResult();
-			return $this->respond(array("data" => $lista_co, "code" => 200));
+	
+		$TotalRegistros=   $ventas->countAllResults(); 
+ 
+		if ($this->isAPI()) {
+			$ventas = $ventas
+			->where("codcliente", $cliente)->where("year(fecha)", $year)
+			->where("month(fecha)", $month)
+			->where("estado", $estado)
+			->get()->getResult();
+			return $this->respond(array("data" => $ventas, "code" => 200));
 		} else {
-			$lista_pagi = $lista_co->paginate(10);
+
+			$numero_filas = 10;
+			$pagina =  isset($_GET['page']) ?  $_GET['page']  : 0;
+
+			//filtro
+			$lista_pagi =  $ventas
+			->where("codcliente", $cliente)->where("year(fecha)", $year)
+			->where("month(fecha)", $month)
+			->where("estado", $estado)
+			->limit($numero_filas,  $pagina)->get()->getResult();
+
+			$ViewParams=   ['ventas' =>  $lista_pagi,
+			//'ventas_pager' => $lista_co->pager,
+			'year'=> $year,
+			'month'=> $month,
+			'estado'=> $estado_,
+			'TotalRegistros'=>  $TotalRegistros,
+			'CLIENTE'=>  $cliente ,
+			'EVENT_HANDLER'=>"_informe_ventas(event)",
+			'MODO'=>  $this->isAdminView() ? "ADMIN":  "CLIENT"
+		];
 
 			//Seleccionar vista
-			if( $this->isAdminView())
+			return view(   "movimientos/informes/grill_ventas",  $ViewParams  );
+		/*	if( $this->isAdminView())
 			{$LaVista=  "admin/clientes/movimientos/grill_ventas";
 				if( $estado == "B")  $LaVista=  "admin/clientes/movimientos/grill_ventas_anuladas";
-				return view(  $LaVista,
-				  ['ventas' =>  $lista_pagi,
-				   'ventas_pager' => $lista_co->pager,
-				   'year'=> $year,
-				   'month'=> $month,
-				   'estado'=> $estado_,
-				   'CLIENTE'=>  $cliente ]
-				);}
+
+				return view(  $LaVista, array_merge ( $ViewParams,  ['Link'=>  base_url("admin/clientes/ventas/$cliente/$month/$year")]));}
 			else
-			{$LaVista=  "movimientos/informes/grill_ventas";
+			{
+				$LaVista=  "movimientos/informes/grill_ventas";
 				if( $estado == "B")  $LaVista=  "movimientos/informes/grill_ventas_anuladas";
-				return view(  $LaVista,
-				  ['ventas' =>  $lista_pagi,
-				   'ventas_pager' => $lista_co->pager,
-				   'year'=> $year,
-				   'month'=> $month,
-				   'estado'=> $estado_]
-				);}
+				return view(  $LaVista, 
+				 array_merge($ViewParams,   ['Link'=>  base_url("admin/clientes/ventas/$cliente/$month/$year")])  );
+			}*/
 		}
 		
 	}
@@ -160,29 +161,20 @@ class Venta extends ResourceController {
 	public function index(  $MES= NULL,   $ANIO=   NULL,  $estado_ = "A")
 	{
 
-		$this->API_MODE =  $this->isAPI();
-		$CLIENTE= NULL; 
-
+	 
+		$CLIENTE= $this->getClienteId(); 
+	
 		$lista_co = [];
-
-		if ($this->API_MODE) {
-			$request = \Config\Services::request();
-			$sesion = is_null($request->getHeader('Ivasession')) ? "" :  $request->getHeader('Ivasession')->getValue();
-			//idS de usuario
-			$usunow = (new Usuario_model())->where("session_id", $sesion)->first();
-			$ruc =  $usunow->ruc;
-			$dv =  $usunow->dv;
-			$CLIENTE =  $usunow->regnro; 
-		} else {
-			$CLIENTE= session("id");
-		} 
+ 
 
 		//Segun los parametros
 		//Parametros: mes y anio
 		$parametros = [];
 		$year =   is_null($ANIO) ?  date("Y")  :  $ANIO;
 		$month = is_null($MES)?  date("m") :  $MES;
-		$estado= "A";
+		$estado=  $estado_;
+
+	
 
 		if ($this->request->getMethod(true) == "POST") {
 			$parametros = $this->request->getRawInput();
@@ -193,6 +185,7 @@ class Venta extends ResourceController {
 		} else {
 			$estado = $estado_;
 		}
+		 
 		$lista_co = $this->index_se( $CLIENTE,  $month, $year, $estado );
 		 return  $lista_co;
 	}
@@ -228,7 +221,7 @@ class Venta extends ResourceController {
 		//Parametros: mes y anio 
 		$year = is_null($anio)?  date("Y") :   $anio; 
 		$lista_co = $ventas->where("year(fecha)", $year) 
-		->select('if( sum(iva1) is null, 0,  sum(iva1) ) as iva1, if( sum(iva2) is null, 0,  sum(iva2) ) as iva2, if( sum(iva3) is null, 0,  sum(iva3) ) as iva3,
+		->select('if( sum(iva1) is null, 0,  ROUND(sum(iva1)) ) as iva1, if( sum(iva2) is null, 0,  ROUND(sum(iva2)) ) as iva2, if( sum(iva3) is null, 0,  sum(iva3) ) as iva3,
 		if( sum(importe1) is null, 0, sum(importe1) ) as total10, 
 		if( sum(importe2) is null, 0, sum(importe2) ) as total5,
 		if( sum(importe3) is null, 0, sum(importe3) ) as totalexe
@@ -242,8 +235,7 @@ class Venta extends ResourceController {
 
 	public  function  total_($cod_cliente, $mes= NULL, $anio= NULL)
 	{
-		$request = \Config\Services::request();
-		$this->API_MODE =  $this->isAPI();
+		$request = \Config\Services::request(); 
 
 		$ventas = (new Ventas_model())->where("codcliente", $cod_cliente);
 
@@ -261,7 +253,7 @@ class Venta extends ResourceController {
 		}
 		$lista_co = $ventas->where("year(fecha)", $year)
 		->where("month(fecha)", $month)
-		->select('if( sum(iva1) is null, 0,  sum(iva1) ) as iva1, if( sum(iva2) is null, 0,  sum(iva2) ) as iva2, if( sum(iva3) is null, 0,  sum(iva3) ) as iva3,
+		->select('if( sum(iva1) is null, 0,  round(sum(iva1)) ) as iva1, if( sum(iva2) is null, 0,  round(sum(iva2)) ) as iva2, if( sum(iva3) is null, 0,  sum(iva3) ) as iva3,
 		if( sum(importe1) is null, 0, sum(importe1) ) as total10, 
 		if( sum(importe2) is null, 0, sum(importe2) ) as total5,
 		if( sum(importe3) is null, 0, sum(importe3) ) as totalexe
@@ -276,8 +268,7 @@ class Venta extends ResourceController {
 
 	public  function  total()
 	{
-		$response = \Config\Services::response();
-		$this->API_MODE =  $this->isAPI();
+		$response = \Config\Services::response(); 
 		$cod_cliente = $this->getClienteId();
 		$compras = (new Ventas_model());
 
@@ -311,8 +302,7 @@ class Venta extends ResourceController {
 
 
 	public  function  anuladas(  $MES= NULL, $ANIO= NULL){
-		$response = \Config\Services::response();
-		$this->API_MODE=  $this->isAPI();
+		$response = \Config\Services::response(); 
 		$Cliente= $this->getClienteId();
 		$respuesta= $this->anuladas_(  $Cliente, $MES, $ANIO );
 		return $response->setJSON(   $respuesta);
@@ -366,13 +356,27 @@ class Venta extends ResourceController {
 
 
 	 
-	
+	private function operacion_habilitada(  $ClienteCOD, $fecha_compro){
+		$mes_fecha_compro=   date("m",   strtotime( $fecha_compro ) );
+		$anio_fecha_anio=   date("Y",   strtotime( $fecha_compro ) );
+
+		//Al dia
+		$habilitado =  (new Usuario())->servicio_habilitado(  $ClienteCOD  );
+		if (  array_key_exists("msj",  $habilitado ) )
+			return $this->response->setJSON(['msj' =>  $habilitado['msj'],  'code' => "500"]);
+
+		elseif(  (new Cierres())->esta_cerrado(   $mes_fecha_compro,  $anio_fecha_anio  )  )
+		return  $this->response->setJSON(  ['msj'=>  "El mes ya esta cerrado",  "code"=>  "500"]);
+		else  return NULL;
+	}
+
 	public function create(){
 		
 		$request = \Config\Services::request();
 		$db = \Config\Database::connect();
 
 
+		$ClienteCOD= $this->getClienteId();
 		if ($request->getMethod(true) == "GET") {
 
 			
@@ -380,46 +384,38 @@ class Venta extends ResourceController {
 			//Obtener ultimo numero de factura
 			$ultimo_nro= $this->generar_numero_factura();
 			//servicio habilitado
-			$habilitado =  (new Usuario())->servicio_habilitado($this->getClienteId());
+			$habilitado =  (new Usuario())->servicio_habilitado($ClienteCOD);
 			if (array_key_exists("msj",  $habilitado))
 			return view("movimientos/comprobantes/venta/create", ['ultimo_numero'=> $ultimo_nro , 'error'=> $habilitado['msj']  ]);
 			else
 			return view("movimientos/comprobantes/venta/create", ['ultimo_numero'=> $ultimo_nro ]);
 		}
-		//Manejo POST
-		$this->API_MODE =  $this->isAPI();
+
+
+		//Manejo POST 
 		$usu = new Ventas_model();
 		$data = $this->request->getRawInput();
 		$fecha_compro=  $data['fecha'];
-		$mes_fecha_compro=   date("m",   strtotime( $fecha_compro ) );
-		$anio_fecha_anio=   date("Y",   strtotime( $fecha_compro ) );
+		//Operacion habilitada
+		$oper_habilitada=   $this->operacion_habilitada(  $ClienteCOD,  $fecha_compro) ;
+		if( ! is_null( $oper_habilitada) )  return  $oper_habilitada;
 
-		//Al dia
-		$habilitado =  (new Usuario())->servicio_habilitado(  $this->getClienteId());
-		if (  array_key_exists("msj",  $habilitado ) )
-			return $this->response->setJSON(['msj' =>  $habilitado['msj'],  'code' => "500"]);
-		
-
-		if(  (new Cierres())->esta_cerrado(   $mes_fecha_compro,  $anio_fecha_anio  )  )
-		return  $this->response->setJSON(  ['msj'=>  "El mes ya esta cerrado",  "code"=>  "500"]);
-		//Verificar si el periodo-ejercicio esta cerrado o fuera de rango
-	 
-		//$Operacion_fecha_invalida= (new Cierres())->fecha_operacion_invalida(  $data['fecha'] );
-		//if (  !is_null($Operacion_fecha_invalida))  return $Operacion_fecha_invalida;
-		//***** Fin check tiempo*/
-
-		if( $this->API_MODE)  $data['origen']= "A";
+		//inferir otros datos del cliente
+		$ModeloCliente=  (new Usuario_model())->find(  $ClienteCOD);
+		$data["codcliente"]= $ClienteCOD;
+		$data['ruc']=  $ModeloCliente->ruc;
+		$data['dv']= $ModeloCliente->dv;
+		$data['origen']=   $this->isAPI() ?  "A"   : "W";
+		if( ! isset($data['importe1'] ) ) $data['importe1'] = 0;
+		if( ! isset($data['importe2'] ) ) $data['importe2'] = 0;
+		if( ! isset($data['importe3'] ) ) $data['importe3'] = 0;
+		 
 		
 		//Validar factura normal o anulada?
 		$validacion_selectiva= array_key_exists("estado", $data) ? $this->validate("ventas_anuladas")  :  $this->validate("ventas");
 
 		if ($validacion_selectiva) { //Validacion OK
-
-			$cod_cliente =  $data["codcliente"];
-			if (!$cod_cliente && !is_null((new Usuario_model())->find($cod_cliente))) {
-				return  $this->genericResponse(null,  "Codigo de cliente: $cod_cliente no existe", 500);
-			}
-
+ 
 			$moneda =  $data["moneda"] ;
 			if (!$moneda && !is_null((new Monedas_model())->find($moneda))) {
 				return $this->genericResponse(null,  "Codigo de moneda: $moneda no existe", 500);
@@ -432,24 +428,32 @@ class Venta extends ResourceController {
 
 			$db->transStart();
 			try {
-				if ($this->API_MODE)  $data['origen'] = "A"; //ORIGEN Aplicacion
+				 $data['origen'] = ($this->isAPI()) ? "A" : "W"; //ORIGEN Aplicacion
+				 	//calculo interno del iva
+				$iva1 = $data['importe1'] / 11;
+				$iva2 = $data['importe2'] / 21;
+				$iva3 =  $data['importe3'];
+				$data['iva1'] =  $iva1;
+				$data['iva2'] =  $iva2;
+				$data['iva3'] = $iva3;
+				$data["total"] =  $data['importe1']  + $data['importe2']  + $data['importe3']  ;
+				$data['estado']=  array_key_exists("estado",  $data) ? $data['estado'] : "A";
+
+
 				//Convertir a guaranies
 				if( $moneda != 1){
 					$cambio = $data['tcambio'];
 					$im1= $data['importe1'];
 					$im2= $data['importe2'];
 					$im3= $data['importe3'];
-					$iva1= $data['iva1'];
-					$iva2= $data['iva2'];
-					$iva3= $data['iva3'];
+					 
 					$data['importe1'] =  intval( $cambio) * intval( $im1);
 					$data['importe2'] =  intval( $cambio) * intval( $im2);
 					$data['importe3'] =  intval( $cambio) * intval( $im3);
 					$data['iva1'] =  intval( $cambio) * intval( $iva1);
 					$data['iva2'] =  intval( $cambio) * intval( $iva2);
 					$data['iva3'] =  intval( $cambio) * intval( $iva3);
-					$data["total"] =  $data['importe1']  + $data['importe2']  + $data['importe3']  ;
-					$data['estado']=  array_key_exists("estado",  $data) ? $data['estado'] : "A";
+					$data["total"] =  $data['importe1']  + $data['importe2']  + $data['importe3']  ; 
 					 
 				}
 
@@ -467,7 +471,7 @@ class Venta extends ResourceController {
 			}
 			$db->transComplete();
 			//Evaluar resultado
-			if ($this->API_MODE) return  $resu;
+			if ($this->isAPI()) return  $resu;
 			else {
 				if ($resu['code'] == 200) 
 				return $this->response->setJSON( ['data'=>  'Guardado', 'code'=>'200'] );
@@ -480,7 +484,7 @@ class Venta extends ResourceController {
 		//Hubo errores de validacion
 		$validation = \Config\Services::validation();
 		$resultadoValidacion =  $this->genericResponse(null, $validation->getErrors(), 500);
-		if ($this->API_MODE)
+		if ($this->isAPI())
 		return $resultadoValidacion;
 		else 
 		return $this->response->setJSON( ['msj'=>  $resultadoValidacion['msj'], 'code'=>'500'] );
@@ -492,69 +496,75 @@ class Venta extends ResourceController {
 
 
 	//ruc=14455&dv=23&codcliente=9&fecha=2020-12-11&moneda=1&factura=0020037892222&total=140000000
-	public function update( $cod_venta="" ){
+	public function update( $cod_venta= NULL){
 		
 		$request = \Config\Services::request();
+		$ClienteCOD=  $this->getClienteId();
 		if ($request->getMethod(true) == "GET") {
 			$regis =  (new Ventas_model())->find($cod_venta);
 
 			//servicio habilitado
-			$habilitado =  (new Usuario())->servicio_habilitado($this->getClienteId());
+			$habilitado =  (new Usuario())->servicio_habilitado(   $ClienteCOD);
 			if (array_key_exists("msj",  $habilitado))
 				return view("movimientos/comprobantes/venta/update",  ['venta' => $regis,   "error" => $habilitado['msj']]);
 			else
 				return view("movimientos/comprobantes/venta/update",  ['venta' => $regis]);
 		}
 		//Manejo POST
-
-		$this->API_MODE =  $this->isAPI();
+ 
 		$usu = new Ventas_model();
 
 		$data = $this->request->getRawInput();
 		$fecha_compro=  $data['fecha'];
-		$mes_fecha_compro=   date("m",   strtotime( $fecha_compro ) );
-		$anio_fecha_anio=   date("Y",   strtotime( $fecha_compro ) );
-
-		//Verificar si el periodo-ejercicio esta cerrado o fuera de rango
-	 
-		if(  (new Cierres())->esta_cerrado($mes_fecha_compro, $anio_fecha_anio)  )
-		return  $this->response->setJSON(  ['msj'=>  "El mes ya esta cerrado",  "code"=>  "500"]);
+		//Operacion habilitada
+		$oper_habilitada=   $this->operacion_habilitada(  $ClienteCOD,  $fecha_compro) ;
+		if( ! is_null( $oper_habilitada) )  return  $oper_habilitada;
+		//inferir otros datos del cliente
+		$ModeloCliente =  (new Usuario_model())->find($ClienteCOD);
+		$data["codcliente"] = $ClienteCOD;
+		$data['ruc'] =  $ModeloCliente->ruc;
+		$data['dv'] = $ModeloCliente->dv;
+		$data['origen'] =   $this->isAPI() ?  "A"   : "W";
+ 
 		
-		//$Operacion_fecha_invalida= (new Cierres())->fecha_operacion_invalida(  $data['fecha'] );
-		//if (  !is_null($Operacion_fecha_invalida))  return $Operacion_fecha_invalida;
-		//***** Fin check tiempo*/
-		
+		if ($this->validate('ventas_update')) { //Validacion OK
 
-		if( $this->API_MODE)  $data['origen']= "A";
-		
-		if ($this->validate('ventas')) { //Validacion OK
-
-			$cod_cliente =  $data["codcliente"];
-			if (!$cod_cliente && !is_null((new Usuario_model())->find($cod_cliente))) {
-				return  $this->genericResponse(null,  "Codigo de cliente: $cod_cliente no existe", 500);
+			$moneda = "";
+			 $Moneda_definida= array_key_exists( "moneda",  $data  );
+			if( array_key_exists( "moneda",  $data  )  ){
+				$moneda =  $data["moneda"] ;
+				if (!$moneda && !is_null((new Monedas_model())->find($moneda))) {
+					return $this->genericResponse(null,  "Codigo de moneda: $moneda no existe", 500);
+				}
+				 
+				if( $moneda != "1" && (  !isset( $data['tcambio'] )  ||  $data['tcambio']=="")   ){
+					return $this->genericResponse(null,  "Indique el monto para cambio de moneda", 500);
+				}
 			}
-
-			$moneda =  $data["moneda"] ;
-			if (!$moneda && !is_null((new Monedas_model())->find($moneda))) {
-				return $this->genericResponse(null,  "Codigo de moneda: $moneda no existe", 500);
-			}
-			 
-			if( $moneda != "1" && (  !isset( $data['tcambio'] )  ||  $data['tcambio']=="")   ){
-				return $this->genericResponse(null,  "Indique el monto para cambio de moneda", 500);
-			}
+			
 			$resu = []; //Resultado de la operacion
+			if( ! isset($data['importe1'] ) ) $data['importe1'] = 0;
+			if( ! isset($data['importe2'] ) ) $data['importe2'] = 0;
+			if( ! isset($data['importe3'] ) ) $data['importe3'] = 0;
+
 			try {
-				if ($this->API_MODE)  $data['origen'] = "A"; //ORIGEN Aplicacion
+
+				//calculo interno del iva
+				$iva1 = $data['importe1'] / 11;
+				$iva2 = $data['importe2'] / 21;
+				$iva3 =  $data['importe3'];
+				$data['iva1'] =  $iva1;
+				$data['iva2'] =  $iva2;
+				$data['iva3'] = $iva3;
+				$data["total"] =  $data['importe1']  + $data['importe2']  + $data['importe3'];
+				$data['estado']=  array_key_exists("estado",  $data) ? $data['estado'] : "A";
 
 				//Convertir a guaranies
-				if( $moneda != 1){
+				if(  $Moneda_definida  &&  $moneda != 1){
 					$cambio = $data['tcambio'];
 					$im1= $data['importe1'];
 					$im2= $data['importe2'];
-					$im3= $data['importe3'];
-					$iva1= $data['iva1'];
-					$iva2= $data['iva2'];
-					$iva3= $data['iva3'];
+					$im3= $data['importe3']; 
 					$data['importe1'] =  intval( $cambio) * intval( $im1);
 					$data['importe2'] =  intval( $cambio) * intval( $im2);
 					$data['importe3'] =  intval( $cambio) * intval( $im3);
@@ -562,34 +572,31 @@ class Venta extends ResourceController {
 					$data['iva2'] =  intval( $cambio) * intval( $iva2);
 					$data['iva3'] =  intval( $cambio) * intval( $iva3);
 					$data["total"] =  $data['importe1']  + $data['importe2']  + $data['importe3']  ;
-					 
+					
+
 				}
-				
-				$cod_cliente= $data['codcliente']; 
-				$usu->where("codcliente", $cod_cliente)
+				 
+				$usu->where("codcliente", $ClienteCOD)
 				->where("regnro", $data['regnro'] )
 				->set(  $data)
 				->update( );
-
-				 
 				$resu = $this->genericResponse( (new Ventas_model())->find( $data['regnro'] ), null, 200);
 			} catch (Exception $e) {
 				$resu = $this->genericResponse(null, "Hubo un error al registrar ($e)", 500);
 			}
 			//Evaluar resultado
-			if ($this->API_MODE) return  $resu;
+			if ($this->isAPI()) return  $resu;
 			else {
 
 				return $this->response->setJSON(   $resu );
-				//if ($resu['code'] == 200) return redirect()->to(base_url("movimiento/index"));
-				//else  return view("movimientos/comprobantes/f_venta", array("error" => $resu['msj']));
+				 
 			}
 		}
 
 		//Hubo errores de validacion
 		$validation = \Config\Services::validation();
 		$resultadoValidacion =  $this->genericResponse(null, $validation->getErrors(), 500);
-		if ($this->API_MODE)
+		if ($this->isAPI())
 		return $resultadoValidacion;
 		else 
 		return $this->response->setJSON(   $resultadoValidacion );
@@ -624,8 +631,7 @@ class Venta extends ResourceController {
 
 	
 	public function delete( $id = null)
-	{
-		$this->API_MODE= true;
+	{ 
 	 
 		$us= (new Ventas_model())->find(  $id);
  

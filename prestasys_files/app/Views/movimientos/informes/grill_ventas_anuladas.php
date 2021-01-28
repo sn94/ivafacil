@@ -2,10 +2,7 @@
 
 use App\Helpers\Utilidades;
 
-$ventas_total_10 = 0;
-$ventas_total_5 = 0;
-$ventas_total_ex = 0;
-$ventas_t = 0;
+ 
 ?>
 
 <!--   GENERACION DE INFORME  --->
@@ -22,30 +19,9 @@ $ventas_t = 0;
     }
 </script>
 <form id="ventas-a-reports" method="POST" action="<?= base_url("venta/informes/PDF") ?>" target="_blank">
-    <!--cargar anios -->
-    <select onchange="$('#download-a-1').val('');informe_ventas_anuladas();" name="year" style="display: none;font-size: 11px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
-        <?php
-        for ($m = 2019; $m <= date("Y"); $m++) {
-            if ($year ==  $m)
-                echo "<option selected value='$m'>$m</option>";
-            else
-                echo "<option value='$m'>$m</option>";
-        }
-        ?>
-    </select>
+     
 
-    <!--cargar meses -->
-    <select onchange="$('#download-a-1').val('');informe_ventas_anuladas();" name="month" style="display: none;font-size: 11px; border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
-        <?php
-        for ($m = 1; $m <= 12; $m++) {
-            $nom_mes = Utilidades::monthDescr($m);
-            if ($month ==  $m)
-                echo "<option selected value='$m'>$nom_mes</option>";
-            else
-                echo "<option value='$m'>$nom_mes</option>";
-        }
-        ?>
-    </select>
+   
 
     
      <input  type="hidden" name="anulados" value="B"> 
@@ -78,7 +54,9 @@ $ventas_t = 0;
         </tr>
     </thead>
     <tbody>
-        <?php foreach ($ventas as $it) : ?>
+        <?php
+        if( $TotalRegistros > 0 ):
+        foreach ($ventas as $it) : ?>
             <tr>
                 <td class="pb-0"><a  style="color:black;" onclick="borrar_opera(event, informe_ventas)" href="<?= base_url("venta/delete/" . $it->regnro) ?>"> <i class="fa fa-trash"></i></a> </td>
                 <td class="pb-0"> <a  style="color:black;" href="<?= base_url("venta/update/" . $it->regnro) ?>"><i class="fa fa-pencil"></i></a> </td>
@@ -91,26 +69,18 @@ $ventas_t = 0;
 
             </tr>
         <?php
-            $ventas_total_10 +=  intval($it->importe1);
-            $ventas_total_5 +=  intval($it->importe2);
-            $ventas_total_ex +=  intval($it->importe3);
-            $ventas_t += intval($it->total);
-        endforeach; ?>
+             
+        endforeach;
+    endif; ?>
     </tbody>
-    <tfoot>
-        <tr class="bg-dark text-light">
-            <td></td>
-            <td></td>
-            <td>TOTALES</td>
-            <td class="text-right" id="venta-total-ex"> <?= Utilidades::number_f($ventas_total_ex) ?> </td>
-            <td class="text-right" id="venta-total-5"> <?= Utilidades::number_f($ventas_total_5) ?> </td>
-            <td class="text-right" id="venta-total-10"> <?= Utilidades::number_f($ventas_total_10) ?> </td>
-            <td class="text-right" id="venta-total"> <?= Utilidades::number_f($ventas_t) ?> </td>
-        </tr>
-
-    </tfoot>
+     
 </table>
-<p style="color:black; font-weight: 600;font-size:11.5px;">Página(s)</p>
-<?= (sizeof($ventas) > 1) ? $ventas_pager->links() : '' ?>
+ 
+
+<?php 
+//(  $ventas_total > 0) ?    $ventas_pager->makeLinks( 1,10, $ventas_total  ,   'paginador_g_ventas_a')  : '' ?>
+
+ 
+<?=view( "paginadores/paginador")?>
 
  

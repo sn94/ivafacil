@@ -105,8 +105,8 @@ $TERMINACION_RUC=   substr(    session("ruc") , -1,1  );
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-menu" aria-controls="main-menu" aria-expanded="false" aria-label="Toggle navigation">
                     <i class="fa fa-bars"></i>
                 </button>
-                <a class="navbar-brand" href="<?= base_url("/") ?>"><img src="<?= base_url("assets/img/Logo.jpg") ?>" alt="Logo"></a>
-                <a class="navbar-brand hidden" href="<?= base_url("/") ?>"><img src="<?= base_url("assets/img/Logo.jpg") ?>" alt="Logo"></a>
+                <a class="navbar-brand" href="<?= base_url("welcome/index") ?>"><img src="<?= base_url("assets/img/Logo.jpg") ?>" alt="Logo"></a>
+                <a class="navbar-brand hidden" href="<?= base_url("welcome/index") ?>"><img src="<?= base_url("assets/img/Logo.jpg") ?>" alt="Logo"></a>
             </div>
 
             <div id="main-menu" class="main-menu collapse navbar-collapse">
@@ -138,8 +138,14 @@ $TERMINACION_RUC=   substr(    session("ruc") , -1,1  );
                         <a href="<?= base_url("cierres/view-cierre-mes") ?>" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Cierre del mes</a>
 
                     </li>
+                   
                     <li class="menu-item-has-children dropdown">
-                        <a href="<?= base_url("cierres/view-cierre-anio") ?>" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Resumen del año</a>
+                        <a href="<?= base_url("cierres/view-cierre-anio") ?>" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i> Resumen del año</a>
+
+                    </li>
+
+                    <li class="menu-item-has-children dropdown">
+                        <a href="<?= base_url("cierres/comparativos") ?>" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i> Comparativo anual</a>
 
                     </li>
                     <li class="menu-item-has-children dropdown">

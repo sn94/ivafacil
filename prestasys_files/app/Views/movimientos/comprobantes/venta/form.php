@@ -19,7 +19,7 @@ $iva1 = isset($venta) ?  Utilidades::number_f($venta->iva1) : "0";
 $iva2 = isset($venta) ?  Utilidades::number_f($venta->iva2) : "0";
 $iva3 = isset($venta) ?  Utilidades::number_f($venta->iva3) : "0";
 $origen = isset($venta) ?  Utilidades::number_f($venta->origen) : "W";
-$estado=  isset( $venta)  ? ( $venta->estado =="A" ? "" : "checked" )  : "";
+$estado =  isset($venta)  ? ($venta->estado == "A" ? "" : "checked")  : "";
 ?>
 
 
@@ -52,14 +52,14 @@ $estado=  isset( $venta)  ? ( $venta->estado =="A" ? "" : "checked" )  : "";
                 </div>
                 <div class="col-8 col-md-8 pb-0 mb-0">
                     <input oninput="solo_numeros_guiones(event)" value="<?= $factura ?>" placeholder="000-000-0000000" maxlength="15" type="text" id="nf-password" name="factura" class=" form-control form-control-label form-control-sm mb-0 ">
-                  
+
                     <span style="font-size: 11px; font-weight: 600;color: red;">
-                        ANULADO <input   <?=$estado?> type="checkbox" name="estado" value="B">
+                        ANULADO <input <?= $estado ?> type="checkbox" name="estado" value="B">
                     </span>
                     <p style="color:red; font-size: 11px; font-weight: 600;" id="error-factura"></p>
                 </div>
 
-                
+
 
                 <div class="col-3 col-md-3  pl-md-3 pl-0">
                     <label for="nf-password" class=" form-control-label form-control-sm -label">Moneda:</label>
@@ -204,7 +204,7 @@ Validaciones
     function solo_numeros_guiones(ev) {
         //0 48   9 57
         if (ev.data == null) return;
-        if (   ev.data.charCodeAt() != 45   &&  (ev.data.charCodeAt() < 48 || ev.data.charCodeAt() > 57)) {
+        if (ev.data.charCodeAt() != 45 && (ev.data.charCodeAt() < 48 || ev.data.charCodeAt() > 57)) {
             let cad = ev.target.value;
             let cad_n = cad.substr(0, ev.target.selectionStart - 1) + cad.substr(ev.target.selectionStart + 1);
             ev.target.value = cad_n;
@@ -215,7 +215,7 @@ Validaciones
     function solo_numeros(ev) {
         //0 48   9 57
         if (ev.data == null) return;
-        if (  (ev.data.charCodeAt() < 48 || ev.data.charCodeAt() > 57)) {
+        if ((ev.data.charCodeAt() < 48 || ev.data.charCodeAt() > 57)) {
             let cad = ev.target.value;
             let cad_n = cad.substr(0, ev.target.selectionStart - 1) + cad.substr(ev.target.selectionStart + 1);
             ev.target.value = cad_n;
@@ -405,8 +405,8 @@ Validaciones
 
 
     function campos_vacios() {
-        if(  $("input[name=estado]").prop("checked") ) return false; 
-        
+        if ($("input[name=estado]").prop("checked")) return false;
+
         if (($("input[name=importe1]").val() == "" || $("input[name=importe1]").val() == "0") &&
             ($("input[name=importe2]").val() == "" || $("input[name=importe2]").val() == "0") &&
             ($("input[name=importe3]").val() == "" || $("input[name=importe3]").val() == "0")) {
@@ -440,10 +440,10 @@ Validaciones
         ev.preventDefault();
         if (campos_vacios()) return;
 
-        if ($("input[name=factura]").val() ==  "") {
-              alert("Por favor ingrese el número de factura");
-              return;
-          }
+        if ($("input[name=factura]").val() == "") {
+            alert("Por favor ingrese el número de factura");
+            return;
+        }
         //limpiar numero de factura
         //  let factu = $("input[name=factura]").val().replaceAll(/-+/g, "");
         // $("input[name=factura]").val(factu);
@@ -468,7 +468,14 @@ Validaciones
         if ("data" in resp) {
             alert("ACTUALIZADO");
             window.location.reload();
-        } else alert(procesar_errores(resp.msj));
+        } else {
+            $("input[name=importe1]").val(dar_formato_millares($("input[name=importe1]").val()));
+            $("input[name=importe2]").val(dar_formato_millares($("input[name=importe2]").val()));
+            $("input[name=importe3]").val(dar_formato_millares($("input[name=importe3]").val()));
+            $("input[name=total]").val(dar_formato_millares($("input[name=total]").val()));
+            $("input[name=tcambio]").val(dar_formato_millares($("input[name=tcambio]").val()));
+            alert(procesar_errores(resp.msj));
+        }
 
 
     }

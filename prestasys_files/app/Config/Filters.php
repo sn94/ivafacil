@@ -27,7 +27,7 @@ class Filters extends BaseConfig
 			['except' => [
 				"/",
 				'usuario/create', 'usuario/sign-in', 'usuario/sign_in', 
-				'api/usuario/sign-in', 'api/usuario/create', 'api/usuario/digito-verificador/*',
+				'api/usuario/sign-in', 'api/usuario/create','api/usuario/ruc/*', 'api/usuario/digito-verificador/*',
 				'auxiliar/*', 'api/ciudades', 'api/planes', 'api/monedas',
 				'admin',  'admin/*', 'home', 'welcome/publico',
 				'usuario/olvido-password','usuario/recuperar-password', 'usuario/recuperar-password/*',

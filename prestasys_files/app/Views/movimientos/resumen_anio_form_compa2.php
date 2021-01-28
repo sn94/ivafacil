@@ -1,19 +1,19 @@
-<table class="table   table-striped" style="font-size: 11px;">
-    <thead>
+<table class="table   table-striped" style="font-size: 13.5px;">
+    <thead style="font-family: mainfont;">
 
         <tr>
-            <th class="text-left">AÑO</th>
-            <th>SALDO INICIAL</th>
-            <th>VENTA</th>
-            <th>COMPRA</th>
-            <th>RET.</th>
-            <th>IVA</th>
-            <th>PAGO</th>
-            <th>SALDO</th>
+            <th class="text-center">AÑO</th>
+            <th class="text-center">SALDO INICIAL</th>
+            <th class="text-center">VENTA</th>
+            <th class="text-center">COMPRA</th>
+            <th class="text-center">RETENCIÓN</th>
+            <th class="text-center">IVA</th>
+            <th class="text-center">PAGO</th>
+            <th class="text-center">SALDO</th>
         </tr>
 
     </thead>
-    <tbody>
+    <tbody style="font-size: 11px;">
         <?php
 
         use App\Helpers\Utilidades;

@@ -191,9 +191,11 @@ use App\Models\Parametros_model;
         let compras_total_exe = parseInt(resp_json.compras_total_exe);
         let compras_total_10 = parseInt(resp_json.compras_total_10);
         let compras_total_5 = parseInt(resp_json.compras_total_5);
-        let compras_iva10 = parseInt(resp_json.compras_iva10);
-        let compras_iva5 = parseInt(resp_json.compras_iva5);
-        let compras_total_iva = compras_iva10 + compras_iva5;
+
+        let compras_iva10 = parseFloat(resp_json.compras_iva10);
+        let compras_iva5 = parseFloat(resp_json.compras_iva5);
+        
+        let compras_total_iva =  Math.round(  compras_iva10 + compras_iva5 );
 
         let ventas_total_exe = parseInt(resp_json.ventas_total_exe);
         let ventas_total_10 = parseInt(resp_json.ventas_total_10);

@@ -54,6 +54,7 @@ class Usuario extends ResourceController {
  
 
 
+	
 	private function getClienteId(){
 		$usu= new Usuario_model();
         $request = \Config\Services::request();
@@ -69,6 +70,8 @@ class Usuario extends ResourceController {
 		}else{      return session("id"); }
 		
 	}
+
+
 	private function isAdminView(){
 		$request = \Config\Services::request();
 		$uri = $request->uri; 
@@ -170,7 +173,9 @@ class Usuario extends ResourceController {
 	{
 		$this->API_MODE=  $this->isAPI();
 		$us= (new Usuario_model())
-				->select("regnro, ruc, dv, tipoplan, email, cliente, cedula, telefono, celular, domicilio, ciudad, rubro")->
+				->select("regnro, ruc, dv, tipoplan, email, cliente, cedula, 
+				telefono, celular, domicilio, ciudad, rubro,
+				saldo_IVA, ultimo_nro, clave_marangatu")->
 				where("regnro", $id  )->first();
 		 
 	 
@@ -213,23 +218,27 @@ class Usuario extends ResourceController {
 	*/
 	private function campos_referenciales_validos(  $update= false){
 	 
-		$data = $this->request->getRawInput(); 
+		$data = $this->request->getRawInput();
 
-
-			$tipo_plan =  $data["tipoplan"]; 
+		if (isset($data["tipoplan"])) {
+			$tipo_plan =  $data["tipoplan"];
 			if (is_null((new Planes_model())->find($tipo_plan))) {
 				return  $this->genericResponse(null,  "Codigo $tipo_plan de Tipo de plan no existe", 500);
 			}
-
+		}
+		if (isset($data["ciudad"])) {
 			$ciudad =  $data["ciudad"];
 			if (!$ciudad && is_null((new Ciudades_model())->find($ciudad))) {
 				return $this->genericResponse(null,  "Codigo $ciudad de ciudad no existe", 500);
 			}
+		}
+		if( isset(  $data["rubro"]) ) {
 			$rubro =  $data["rubro"];
 			if (!$rubro && is_null((new Rubro_model())->find($rubro))) {
 				return $this->genericResponse(null,  "Codigo $rubro de rubro, no existe", 500);
 			}
-			 return null;
+		}
+		return null;
 	}
 
 
@@ -411,6 +420,9 @@ class Usuario extends ResourceController {
 				return $this->genericResponse(null, array("error" => "Usuario no existe"), 500);
 			} else {
  
+				if( $this->isAPI())
+				$data['regnro']= $this->getClienteId();
+
 				//QUITAR QUITAR
 				unset(  $data['ruc']);
 				unset(  $data['dv']);

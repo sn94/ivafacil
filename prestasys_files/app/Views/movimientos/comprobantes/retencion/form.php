@@ -232,6 +232,12 @@ $origen = isset($retencion) ?  Utilidades::number_f($retencion->origen) : "W";
 
     //procesar form
 
+    
+    function limpiar_numero_para_float(val) {
+        return val.replaceAll(new RegExp(/[.]*/g), "").replaceAll(new RegExp(/[,]{1}/g), ".");
+    }
+
+    
     async function guardar(ev) {
         ev.preventDefault();
 

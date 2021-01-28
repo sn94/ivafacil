@@ -82,8 +82,9 @@ class Validation
 		],*/
 		'tipoplan'     => 
 		[
-            'rules'  => 'integer',
+            'rules'  => 'required|integer',
             'errors' => [
+				'required'=>'Proporcione el tipo de plan',
 				'integer'=>'El campo "Tipo plan" debe ser numerico'
             ]
 		],
@@ -105,14 +106,15 @@ class Validation
 		],
 		'cliente'     => 
 		[
-            'rules'  => 'max_length[80]',
+            'rules'  => 'required|max_length[80]',
             'errors' => [
-				'max_length'=>'La longitud maxima del valor para campo "cliente" es de 80 caracteres' 
+				'required'=>'Proporcione su nombre o razón social',
+				'max_length'=>'La longitud maxima para nombre de cliente es de 80 caracteres' 
             ]
 		],
 		'cedula'     => 
 		[
-            'rules'  => 'max_length[10]|integer',
+            'rules'  => 'if_exist|max_length[10]|integer',
             'errors' => [
 				'max_length'=>'La longitud maxima del valor para campo "cedula" es de 10 caracteres' ,
 				'integer'=>'El campo "cedula" solo permite caracteres numericos'
@@ -143,15 +145,17 @@ class Validation
 		],
 		'ciudad'     => 
 		[
-            'rules'  => 'integer',
+            'rules'  => 'required|integer',
             'errors' => [
+				'required'=>'Proporcione ciudad',
 				'integer'=>'El campo "Ciudad" debe ser numerico'
             ]
 		],
 		'rubro'     => 
 		[
-            'rules'  => 'integer',
+            'rules'  => 'required|integer',
             'errors' => [
+				'required'=>'Proporcione rubro de actividad',
 				'integer'=>'El campo "Rubro" debe ser numerico'
             ]
 		]
@@ -167,7 +171,7 @@ class Validation
 		]*/
          
 		 
-	]; //$validation->run($data, 'usuarios');
+	];  
 
 
 	public $usuarios_update= [
@@ -181,36 +185,15 @@ class Validation
 				'max_length'=>'La longitud máxima permitida de la contraseña es de 80 caracteres'
             ]
 		],
-		/*'tipo'     => 
-		[
-            'rules'  => 'required|max_length[1]',
-            'errors' => [
-				'required' => 'Por favor indique el tipo de usuario',
-				'max_length'=>'La longitud máxima permitida para el campo tipo es de 1 caracter'
-            ]
-        ],
-		
-	 	'fechainicio'     => 
-		[
-            'rules'  => 'if_exist|valid_date',
-            'errors' => [
-				'valid_date'=>'El valor para el campo "Fecha de inicio" no es valida'
-            ]
-		],*/
+		 
 		'tipoplan'     => 
 		[
-            'rules'  => 'integer',
+            'rules'  => 'if_exist|integer',
             'errors' => [
 				'integer'=>'El campo "Tipo plan" debe ser numerico'
             ]
 		],
-	/*	'estado'     => 
-		[
-            'rules'  => 'max_length[1]',
-            'errors' => [
-				'max_length'=>'La longitud maxima del valor para campo "estado" es de 1 caracter'
-            ]
-		],*/
+	 
 		'email'     => 
 		[
             'rules'  => 'if_exist|required|max_length[120]|valid_email',
@@ -222,14 +205,14 @@ class Validation
 		],
 		'cliente'     => 
 		[
-            'rules'  => 'max_length[80]',
+            'rules'  => 'if_exist|max_length[80]',
             'errors' => [
 				'max_length'=>'La longitud maxima del valor para campo "cliente" es de 80 caracteres' 
             ]
 		],
 		'cedula'     => 
 		[
-            'rules'  => 'max_length[10]|integer',
+            'rules'  => 'if_exist|max_length[10]|integer',
             'errors' => [
 				'max_length'=>'La longitud maxima del valor para campo "cedula" es de 10 caracteres' ,
 				'integer'=>'El campo "cedula" solo permite caracteres numericos'
@@ -260,14 +243,14 @@ class Validation
 		],
 		'ciudad'     => 
 		[
-            'rules'  => 'integer',
+            'rules'  => 'if_exist|integer',
             'errors' => [
 				'integer'=>'El campo "Ciudad" debe ser numerico'
             ]
 		],
 		'rubro'     => 
 		[
-            'rules'  => 'integer',
+            'rules'  => 'if_exist|integer',
             'errors' => [
 				'integer'=>'El campo "Rubro" debe ser numerico'
             ]
@@ -278,33 +261,8 @@ class Validation
 
 
 	public $compras = [
-		'ruc'     =>
-		[
-			'rules'  => 'required|max_length[15]|integer',
-			'errors' => [
-				'required' => 'Proporciona un número de RUC',
-				'max_length' => 'La longitud máxima permitida para el RUC es de 15 caracteres',
-				'integer' => 'El Número de RUC solo admite valores numéricos'
-			]
-		],
-		'dv'     =>
-		[
-			'rules'  => 'required|max_length[2]|integer',
-			'errors' => [
-				'required' => 'El digito verificador es obligatorio',
-				'max_length' => 'La longitud máxima permitida para el digito verificador es de 2 caracteres',
-				'integer' => 'El dígito verificador (DV) solo admite valores numéricos'
-			]
-		],
-		'codcliente'  =>
-		[
-			'rules'  => 'required|max_length[20]|integer',
-			'errors' => [
-				'required' => 'Proporciona el código de cliente',
-				'max_length' => 'La longitud máxima permitida para el RUC es de 15 caracteres',
-				'integer' => 'El código de cliente solo admite valores numéricos'
-			]
-		],
+		 
+		  
 		'fecha' =>
 		[
 			'rules'  => 'required|valid_date',
@@ -364,47 +322,11 @@ class Validation
 				'numeric' => 'El campo "Exenta" solo admite valores numéricos'
 
 			]
-		],
-		'total' =>
-		[
-			'rules'  => 'required|max_length[15]|numeric',
-			'errors' => [
-				'required' => 'Indique el importe total de la factura',
-				'max_length' => 'El campo "Total" no debe sobrepasar los 10 dígitos',
-				'numeric' => 'El campo "Total" solo admite valores numéricos'
-
-			]
 		]
 		 
 	];
 	public $ventas = [
-		'ruc'     =>
-		[
-			'rules'  => 'required|max_length[15]|integer',
-			'errors' => [
-				'required' => 'Proporciona un número de RUC',
-				'max_length' => 'La longitud máxima permitida para el RUC es de 15 caracteres',
-				'integer' => 'El Número de RUC solo admite valores numéricos'
-			]
-		],
-		'dv'     =>
-		[
-			'rules'  => 'required|max_length[2]|integer',
-			'errors' => [
-				'required' => 'El digito verificador es obligatorio',
-				'max_length' => 'La longitud máxima permitida para el digito verificador es de 2 caracteres',
-				'integer' => 'El dígito verificador (DV) solo admite valores numéricos'
-			]
-		],
-		'codcliente'  =>
-		[
-			'rules'  => 'required|max_length[20]|integer',
-			'errors' => [
-				'required' => 'Proporciona el código de cliente',
-				'max_length' => 'La longitud máxima permitida para el RUC es de 15 caracteres',
-				'integer' => 'El código de cliente solo admite valores numéricos'
-			]
-		],
+		 
 		'fecha' =>
 		[
 			'rules'  => 'required|valid_date',
@@ -414,16 +336,16 @@ class Validation
 			]
 		],
 
-		/*'factura' =>
+		'factura' =>
 		[
-			'rules'  => 'max_length[13]|integer',
+			'rules'  => 'max_length[15]',
 			'errors' => [
 				//'required' => 'Indique el número de factura',
-				'max_length' => 'El número de factura no debe sobrepasar los 13 dígitos',
+				'max_length' => 'El número de factura no debe sobrepasar los 15 dígitos',
 				'integer' => 'El número de factura solo admite valores numéricos'
 
 			]
-		],*/
+		],
 		'moneda'  =>
 		[
 			'rules'  => 'required|max_length[2]|integer',
@@ -464,49 +386,81 @@ class Validation
 				'numeric' => 'El campo "Exenta" solo admite valores numéricos'
 
 			]
-		],
-		'total' =>
-		[
-			'rules'  => 'required|max_length[10]|numeric',
-			'errors' => [
-				'required' => 'Indique el importe total de la factura',
-				'max_length' => 'El campo "Total" no debe sobrepasar los 10 dígitos',
-				'numeric' => 'El campo "Total" solo admite valores numéricos'
-
-			]
-		]
+		] 
 		 
 	];
 
 
+	public $ventas_update = [
+		 
+		'fecha' =>
+		[
+			'rules'  => 'if_exist|valid_date',
+			'errors' => [
+				'required' => 'Proporciona la fecha de factura',
+				'valid_date' => 'Proporcione una fecha válida de factura'
+			]
+		],
+
+		'factura' =>
+		[
+			'rules'  => 'if_exist|max_length[15]',
+			'errors' => [
+				//'required' => 'Indique el número de factura',
+				'max_length' => 'El número de factura no debe sobrepasar los 15 dígitos',
+				'integer' => 'El número de factura solo admite valores numéricos'
+
+			]
+		],
+		'moneda'  =>
+		[
+			'rules'  => 'if_exist|max_length[2]|integer',
+			'errors' => [
+				'required' => 'Indique código de moneda',
+				'max_length' => 'El código de moneda no debe sobrepasar los 2 dígitos',
+				'integer' => 'El código de moneda solo admite valores numéricos'
+
+			]
+		], 
+
+		'importe1' => /* Monto aplicable a 10 */
+		[
+			'rules'  => 'if_exist|max_length[10]|numeric',
+			'errors' => [
+				 
+				'max_length' => 'El total IVA 10% no debe sobrepasar los 10 dígitos',
+				'numeric' => 'El total IVA 10%  solo admite valores numéricos'
+
+			]
+		],
+		'importe2' => /* monto aplicable 5*/
+		[
+			'rules'  => 'if_exist|max_length[10]|numeric',
+			'errors' => [
+				 
+				'max_length' => 'El total IVA 5% no debe sobrepasar los 10 dígitos',
+				'numeric' => 'El total IVA 5% solo admite valores numéricos'
+
+			]
+		],
+		'importe3' => /* monto exento */
+		[
+			'rules'  => 'if_exist|max_length[10]|numeric',
+			'errors' => [
+				 
+				'max_length' => 'El campo "Exenta" no debe sobrepasar los 10 dígitos',
+				'numeric' => 'El campo "Exenta" solo admite valores numéricos'
+
+			]
+		] 
+		 
+	];
+
+
+
 	public $ventas_anuladas = [
-		'ruc'     =>
-		[
-			'rules'  => 'required|max_length[15]|integer',
-			'errors' => [
-				'required' => 'Proporciona un número de RUC',
-				'max_length' => 'La longitud máxima permitida para el RUC es de 15 caracteres',
-				'integer' => 'El Número de RUC solo admite valores numéricos'
-			]
-		],
-		'dv'     =>
-		[
-			'rules'  => 'required|max_length[2]|integer',
-			'errors' => [
-				'required' => 'El digito verificador es obligatorio',
-				'max_length' => 'La longitud máxima permitida para el digito verificador es de 2 caracteres',
-				'integer' => 'El dígito verificador (DV) solo admite valores numéricos'
-			]
-		],
-		'codcliente'  =>
-		[
-			'rules'  => 'required|max_length[20]|integer',
-			'errors' => [
-				'required' => 'Proporciona el código de cliente',
-				'max_length' => 'La longitud máxima permitida para el RUC es de 15 caracteres',
-				'integer' => 'El código de cliente solo admite valores numéricos'
-			]
-		],
+		 
+		 
 		'fecha' =>
 		[
 			'rules'  => 'required|valid_date',
@@ -518,33 +472,9 @@ class Validation
 	];
 
 	public $retencion = [
-		'ruc'     =>
-		[
-			'rules'  => 'required|max_length[15]|integer',
-			'errors' => [
-				'required' => 'Proporciona un número de RUC',
-				'max_length' => 'La longitud máxima permitida para el RUC es de 15 caracteres',
-				'integer' => 'El Número de RUC solo admite valores numéricos'
-			]
-		],
-		'dv'     =>
-		[
-			'rules'  => 'required|max_length[2]|integer',
-			'errors' => [
-				'required' => 'El digito verificador es obligatorio',
-				'max_length' => 'La longitud máxima permitida para el digito verificador es de 2 caracteres',
-				'integer' => 'El dígito verificador (DV) solo admite valores numéricos'
-			]
-		],
-		'codcliente'  =>
-		[
-			'rules'  => 'required|max_length[20]|integer',
-			'errors' => [
-				'required' => 'Proporciona el código de cliente',
-				'max_length' => 'La longitud máxima permitida para el RUC es de 15 caracteres',
-				'integer' => 'El código de cliente solo admite valores numéricos'
-			]
-		],
+		 
+		 
+		 
 		'fecha' =>
 		[
 			'rules'  => 'required|valid_date',

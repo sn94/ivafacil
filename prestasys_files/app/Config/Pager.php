@@ -21,6 +21,11 @@ class Pager extends BaseConfig
 		'default_full'   => 'CodeIgniter\Pager\Views\default_full',
 		'default_simple' => 'CodeIgniter\Pager\Views\default_simple',
 		'default_head'   => 'CodeIgniter\Pager\Views\default_head',
+
+		'paginador_g_compras'		=>  'paginadores/paginador_g_compras',
+		'paginador_g_ventas'		=>  'paginadores/paginador_g_ventas',
+		'paginador_g_ventas_a'		=>  'paginadores/paginador_g_ventas_anu',
+		'paginador_g_retencion'		=>  'paginadores/paginador_g_retencion'
 	];
 
 	/*

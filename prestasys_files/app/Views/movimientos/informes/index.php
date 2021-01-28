@@ -1,4 +1,13 @@
-<?= $this->extend("layouts/index_cliente") ?>
+<?php
+
+if ($MODO == "ADMIN")
+    echo $this->extend("admin/layout/index");
+else
+    echo $this->extend("layouts/index_cliente");
+
+
+?>
+
 <?= $this->section("estilos") ?>
 <?php
 
@@ -22,11 +31,39 @@ echo $estilo;
 
 
 
-<input type="hidden" id="info-compras" value="<?= base_url("compra/index") ?>">
-<input type="hidden" id="info-ventas" value="<?= base_url("venta/index") ?>">
-<input type="hidden" id="info-ventas-a" value="<?= base_url("venta/index") ?>">
-<input type="hidden" id="info-retencion" value="<?= base_url("retencion/index") ?>">
+<?php
+$INFO_COMPRAS = "";
+$INFO_VENTAS = "";
+$INFO_VENTAS_A = "";
+$INFO_RETENCION = "";
+$INFO_SALDO_ANTERIOR = "";
+$INFO_TOTALES = "";
 
+//modo de rutas
+if ($MODO == "ADMIN") {
+    $INFO_COMPRAS =  base_url("admin/clientes/compras/$CLIENTE");
+    $INFO_VENTAS =  base_url("admin/clientes/ventas/$CLIENTE");
+    $INFO_VENTAS_A = base_url("admin/clientes/ventas/$CLIENTE");
+    $INFO_RETENCION =  base_url("admin/clientes/retencion/$CLIENTE");
+    $INFO_SALDO_ANTERIOR =  base_url("admin/clientes/saldo-anterior/$CLIENTE");
+    $INFO_TOTALES = base_url("admin/totales-mes/$CLIENTE");
+} else {
+    $INFO_COMPRAS =  base_url("compra/index");
+    $INFO_VENTAS =  base_url("venta/index");
+    $INFO_VENTAS_A = base_url("venta/index");
+    $INFO_RETENCION =  base_url("retencion/index");
+    $INFO_SALDO_ANTERIOR =  base_url("cierres/leer-saldo-anterior-sess");
+    $INFO_TOTALES = base_url('cierres/totales-mes-session');
+}
+
+?>
+
+<input type="hidden" id="info-compras" value="<?= $INFO_COMPRAS ?>">
+<input type="hidden" id="info-ventas" value="<?= $INFO_VENTAS ?>">
+<input type="hidden" id="info-ventas-a" value="<?= $INFO_VENTAS_A ?>">
+<input type="hidden" id="info-retencion" value="<?= $INFO_RETENCION ?>">
+<input type="hidden" id="info-saldo-anterior" value="<?= $INFO_SALDO_ANTERIOR ?>">
+<input type="hidden" id="info-totales" value="<?= $INFO_TOTALES ?>">
 <!-- Menu de Usuario -->
 
 
@@ -68,46 +105,100 @@ echo $estilo;
 
     </div>
 
-    <div class="col-12 col-md-12 " style="background-color: #b1d5a0; font-family: mainfont;font-weight: 600;">
-        
+
+    <!-- TOTALES DE IMPORTE DE FACTURA -->
+
+    <div class="col-12 col-md-12 mt-1 " style="font-family: mainfont;font-weight: 600;">
+
+        <div class="row" style="background-color: #b1d5a0;">
+            <div class="col-12 text-center p-0">TOTALES</div>
+        </div>
+        <div class="row">
+
+            <div class="col-12 col-md text-center">
+                Compras
                 <div class="row">
-                    <div  class="col-12 text-center p-0">I.V.A</div>
+                    <div class="col-12 col-md ">
+                        <div class="col-3 col-md-12 text-center   pt-0  border-bottom border-success">10%</div>
+                        <div class="col-9 col-md-12 text-center pr-4 p-md-1" id="IMPORTE_10_C"> 0 </div>
+                    </div>
+
+                    <div class="col-12 col-md">
+                        <div class="col-3 col-md-12 text-center  pt-0  border-bottom border-success">5%</div>
+                        <div class="col-9 col-md-12 text-center  pr-4 p-md-1 " id="IMPORTE_5_C">0</div>
+                    </div>
                 </div>
+            </div>
+
+
+            <div class="col-12 col-md text-center">
+                Ventas
                 <div class="row">
-                   
-                   <div class="col-12 col-md">
-                   <div class="col-4 col-md-12 text-right    pt-0">Saldo inicial</div>
-                    <div class="col-8 col-md-12 text-right pr-4 p-md-1" id="TOTAL_SALDO_INICIAL"></div>
+                    <div class="col-12 col-md">
+                        <div class="col-3 col-md-12 text-center   pt-0  border-bottom border-success">10%</div>
+                        <div class="col-9 col-md-12  text-center  pr-4 p-md-1 " id="IMPORTE_10_V">0 </div>
                     </div>
 
                     <div class="col-12 col-md">
-                   <div class="col-4 col-md-12 text-right  pt-0">Compras</div>
-                    <div class="col-8 col-md-12 text-right  pr-4 p-md-1 " id="TOTAL_C"></div>
-                   </div>
-
-                   <div class="col-12 col-md">
-                   <div class="col-4 col-md-12 text-right   pt-0">Ventas</div>
-                    <div class="col-8 col-md-12  text-right  pr-4 p-md-1 " id="TOTAL_V"> </div>
+                        <div class="col-3 col-md-12 text-center pt-0  border-bottom border-success">5%</div>
+                        <div class="col-9 col-md-12  text-center  pr-4 p-md-1  " id="IMPORTE_5_V">0 </div>
                     </div>
+                </div>
+            </div>
 
-                    <div class="col-12 col-md">
-                  <div class="col-4 col-md-12 text-right pt-0">Retención</div>
-                    <div class="col-8 col-md-12  text-right  pr-4 p-md-1  " id="TOTAL_R"> </div>
-                    </div>
+            <div class="col-12 col-md  text-center">
+                Retención
+                <div class="row">
+                    <div class="col-3 col-md-12 text-center pt-0  border-bottom border-success">Monto tot.</div>
+                    <div class="col-9 col-md-12  text-center  pr-4 p-md-1  " id="IMPORTE_R">0 </div>
+                </div>
+            </div>
 
-                    <div class="col-12 col-md">
-                   <div class="col-4 col-md-12 text-right  pt-0">Saldo </div>
-                    <div class="col-8 col-md-12  text-right  pr-4 p-md-1 " id="TOTAL_S"> </div>
-                    </div>
-                    <div class="col-12 col-md">
-                   <div class="col-4 col-md-12 text-right  pt-0">Saldo total</div>
-                    <div class="col-8 col-md-12  text-right  pr-4 p-md-1 " id="TOTAL_S_TOTAL"> </div>
-                    </div>
+        </div>
 
-                </div>  
-        
     </div>
-    <div class="col-12 col-md-12">
+    <!-- END TOTALES  IMPORTE DE FACTURA -->
+
+    <div class="col-12 col-md-12 " style="font-family: mainfont;font-weight: 600;">
+
+        <div class="row">
+            <div class="col-12 text-center p-0" style="background-color: #b1d5a0;  ">I.V.A</div>
+        </div>
+        <div class="row">
+
+            <div class="col-12 col-md">
+                <div class="col-4 col-md-12 text-center    pt-0   border-bottom border-success">Saldo inicial</div>
+                <div class="col-8 col-md-12 text-center pr-4 p-md-1" id="TOTAL_SALDO_INICIAL">0</div>
+            </div>
+
+            <div class="col-12 col-md">
+                <div class="col-4 col-md-12 text-center  pt-0   border-bottom border-success">Compras</div>
+                <div class="col-8 col-md-12 text-center  pr-4 p-md-1 " id="TOTAL_C">0</div>
+            </div>
+
+            <div class="col-12 col-md">
+                <div class="col-4 col-md-12 text-center   pt-0   border-bottom border-success">Ventas</div>
+                <div class="col-8 col-md-12  text-center  pr-4 p-md-1 " id="TOTAL_V"> 0</div>
+            </div>
+
+            <div class="col-12 col-md">
+                <div class="col-4 col-md-12 text-center pt-0   border-bottom border-success">Retención</div>
+                <div class="col-8 col-md-12  text-center  pr-4 p-md-1  " id="TOTAL_R">0 </div>
+            </div>
+
+            <div class="col-12 col-md">
+                <div class="col-4 col-md-12 text-center  pt-0   border-bottom border-success">Saldo </div>
+                <div class="col-8 col-md-12  text-center  pr-4 p-md-1 " id="TOTAL_S">0 </div>
+            </div>
+            <div class="col-12 col-md">
+                <div class="col-4 col-md-12 text-center  pt-0   border-bottom border-success">Saldo total</div>
+                <div class="col-8 col-md-12  text-center  pr-4 p-md-1 " id="TOTAL_S_TOTAL">0 </div>
+            </div>
+
+        </div>
+
+    </div>
+    <div class="col-12 col-md-12 mt-2">
 
         <h5 class="text-center">VENTAS</h5>
         <div id="tabla-ventas">
@@ -174,15 +265,17 @@ echo $estilo;
         total_ex = 0;
 
 
-    async function informe_compras() {
-        //Obtener el resumen de compras
-        //Parametros Anio, mes
-        let mes_ = $("select[name=month]").val();
-        let anio_ = $("select[name=year]").val();
+    async function _informe_compras(ARG) {
+        //es objeto
 
+        let URL__ = "";
+        if (typeof ARG == "object") {
+            ARG.preventDefault();
+            URL__ = ARG.currentTarget.href;
+        } else URL__ = ARG;
         let loader = "<img  src='<?= base_url("assets/img/loader.gif") ?>'   />";
         $("#tabla-compras").html(loader);
-        let req = await fetch($("#info-compras").val() + "/" + mes_ + "/" + anio_);
+        let req = await fetch(URL__);
         let resp_html = await req.text();
         $("#tabla-compras").html(resp_html);
         let saldo = parseInt($("#SALDO-CONTRI").text());
@@ -191,15 +284,28 @@ echo $estilo;
         saldo += s5 + s10;
         $("#SALDO-CONTRI").text(dar_formato_millares(saldo));
     }
-
-    async function informe_ventas() {
+    async function informe_compras() {
+        //Obtener el resumen de compras
         //Parametros Anio, mes
         let mes_ = $("select[name=month]").val();
         let anio_ = $("select[name=year]").val();
 
+        await _informe_compras($("#info-compras").val() + "/" + mes_ + "/" + anio_);
+    }
+
+
+
+
+    async function _informe_ventas(ARG) {
+        let URL__ = "";
+        if (typeof ARG == "object") {
+            ARG.preventDefault();
+            URL__ = ARG.currentTarget.href;
+        } else URL__ = ARG;
+
         let loader = "<img  src='<?= base_url("assets/img/loader.gif") ?>'   />";
         $("#tabla-ventas").html(loader);
-        let req = await fetch($("#info-ventas").val() + "/" + mes_ + "/" + anio_);
+        let req = await fetch(URL__);
 
         let resp_html = await req.text();
         $("#tabla-ventas").html(resp_html);
@@ -210,18 +316,28 @@ echo $estilo;
         saldo += s5 + s10;
         $("#SALDO-FISCO").text(dar_formato_millares(saldo));
 
+
+    }
+    async function informe_ventas() {
+        //Parametros Anio, mes
+        let mes_ = $("select[name=month]").val();
+        let anio_ = $("select[name=year]").val();
+        let ruta = $("#info-ventas").val() + "/" + mes_ + "/" + anio_;
+        await _informe_ventas(ruta);
     }
 
 
-    async function informe_ventas_anuladas() {
-        //Parametros Anio, mes
 
-        let mes_ = $("select[name=month]").val();
-        let anio_ = $("select[name=year]").val();
+    async function _informe_ventas_anuladas(ARG) {
+        let URL__ = "";
+        if (typeof ARG == "object") {
+            ARG.preventDefault();
+            URL__ = ARG.currentTarget.href;
+        } else URL__ = ARG;
 
         let loader = "<img  src='<?= base_url("assets/img/loader.gif") ?>'   />";
         $("#tabla-ventas-a").html(loader);
-        let req = await fetch($("#info-ventas-a").val() + "/" + mes_ + "/" + anio_ + "/B");
+        let req = await fetch(URL__);
 
         let resp_html = await req.text();
         $("#tabla-ventas-a").html(resp_html);
@@ -235,18 +351,40 @@ echo $estilo;
     }
 
 
+    async function informe_ventas_anuladas() {
+        //Parametros Anio, mes
+
+        let mes_ = $("select[name=month]").val();
+        let anio_ = $("select[name=year]").val();
+        let url__ = $("#info-ventas-a").val() + "/" + mes_ + "/" + anio_ + "/B";
+        await _informe_ventas_anuladas(url__);
+    }
+
+
+    async function _informe_retencion(ARG) {
+        let URL__ = "";
+        if (typeof ARG == "object") {
+            ARG.preventDefault();
+            URL__ = ARG.currentTarget.href;
+        } else URL__ = ARG;
+        let loader = "<img  src='<?= base_url("assets/img/loader.gif") ?>'   />";
+        $("#tabla-retencion").html(loader);
+        let req = await fetch(URL__);
+
+        let resp_html = await req.text();
+        $("#tabla-retencion").html(resp_html);
+
+
+    }
+
     async function informe_retencion() {
 
         // let req = await fetch($("#info-retencion").val());
         let mes_ = $("select[name=month]").val();
         let anio_ = $("select[name=year]").val();
 
-        let loader = "<img  src='<?= base_url("assets/img/loader.gif") ?>'   />";
-        $("#tabla-retencion").html(loader);
-        let req = await fetch($("#info-retencion").val() + "/" + mes_ + "/" + anio_);
-
-        let resp_html = await req.text();
-        $("#tabla-retencion").html(resp_html);
+        let URL = $("#info-retencion").val() + "/" + mes_ + "/" + anio_;
+        _informe_retencion(URL);
 
     }
 
@@ -255,44 +393,87 @@ echo $estilo;
     async function totales() {
 
         //OBTENER SALDO INICIAL
-        let mes= $("select[name=month]").val();
-        let anio= $("select[name=year]").val();
-        let req=  await fetch( '<?=base_url('cierres/leer-saldo-anterior-sess')?>/'+mes+'/'+anio);
-        let resp=  await  req.json();
-        let saldo_ini=   0;
-        if(  "data" in resp )  saldo_ini =     resp.data ;
+        let mes = $("select[name=month]").val();
+        let anio = $("select[name=year]").val();
+        //saldo anterior
+        let saldo_anterior_url = $("#info-saldo-anterior").val();
+        let req = await fetch(saldo_anterior_url + '/' + mes + '/' + anio);
+        let resp = await req.json();
+        let saldo_ini = 0;
+        if ("data" in resp) saldo_ini = resp.data;
 
+        //otros totales-mes-session
+        let req_2 = await fetch($("#info-totales").val() + '/' + mes + '/' + anio);
+        let resp_2 = await req_2.json();
+        //totales en  iva compra  venta retencion
+        let c = 0;
+        let v = 0;
+        let r = 0;
+        let c_imp_10 = 0;
+        let v_imp_10 = 0;
+        let c_imp_5 = 0;
+        let v_imp_5 = 0;
+        let r_imp = 0;
+        try {
+            c = parseInt(resp_2.compras_iva10) + parseInt(resp_2.compras_iva5);
+            v = parseInt(resp_2.ventas_iva10) + parseInt(resp_2.ventas_iva5);
+            r = parseInt(resp_2.retencion);
+            //importes de factura o comprobantes
+            c_imp_10 = parseInt(resp_2.compras_total_10);
+            c_imp_5 = parseInt(resp_2.compras_total_5);
+            v_imp_10 = parseInt(resp_2.ventas_total_10);
+            v_imp_5 = parseInt(resp_2.ventas_total_5);
+            c_imp_10 = parseInt(resp_2.compras_total_10);
+            r_imp = parseInt(resp_2.retencion);
+        } catch (err) {
+            c = 0;
+            v = 0;
+            r = 0;
+            alert(err);
+        } finally {
 
-        let c = $("#compra-total-iva").text();
-        let v = $("#venta-total-iva").text();
-        let r = $("#retencion-total").text();
+        }
+        /* let c = $("#compra-total-iva").text();
+         let v = $("#venta-total-iva").text();
+         let r = $("#retencion-total").text();*/
 
-        let c_ = limpiar_numero(c);
-        let v_ = limpiar_numero(v);
-        let r_ = limpiar_numero(r);
+        let c_ = limpiar_numero(String(c));
+        let v_ = limpiar_numero(String(v));
+        let r_ = limpiar_numero(String(r));
         let saldo = parseInt(c_) + parseInt(r_) - parseInt(v_);
-        $("#TOTAL_SALDO_INICIAL").text( dar_formato_millares( saldo_ini)  );
-        $("#TOTAL_C").text(c);
-        $("#TOTAL_V").text(v);
-        $("#TOTAL_R").text(r);
-//Sumar saldo inicial 
-let saldo_definitivo=   saldo +  parseInt( saldo_ini);
+        //importe de factura
+        $("#IMPORTE_10_C").text(dar_formato_millares(c_imp_10));
+        $("#IMPORTE_5_C").text(dar_formato_millares(c_imp_5));
+        $("#IMPORTE_10_V").text(dar_formato_millares(v_imp_10));
+        $("#IMPORTE_5_V").text(dar_formato_millares(v_imp_5));
+        $("#IMPORTE_R").text(dar_formato_millares(r_imp));
+
+        $("#TOTAL_SALDO_INICIAL").text(dar_formato_millares(saldo_ini));
+        $("#TOTAL_C").text(dar_formato_millares(c));
+        $("#TOTAL_V").text(dar_formato_millares(v));
+        $("#TOTAL_R").text(dar_formato_millares(r));
+        //Sumar saldo inicial 
+        let saldo_definitivo = saldo + parseInt(saldo_ini);
 
         $("#TOTAL_S").text(dar_formato_millares(saldo));
         if (saldo > 0) {
             $("#TOTAL_S").css("color", "green");
+            $("#TOTAL_S").removeClass("table-danger");
             $("#TOTAL_S").addClass("table-success");
         } else {
             $("#TOTAL_S").css("color", "red");
+            $("#TOTAL_S").removeClass("table-success");
             $("#TOTAL_S").addClass("table-danger");
         }
 
         $("#TOTAL_S_TOTAL").text(dar_formato_millares(saldo_definitivo));
         if (saldo_definitivo > 0) {
             $("#TOTAL_S_TOTAL").css("color", "green");
+            $("#TOTAL_S_TOTAL").removeClass("table-danger");
             $("#TOTAL_S_TOTAL").addClass("table-success");
         } else {
             $("#TOTAL_S_TOTAL").css("color", "red");
+            $("#TOTAL_S_TOTAL").removeClass("table-success");
             $("#TOTAL_S_TOTAL").addClass("table-danger");
         }
     }
@@ -309,12 +490,12 @@ let saldo_definitivo=   saldo +  parseInt( saldo_ini);
 
 
     async function cargar_tablas() {
-        await informe_ventas();
-        await informe_ventas_anuladas();
-        await informe_compras();
-        await informe_retencion();
-        await totales();
-        $("ul.pagination li").addClass("btn btn-dark btn-sm").css("font-weight", "600");
+          informe_ventas();
+         informe_ventas_anuladas();
+          informe_compras();
+         informe_retencion();
+       totales();
+        //   $("ul.pagination li").addClass("btn btn-dark btn-sm").css("font-weight", "600");
     }
 
 

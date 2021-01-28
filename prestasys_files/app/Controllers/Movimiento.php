@@ -15,7 +15,7 @@ use CodeIgniter\RESTful\ResourceController;
 use Exception;
 
 
-class Movimiento extends Controller {
+class Movimiento extends BaseController {
  
  
 	private $API_MODE= true;
@@ -32,29 +32,31 @@ class Movimiento extends Controller {
 	  
  
 
- 
-
+  
 
 //vista general de informes de movimiento
 //resumen de compra
 //de venta
 //de retencion 
 //en el mes
-	public function informe_mes(){
-		return view("movimientos/informes/index", ['year'=>date("Y"),   'month'=> date("m")]);
-	}
-	 
-	 
-
-
-	public function informe_mes_(  $CLIENTE,  $MES= NULL, $ANIO= NULL ){
+	public function informe_mes(  $CLI= NULL,  $MES= NULL, $ANIO= NULL) {
 
 		$mes= is_null( $MES)  ?   date("m")  :   $MES;
 		$anio= is_null( $ANIO) ?  date("Y") :  $ANIO;
 
-		return view("admin/clientes/movimientos/index", 
-		 ['CLIENTE'=>  $CLIENTE,  'MES_REFER'=>  $mes,  'ANIO_REFER'=>  $anio]);
+		$CLIENTE = is_null( $CLI) ?  $this->getClienteId() : $CLI;
+		$MODO=  $this->isAdminView() ? "ADMIN"  : "CLIENT";
+		return view(
+			"movimientos/informes/index",
+
+			['CLIENTE' =>  $CLIENTE, 'year' =>  $anio,   'month' => $mes,  "MODO"=>  $MODO]
+		);
 	}
+	 
+	 
+
+
+ 
 	
 	 
 

@@ -17,14 +17,14 @@ if (session("id") != "") {
             $wallpaper =  $_usu_->fondo;
         else {
             if ($_usu_->fondo == "")
-                $wallpaper = base_url('assets/img/papers.jpg');
-            else
                 $wallpaper = "none";
+            else
+                $wallpaper =   $_usu_->fondo ;
         }
     } catch (Exception $ex) {
-        $wallpaper = base_url('assets/img/papers.jpg');
+        $wallpaper = "none";
     };
-} else $wallpaper = base_url('assets/img/papers.jpg');
+} else $wallpaper = "none";
 ?>
 
 

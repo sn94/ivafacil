@@ -83,9 +83,9 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 		$reten= (new Retencion())->total_( $CODCLIENTE, $MES, $ANIO );
 	 
 		 //A favor del contribuyente
-		$s_contri=  intval(  $cf->iva1) +  intval($cf->iva2) + intval(  $reten->importe );
+		$s_contri=  round(  $cf->iva1 + $cf->iva2) + intval(  $reten->importe );
 		 //A favor de hacienda
-		 $s_fisco=  intval(  $df->iva1) +  intval($df->iva2 );
+		 $s_fisco=  round(  $df->iva1 + $df->iva2 );
 		 //Saldo
 		 $saldo_a= $this->__saldo_anterior(   $CODCLIENTE, $MES, $ANIO); 
 		 $saldo=  $s_contri -  $s_fisco;
@@ -99,14 +99,14 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 			'compras_total_10'=> intval($cf->total10) ,
 			'compras_total_5'=> intval($cf->total5) ,
 			'compras_total_exe'=> intval($cf->totalexe) ,
-			'compras_iva10'=> intval($cf->iva1) ,
-			'compras_iva5'=> intval($cf->iva2) ,
+			'compras_iva10'=> round($cf->iva1) ,
+			'compras_iva5'=> round($cf->iva2) ,
 
 			'ventas_total_10'=> intval($df->total10) ,
 			'ventas_total_5'=> intval($df->total5) ,
 			'ventas_total_exe'=> intval($df->totalexe) ,
-			'ventas_iva10'=> intval($df->iva1) ,
-			'ventas_iva5'=> intval($df->iva2) ,
+			'ventas_iva10'=> round($df->iva1) ,
+			'ventas_iva5'=> round($df->iva2) ,
 
 			'retencion' => (intval($reten->importe)),
 			'saldo' => $saldo,
@@ -419,13 +419,15 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 		$TOTAL_COMPRA= (new Compra())->total_mes( $cod_cliente, $MES, $ANIO);
 		$TOTAL_VENTA= (new Venta())->total_mes( $cod_cliente, $MES, $ANIO);
 		$TOTAL_RETENCION= (new Retencion())->total_mes( $cod_cliente, $MES, $ANIO);
-		$SALDO_ACTUAL= intval($TOTAL_COMPRA->iva1)+intval($TOTAL_COMPRA->iva2)+intval(  $TOTAL_RETENCION->importe) - (intval($TOTAL_VENTA->iva1) + intval($TOTAL_VENTA->iva2));
+		$SALDO_ACTUAL= 
+		round($TOTAL_COMPRA->iva1 + $TOTAL_COMPRA->iva2)+intval(  $TOTAL_RETENCION->importe)
+		 - (round($TOTAL_VENTA->iva1 + $TOTAL_VENTA->iva2));
 		$LosTotales= [
-			'IVA_CF_10'=>  $TOTAL_COMPRA->iva1,
-			'IVA_CF_5'=>  $TOTAL_COMPRA->iva2,
+			'IVA_CF_10'=>  round($TOTAL_COMPRA->iva1),
+			'IVA_CF_5'=>  round($TOTAL_COMPRA->iva2),
 			'COMPRA_EXENTA'=>  $TOTAL_COMPRA->iva3,
-			'IVA_DF_10'=>  $TOTAL_VENTA->iva1,
-			'IVA_DF_5'=>  $TOTAL_VENTA->iva2,
+			'IVA_DF_10'=>  round($TOTAL_VENTA->iva1),
+			'IVA_DF_5'=>  round($TOTAL_VENTA->iva2),
 			'VENTA_EXENTA'=>  $TOTAL_VENTA->iva3,
 			'RETENCION' =>   $TOTAL_RETENCION->importe,
 			'SALDO_ANTE'=> $saldo_anterior,
@@ -482,7 +484,7 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 		$codcliente=  $this->getClienteId();
 		$anios=  (new Estado_anio_model())->select("anio")->where("codcliente",   $codcliente)->get()->getResult();
 		 
-		return view("movimientos/resumen_anio",   ['ANIOS'=>   $anios]);
+		return view("movimientos/comparativos",   ['ANIOS'=>   $anios]);
 	}
 
 
@@ -738,8 +740,8 @@ public function resumen_anio_session(  $Year ){
 			$TOTAL_VENTA_m= (new Venta())->total_mes( $cod_cliente,  date("m"), $ANIO);
 			$TOTAL_RETENCION_m= (new Retencion())->total_mes( $cod_cliente,  date("m"), $ANIO);
 
-			$total_ahora_compras= ( intval($TOTAL_COMPRA_m->iva1) +  intval($TOTAL_COMPRA_m->iva2) );
-			$total_ahora_ventas=  ( intval($TOTAL_VENTA_m->iva1) +  intval($TOTAL_VENTA_m->iva2) );
+			$total_ahora_compras= ( round($TOTAL_COMPRA_m->iva1 + $TOTAL_COMPRA_m->iva2) );
+			$total_ahora_ventas=  ( round($TOTAL_VENTA_m->iva1 + $TOTAL_VENTA_m->iva2) );
 			$total_retencion=  intval($TOTAL_RETENCION_m->importe );
 			$saldo= ( $total_ahora_compras+$total_retencion)  -  $total_ahora_ventas;
 			$saldo_anterior_a_este=  $this->saldo_mes_anterior( $cod_cliente,  date("m"),   $ANIO);
@@ -764,11 +766,11 @@ public function resumen_anio_session(  $Year ){
 		$TOTAL_RETENCION= (new Retencion())->total_anio( $cod_cliente, $ANIO);
 
 		$LosTotales= [
-			'IVA_CF_10'=>  $TOTAL_COMPRA->iva1,
-			'IVA_CF_5'=>  $TOTAL_COMPRA->iva2,
+			'IVA_CF_10'=>  round($TOTAL_COMPRA->iva1),
+			'IVA_CF_5'=>  round($TOTAL_COMPRA->iva2),
 			'COMPRA_EXENTA'=>  $TOTAL_COMPRA->iva3,
-			'IVA_DF_10'=>  $TOTAL_VENTA->iva1,
-			'IVA_DF_5'=>  $TOTAL_VENTA->iva2,
+			'IVA_DF_10'=>  round($TOTAL_VENTA->iva1),
+			'IVA_DF_5'=>  round($TOTAL_VENTA->iva2),
 			'VENTA_EXENTA'=>  $TOTAL_VENTA->iva3,
 			'RETENCION' =>   $TOTAL_RETENCION->importe
 		];
@@ -982,6 +984,13 @@ public function resumen_anio_session(  $Year ){
 
 
 
+	//Comparativos 
+	public function  comparativos(   ){
+		$codcliente=  $this->getClienteId();
+		$anios=  (new Estado_anio_model())->select("anio")->where("codcliente",   $codcliente)->get()->getResult();
+
+		return view("movimientos/comparativos2", ['ANIOS'=>  $anios]);
+	}
 	public function  comparativo_anio( $CLIENTE,  $ANIO ){
 
 		$TodosLosMeses= [];

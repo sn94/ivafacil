@@ -21,8 +21,7 @@ class Compra extends ResourceController
 
 	protected $modelName = "App\Models\Compras_model";
 	protected $format = "json";
-	private $API_MODE = true;
-
+	 
 
 	public function __construct()
 	{
@@ -37,11 +36,11 @@ class Compra extends ResourceController
 	{
 
 		if ($code == 200) {
-			if ($this->API_MODE)
+			if ($this->isAPI())
 				return $this->respond(array("data" => $data, "code" => $code)); //, 500, "No hay nada"
 			else return array("data" => $data, "code" => $code);
 		} else {
-			if ($this->API_MODE) return $this->respond(array("msj" => $msj, "code" => $code));
+			if ($this->isAPI()) return $this->respond(array("msj" => $msj, "code" => $code));
 			else return array("msj" => $msj, "code" => $code);
 		}
 	}
@@ -50,12 +49,11 @@ class Compra extends ResourceController
 
 
 
-	private function getClienteId()
-	{
-		$usu = new Usuario_model();
-		$request = \Config\Services::request();
-		$IVASESSION = is_null($request->getHeader("Ivasession")) ? "" :  $request->getHeader("Ivasession")->getValue();
-		$res = $usu->where("session_id",  $IVASESSION)->first();
+	private function getClienteId(){
+		$usu= new Usuario_model();
+        $request = \Config\Services::request();
+        $IVASESSION= is_null($request->getHeader("Ivasession")) ? "" :  $request->getHeader("Ivasession")->getValue();
+        $res= $usu->where( "session_id",  $IVASESSION )->first();
 
 		if ($this->isAPI()) {
 			if (is_null($res)) {
@@ -63,9 +61,8 @@ class Compra extends ResourceController
 			} else {
 				return $res->regnro;
 			}
-		} else {
-			return session("id");
-		}
+		}else{      return session("id"); }
+		
 	}
 
 
@@ -96,61 +93,74 @@ class Compra extends ResourceController
 	//Subinformes
 
 
-	public function index_se($CLIENTE = NULL, $MES = NULL,   $ANIO =   NULL)
+	public function index_se($CLIENTE , $MES ,   $ANIO )
 	{
-
-		$this->API_MODE =  $this->isAPI();
-
+ 
 		$compras = (new Compras_model());
-
+		$db = \Config\Database::connect();
 
 		//Segun los parametros
-		//Parametros: mes y anio
-		$parametros = [];
+		//Parametros: mes y anio 
 		$cliente= $CLIENTE;
-		$year =   is_null($ANIO) ?  date("Y")  :  $ANIO;
-		$month = is_null($MES) ?  date("m") :  $MES;
-
-		if ($this->request->getMethod(true) == "POST") {
-			$parametros = $this->request->getRawInput();
-			$cliente = isset($parametros['cliente'])  ? $parametros['cliente'] : $cliente;
-			$month = isset($parametros['month'])  ? $parametros['month'] : $month;
-			$year =  isset($parametros['year']) ? $parametros['year'] : $year;
-		}
-		$lista_co = [];
+		$year =      $ANIO;
+		$month =  $MES;
+ 
 		$lista_co = $compras
 			->where("codcliente", $cliente)
 			->where("year(fecha)", $year)
-			->where("month(fecha)", $month);
+			->where("month(fecha)", $month)
+			;
 
-
-		if ($this->API_MODE) {
-			$lista_co = $lista_co->get()->getResult();
+		 //Contar
+		$TotalRegistros=   $lista_co->countAllResults();
+ 
+		if ($this->isAPI()) {
+			$lista_co = $lista_co
+			->where("codcliente", $cliente)
+			->where("year(fecha)", $year)
+			->where("month(fecha)", $month)
+			->orderBy("fecha")
+			->get()->getResult();
 			return $this->respond(array("data" => $lista_co, "code" => 200));
 		} else {
 
-			$lista_pagi = $lista_co->paginate(10);
-			if( $this->isAdminView()) 
+			$numero_filas= 10;
+			$pagina=  isset( $_GET['page'] ) ?  $_GET['page']  : 0;
+
+			$lista_co=  $lista_co 
+			->where("codcliente", $cliente)
+			->where("year(fecha)", $year)
+			->where("month(fecha)", $month)
+			->orderBy("fecha")
+			->limit(   $numero_filas ,  $pagina)->get()->getResult();
+		 
+			$lista_pagi =  $lista_co;   //; 
+		 
+			$ViewParams=  	[
+				'compras' =>  $lista_pagi,
+				//'compras_pager' => $lista_co->pager,
+				'TotalRegistros'=> $TotalRegistros,
+				'year' => $year,
+				'month' => $month,
+				'CLIENTE'=>  $cliente,
+				'EVENT_HANDLER'=>"_informe_compras(event)",
+				'MODO'=>  $this->isAdminView() ? "ADMIN":  "CLIENT"
+			];
+
+			 
 			return view(
-				"admin/clientes/movimientos/grill_compras",
-				[
-					'compras' =>  $lista_pagi,
-					'compras_pager' => $lista_co->pager,
-					'year' => $year,
-					'month' => $month,
-					'CLIENTE'=>  $cliente
-				]
-			);
-			else
-			return view(
-				"movimientos/informes/grill_compras",
-				[
-					'compras' =>  $lista_pagi,
-					'compras_pager' => $lista_co->pager,
-					'year' => $year,
-					'month' => $month
-				]
-			);
+				"movimientos/informes/grill_compras", $ViewParams);
+
+			/*if ($this->isAdminView()) {
+				return view(
+					"admin/clientes/movimientos/grill_compras",
+					array_merge($ViewParams,  ['Link'=>  base_url("admin/clientes/compras/$cliente/$month/$year")])
+				);
+			} else {
+				return view("movimientos/informes/grill_compras", 
+				array_merge(  $ViewParams,  ['Link'=>  base_url("compra/index/$month/$year")]  )
+				);
+			}*/
 		}
 	}
 
@@ -159,19 +169,10 @@ class Compra extends ResourceController
 	public function index($MES = NULL,   $ANIO =   NULL)
 	{
 
-		$this->API_MODE =  $this->isAPI();
-		$cliente = null;
-		if ($this->API_MODE) {
+	 
+		$cliente = $this->getClienteId(); 
 			$request = \Config\Services::request();
-			$sesion = is_null($request->getHeader('Ivasession')) ? "" :  $request->getHeader('Ivasession')->getValue();
-			//idS de usuario
-			$usunow = (new Usuario_model())->where("session_id", $sesion)->first();
-			$ruc =  $usunow->ruc;
-			$dv =  $usunow->dv;
-			$cliente =  $usunow->regnro;
-		} else {
-			$cliente = session("id");
-		}
+			
 		//Segun los parametros
 
 		//Parametros: mes y anio
@@ -217,7 +218,7 @@ class Compra extends ResourceController
 		//Parametros: mes y anio 
 		$year =  is_null($Anio) ?  date("Y") : $Anio;
 		$lista_co = $lista_co->where("year(fecha)", $year)
-			->select('if( sum(iva1) is null, 0,  sum(iva1) ) as iva1, if( sum(iva2) is null, 0,  sum(iva2) ) as iva2, if( sum(iva3) is null, 0,  sum(iva3) ) as iva3 ,
+			->select('if( sum(iva1) is null, 0,  ROUND(sum(iva1)) ) as iva1, if( sum(iva2) is null, 0,  ROUND(sum(iva2)) ) as iva2, if( sum(iva3) is null, 0,  sum(iva3) ) as iva3 ,
 		if( sum(importe1) is null, 0, sum(importe1) ) as total10, 
 		if( sum(importe2) is null, 0, sum(importe2) ) as total5,
 		if( sum(importe3) is null, 0, sum(importe3) ) as totalexe
@@ -245,7 +246,7 @@ class Compra extends ResourceController
 		}
 		$lista_co = $lista_co->where("year(fecha)", $year)
 			->where("month(fecha)", $month)
-			->select('if( sum(iva1) is null, 0,  sum(iva1) ) as iva1, if( sum(iva2) is null, 0,  sum(iva2) ) as iva2, if( sum(iva3) is null, 0,  sum(iva3) ) as iva3 ,
+			->select('if( sum(iva1) is null, 0,  round(sum(iva1)) ) as iva1, if( sum(iva2) is null, 0,  round(sum(iva2)) ) as iva2, if( sum(iva3) is null, 0,  sum(iva3) ) as iva3 ,
 		if( sum(importe1) is null, 0, sum(importe1) ) as total10, 
 		if( sum(importe2) is null, 0, sum(importe2) ) as total5,
 		if( sum(importe3) is null, 0, sum(importe3) ) as totalexe
@@ -258,7 +259,7 @@ class Compra extends ResourceController
 	public  function  total()
 	{
 		$request = \Config\Services::request();
-		$this->API_MODE =  $this->isAPI();
+	 
 		$codcliente = $this->getClienteId();
 		$lista_co =  $this->total_($codcliente);
 		$response =  \Config\Services::response();
@@ -287,7 +288,7 @@ class Compra extends ResourceController
 		}
 		//Manejo POST
 
-		$this->API_MODE =  $this->isAPI();
+		  
 		$usu = new Compras_model();
 
 		$data = $this->request->getRawInput();
@@ -305,14 +306,16 @@ class Compra extends ResourceController
 		if(  (new Cierres())->esta_cerrado($mes_fecha_compro, $anio_fecha_anio)  )
 		return  $this->response->setJSON(  ['msj'=>  "El mes ya esta cerrado",  "code"=>  "500"]);
 
-
-		//Verificar si el periodo-ejercicio esta cerrado o fuera de rango
-	//	$Operacion_fecha_invalida = (new Cierres())->fecha_operacion_invalida($data['fecha']);
-	//	if (!is_null($Operacion_fecha_invalida))  return $Operacion_fecha_invalida;
-		//***** Fin check tiempo*/
-
-		if ($this->API_MODE)  $data['origen'] = "A";
-
+			//inferir otros datos del cliente
+			$ModeloCliente=  (new Usuario_model())->find(  $this->getClienteId());
+			$data["codcliente"]= $ModeloCliente->regnro;
+			$data['ruc']=  $ModeloCliente->ruc;
+			$data['dv']= $ModeloCliente->dv;
+			$data['origen']=   $this->isAPI() ?  "A"   : "W";
+			if( ! isset($data['importe1'] ) ) $data['importe1'] = 0;
+			if( ! isset($data['importe2'] ) ) $data['importe2'] = 0;
+			if( ! isset($data['importe3'] ) ) $data['importe3'] = 0;
+		
 		if ($this->validate('compras')) { //Validacion OK
 
 			$cod_cliente =  $data["codcliente"];
@@ -334,16 +337,22 @@ class Compra extends ResourceController
 
 			$db->transStart();
 			try {
-				if ($this->API_MODE)  $data['origen'] = "A"; //ORIGEN Aplicacion
+
+				//calculo interno del iva
+				$iva1 =  $data['importe1'] / 11;
+				$iva2 = $data['importe2'] / 21;
+				$iva3 =  $data['importe3'];
+				$data['iva1'] =  $iva1;
+				$data['iva2'] =  $iva2;
+				$data['iva3'] = $iva3;
+				$data["total"] =  $data['importe1']  + $data['importe2']  + $data['importe3']  ;
+
 				//Convertir a guaranies
 				if ($moneda != 1) {
 					$cambio = $data['tcambio'];
-					$im1 = $data['importe1'];
-					$im2 = $data['importe2'];
-					$im3 = $data['importe3'];
-					$iva1 = $data['iva1'];
-					$iva2 = $data['iva2'];
-					$iva3 = $data['iva3'];
+					$im1 = $data['importe1'];//10%
+					$im2 = $data['importe2']; //5%
+					$im3 = $data['importe3']; //EXE
 					$data['importe1'] =  intval($cambio) * intval($im1);
 					$data['importe2'] =  intval($cambio) * intval($im2);
 					$data['importe3'] =  intval($cambio) * intval($im3);
@@ -363,7 +372,7 @@ class Compra extends ResourceController
 			}
 			$db->transComplete();
 			//Evaluar resultado
-			if ($this->API_MODE) return  $resu;
+			if ($this->isAPI()) return  $resu;
 			else {
 				if ($resu['code'] == 200)
 					return $this->response->setJSON(['data' => "Guardado", "code" => "200"]);
@@ -375,7 +384,7 @@ class Compra extends ResourceController
 		//Hubo errores de validacion
 		$validation = \Config\Services::validation();
 		$resultadoValidacion =  $this->genericResponse(null, $validation->getErrors(), 500);
-		if ($this->API_MODE)
+		if ($this->isAPI())
 			return $resultadoValidacion;
 		else
 			return $this->response->setJSON(['msj' => $resultadoValidacion['msj'], "code" => "500"]);
@@ -410,7 +419,7 @@ class Compra extends ResourceController
 
 		//Manejo POST
 
-		$this->API_MODE =  $this->isAPI();
+	 
 		$usu = new Compras_model();
 
 		$data = $this->request->getRawInput();
@@ -428,7 +437,7 @@ class Compra extends ResourceController
 		//***** Fin check tiempo*/
 
 
-		if ($this->API_MODE)  $data['origen'] = "A";
+		$data['origen'] =  $this->isAPI() ? "A" : "W";
 
 		if ($this->validate('compras')) { //Validacion OK
 
@@ -445,19 +454,37 @@ class Compra extends ResourceController
 			if ($moneda != "1" && (!isset($data['tcambio'])  ||  $data['tcambio'] == "")) {
 				return $this->genericResponse(null,  "Indique el monto para cambio de moneda", 500);
 			}
+
+
+			
+			//inferir otros datos del cliente
+			$ModeloCliente=  (new Usuario_model())->find(  $this->getClienteId());
+			$data["codcliente"]= $ModeloCliente->regnro;
+			$data['ruc']=  $ModeloCliente->ruc;
+			$data['dv']= $ModeloCliente->dv;
+			$data['origen']=   $this->isAPI() ?  "A"   : "W";
+
+			if( ! isset($data['importe1'] ) ) $data['importe1'] = 0;
+			if( ! isset($data['importe2'] ) ) $data['importe2'] = 0;
+			if( ! isset($data['importe3'] ) ) $data['importe3'] = 0;
 			$resu = []; //Resultado de la operacion
 			try {
-				if ($this->API_MODE)  $data['origen'] = "A"; //ORIGEN Aplicacion
+			 
+					//calculo interno del iva
+					$iva1 = $data['importe1'] / 11 ;
+					$iva2 = $data['importe2'] / 21 ;
+					$iva3 =  $data['importe3'];
+					$data['iva1'] =  $iva1;
+					$data['iva2'] =  $iva2;
+					$data['iva3'] = $iva3;
+					$data["total"] =  $data['importe1']  + $data['importe2']  + $data['importe3']  ;
 
 				//Convertir a guaranies
 				if ($moneda != 1) {
 					$cambio = $data['tcambio'];
-					$im1 = $data['importe1'];
-					$im2 = $data['importe2'];
-					$im3 = $data['importe3'];
-					$iva1 = $data['iva1'];
-					$iva2 = $data['iva2'];
-					$iva3 = $data['iva3'];
+					$im1 =  $data['importe1']  ;
+					$im2 =  $data['importe2'] ;
+					$im3 =  $data['importe3']; 
 					$data['importe1'] =  intval($cambio) * intval($im1);
 					$data['importe2'] =  intval($cambio) * intval($im2);
 					$data['importe3'] =  intval($cambio) * intval($im3);
@@ -479,7 +506,7 @@ class Compra extends ResourceController
 				$resu = $this->genericResponse(null, "Hubo un error al registrar ($e)", 500);
 			}
 			//Evaluar resultado
-			if ($this->API_MODE) return  $resu;
+			if ($this->isAPI()) return  $resu;
 			else {
 				return $this->response->setJSON($resu);
 				//if ($resu['code'] == 200) return redirect()->to(base_url("movimiento/index"));
@@ -490,7 +517,7 @@ class Compra extends ResourceController
 		//Hubo errores de validacion
 		$validation = \Config\Services::validation();
 		$resultadoValidacion =  $this->genericResponse(null, $validation->getErrors(), 500);
-		if ($this->API_MODE)
+		if ($this->isAPI())
 			return $resultadoValidacion;
 		else
 			return $this->response->setJSON(['msj' => $resultadoValidacion['msj'], "code" => "500"]);
@@ -517,9 +544,7 @@ class Compra extends ResourceController
 	public function delete($id = null)
 	{
 
-
-		$this->API_MODE =  true;
-
+ 
 		$us = (new Compras_model())->find($id);
 
 		if (is_null($us))

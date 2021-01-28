@@ -1,21 +1,21 @@
-<table class="table   table-striped" style="font-size: 11px;">
-    <thead>
-        <tr>
+<table class="table   table-striped" >
+    <thead style="font-size: 13.5px;">
+        <tr style="font-family: mainfont;" >
             <th colspan="8">Año <?= $ANIO?></th>
         </tr>
-        <tr>
-            <th class="text-left">MES</th>
-            <th>SALDO INICIAL</th>
-            <th>VENTA</th>
-            <th>COMPRA</th>
-            <th>RET.</th>
-            <th>IVA</th>
-            <th>PAGO</th>
-            <th>SALDO</th>
+        <tr   style="font-family: mainfont;" >
+            <th class="text-center">MES</th>
+            <th class="text-center">SALDO INICIAL</th>
+            <th class="text-center">VENTA</th>
+            <th class="text-center">COMPRA</th>
+            <th class="text-center">RETENCIÓN</th>
+            <th class="text-center">IVA</th>
+            <th class="text-center">PAGO</th>
+            <th class="text-center">SALDO</th>
         </tr>
 
     </thead>
-    <tbody>
+    <tbody style="font-size: 11px;">
         <?php
 
         use App\Helpers\Utilidades;

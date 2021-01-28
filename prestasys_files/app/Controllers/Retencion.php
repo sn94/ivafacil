@@ -84,98 +84,81 @@ class Retencion extends ResourceController {
 
 
 	
-	public function index_se(   $CLIENTE= NULL,  $MES= NULL,   $ANIO=   NULL  ){
-
-		$this->API_MODE=  $this->isAPI();
-		$reten= (new Retencion_model());
-
-		
-		$lista_co= []; 
-	
+public function index(  $MES =null,  $ANIO=null){
+	$cliente=   $this->getClienteId()  ;
 		//Segun los parametros
 		//Parametros: mes y anio
 		$parametros = [];
-		$cliente=  $CLIENTE;
 		$year =   is_null($ANIO) ?  date("Y")  :  $ANIO;
 		$month = is_null($MES)?  date("m") :  $MES;
+		return  $this->index_(  $cliente,  $month, $year );
+}
 
-		if ($this->request->getMethod(true) == "POST") {
-			$parametros = $this->request->getRawInput();
-			$cliente = isset($parametros['cliente'])  ? $parametros['cliente'] : $cliente;
-			$month = isset( $parametros['month'])  ? $parametros['month'] : $month;
-			$year =  isset(  $parametros['year']) ? $parametros['year'] : $year;
-		}
-		$lista_co = (new Retencion_model())
-		->where("codcliente", $cliente)
-		->where("month(fecha)", $month)
-		->where("year(fecha)", $year);
+	
+	public function index_(  $CLI=NULL,  $month=NULL,   $year=NULL  ){
 
-		
-		if ($this->API_MODE) {
-			$lista_co = $lista_co->get()->getResult();
-			return $this->respond(array("data" => $lista_co, "code" => 200));
-		} else {
-			$lista_pagi = $lista_co->paginate(15);
-			if( $this->isAdminView())
-			return view("admin/clientes/movimientos/grill_retencion", 
-			['retencion' =>  $lista_pagi, 'retencion_pager'=> $lista_co->pager,
-			'year'=> $year,  'month'=> $month,  	'CLIENTE'=>  $cliente   ]);
+	 
+		$cliente=  is_null(  $CLI)  ? $this->getClienteId()  :  $CLI;
+		$lista_co= (new Retencion_model())->where("codcliente", $cliente);
 
-			else
-			return view("movimientos/informes/grill_retencion", 
-			 ['retencion' =>  $lista_pagi, 'retencion_pager'=> $lista_co->pager,
-			 'year'=> $year,  'month'=> $month]);
-		}
+		//Segun los parametros
+		//Parametros: mes y anio
+		$parametros = [];
 		 
-	}
-
-
-	
-	public function index(   $MES= NULL,   $ANIO=   NULL  ){
-
-		$this->API_MODE=  $this->isAPI();
-		$reten= (new Retencion_model());
-
-		$lista_co= [];
-
-		if ($this->API_MODE) {
-			$sessionid = is_null($this->request->getHeader('Ivasession')) ? "" : $this->request->getHeader('Ivasession')->getValue();
-			if ($sessionid != "") {
-				$us= (new Usuario_model())->where("session_id", $sessionid)->first();
-				$lista_co = $reten->where("ruc",  $us->ruc)
-				->where("dv",  $us->dv)
-				->where("codcliente",  $us->regnro);
-			}
-		}else{
-			$lista_co= $reten->where("ruc", session("ruc"))
-			->where("dv", session("dv"))
-			->where("codcliente", session("id") );
-		}
-	
-		//Segun los parametros
-		//Parametros: mes y anio
-		$parametros = [];
-		$year =   is_null($ANIO) ?  date("Y")  :  $ANIO;
-		$month = is_null($MES)?  date("m") :  $MES;
-
 		if ($this->request->getMethod(true) == "POST") {
 			$parametros = $this->request->getRawInput();
 			$month = isset( $parametros['month'])  ? $parametros['month'] : $month;
 			$year =  isset(  $parametros['year']) ? $parametros['year'] : $year;
 		}
-		$lista_co = $lista_co->where("year(fecha)", $year)
-		->where("month(fecha)", $month);
 
-		
-		if ($this->API_MODE) {
-			$lista_co = $lista_co->get()->getResult();
+		$lista_co = $lista_co
+		->where("codcliente",  $cliente)
+		->where("year(fecha)", $year)
+		->where("month(fecha)", $month)
+		->orderBy("fecha");
+
+		$TotalRegistros=   $lista_co->countAllResults();
+
+
+		if ($this->isAPI()) {
+			$lista_co = $lista_co
+			->where("codcliente",  $cliente)
+			->where("year(fecha)", $year)
+			->where("month(fecha)", $month)
+			->orderBy("fecha")->get()->getResult();
 			return $this->respond(array("data" => $lista_co, "code" => 200));
 		} else {
-			$lista_pagi = $lista_co->paginate(15);
-			 
-			return view("movimientos/informes/grill_retencion", 
-			 ['retencion' =>  $lista_pagi, 'retencion_pager'=> $lista_co->pager,
-			 'year'=> $year,  'month'=> $month]);
+
+			$numero_filas = 10;
+			$pagina =  isset($_GET['page']) ?  $_GET['page']  : 0;
+			$lista_pagi = $lista_co
+			->where("codcliente",  $cliente)
+			->where("year(fecha)", $year)
+			->where("month(fecha)", $month)
+			->orderBy("fecha")
+			->limit($numero_filas, $pagina)->get()->getResult();;
+
+			$ViewParams =  [
+				'retencion' =>  $lista_pagi,
+				'TotalRegistros' => $TotalRegistros,
+				// 'retencion_pager'=> $lista_co->pager,
+				'year' => $year,
+				'month' => $month,
+			 'EVENT_HANDLER'=>"_informe_retencion(event)",
+			 'MODO'=>  $this->isAdminView() ? "ADMIN":  "CLIENT"
+			];
+
+			return view("movimientos/informes/grill_retencion",  $ViewParams);
+			/* if( $this->isAdminView()){
+				return view("movimientos/informes/grill_retencion", 
+				array_merge(  $ViewParams,  ['Link'=>  base_url("admin/clientes/retencion/$cliente/$month/$year")])
+				);
+			 }else{
+				return view("movimientos/informes/grill_retencion", 
+				array_merge(  $ViewParams,  ['Link'=>  base_url("retencion/index/$month/$year")])
+				);
+			 }*/
+			
 		}
 		 
 	}
@@ -321,7 +304,17 @@ class Retencion extends ResourceController {
 			}
 			$resu = []; //Resultado de la operacion
 			try {
-				if ($this->API_MODE)  $data['origen'] = "A"; //ORIGEN Aplicacion
+
+				
+			//inferir otros datos del cliente
+			$ModeloCliente=  (new Usuario_model())->find(  $this->getClienteId());
+			$data["codcliente"]= $ModeloCliente->regnro;
+			$data['ruc']=  $ModeloCliente->ruc;
+			$data['dv']= $ModeloCliente->dv;
+			$data['origen']=   $this->isAPI() ?  "A"   : "W";
+
+
+			 
 				//convertir
 				if( $moneda != 1){
 					$cambio = $data['tcambio'];
@@ -416,7 +409,15 @@ class Retencion extends ResourceController {
 			}
 			$resu = []; //Resultado de la operacion
 			try {
-				if ($this->API_MODE)  $data['origen'] = "A"; //ORIGEN Aplicacion
+				
+					//inferir otros datos del cliente
+			$ModeloCliente=  (new Usuario_model())->find(  $this->getClienteId());
+			$data["codcliente"]= $ModeloCliente->regnro;
+			$data['ruc']=  $ModeloCliente->ruc;
+			$data['dv']= $ModeloCliente->dv;
+			$data['origen']=   $this->isAPI() ?  "A"   : "W";
+
+			
 				//convertir
 				if( $moneda != 1){
 					$cambio = $data['tcambio'];

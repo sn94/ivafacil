@@ -110,8 +110,8 @@ $routes->post('api/usuario/marangatu', 'Usuario::set_marangatu_key');
 
  
 //Params
-$routes->get('/api/calendario', 'Calendario::index'); 
-$routes->get('/api/calendario/(:num)', 'Calendario::get/$1'); 
+$routes->get('/api/usuario/calendario', 'Calendario::index'); 
+$routes->get('/api/usuario/calendario/(:num)', 'Calendario::get/$1'); 
 
 
 //Administrativo 
@@ -143,8 +143,8 @@ $routes->post('/admin/clientes/create', 'Usuario::create');
 $routes->get('/admin/clientes/update/(:num)', 'Usuario::update/$1');
 $routes->put('/admin/clientes/update', 'Usuario::update');
 $routes->get('/admin/clientes/delete/(:num)', 'Usuario::delete/$1'); 
-$routes->get('/admin/clientes/movimientos/(:num)', 'Movimiento::informe_mes_/$1'); //vista de mov. en compras, ventas de un cliente
-$routes->get('/admin/clientes/movimientos/(:num)/(:num)/(:num)', 'Movimiento::informe_mes_/$1/$2/$3');
+$routes->get('/admin/clientes/movimientos/(:num)', 'Movimiento::informe_mes/$1'); //vista de mov. en compras, ventas de un cliente
+$routes->get('/admin/clientes/movimientos/(:num)/(:num)/(:num)', 'Movimiento::informe_mes/$1/$2/$3');
 //admin clientes operaciones
 $routes->get('/admin/clientes/compras/(:num)', 'Compra::index_se/$1'); 
 $routes->get('/admin/clientes/compras/(:num)/(:num)/(:num)', 'Compra::index_se/$1/$2/$3'); 
@@ -157,8 +157,8 @@ $routes->get('/admin/clientes/ventas/(:num)/(:num)/(:num)/(:alpha)', 'Venta::ind
 $routes->post('/admin/clientes/ventas', 'Venta::index_se'); 
 $routes->post('/admin/clientes/ventas-informes/(:alpha)', 'Venta::informes/$1'); 
 
-$routes->get('/admin/clientes/retencion/(:num)/(:num)/(:num)', 'Retencion::index_se/$1/$2/$3'); 
-$routes->post('/admin/clientes/retencion', 'Retencion::index_se'); 
+$routes->get('/admin/clientes/retencion/(:num)/(:num)/(:num)', 'Retencion::index_/$1/$2/$3'); 
+$routes->post('/admin/clientes/retencion', 'Retencion::index'); 
 $routes->post('/admin/clientes/retencion-informes/(:alpha)', 'Retencion::informes/$1'); 
 
 //admin clientes pagos
@@ -184,6 +184,7 @@ $routes->get('/admin/cierre-mes/(:num)/(:num)/(:num)', 'Cierres::info_mes_cierre
 $routes->get('/admin/estados-mes/(:num)/(:num)/(:num)', 'Cierres::resumen_mes/$1/$2/$3'); 
 $routes->get('/admin/estados-mes/(:num)', 'Cierres::resumen_mes/$1'); 
 $routes->get('/admin/cierre-anio/(:num)', 'Cierres::info_anio_cierre/$1'); 
+$routes->get('/admin/totales-mes/(:num)/(:num)/(:num)',   'Cierres::totales/$1/$2/$3');
 //eliminar 
 $routes->get("/admin/deshacer-cierre-mes/(:num)/(:num)/(:num)",   "Cierres::deshacer_cierre_mes/$1/$2/$3");
 $routes->get('/admin/recordar-pago/(:num)', 'Usuario::email_recordar_pago/$1'); 

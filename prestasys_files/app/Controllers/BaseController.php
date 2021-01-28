@@ -14,6 +14,7 @@ namespace App\Controllers;
  * @package CodeIgniter
  */
 
+use App\Models\Usuario_model;
 use CodeIgniter\Controller;
 
 class BaseController extends Controller
@@ -43,6 +44,45 @@ class BaseController extends Controller
 		// $this->session = \Config\Services::session();
 
 		helper("form");
+	}
+
+
+
+	
+	private function isAPI()
+	{
+
+		$request = \Config\Services::request();
+		$uri = $request->uri;
+		if (sizeof($uri->getSegments()) > 0 &&  $uri->getSegment(1) == "api") {
+			return true;
+		}
+		return false;
+	}
+
+	
+	public function isAdminView()
+	{
+		$request = \Config\Services::request();
+		$uri = $request->uri;
+		return (sizeof($uri->getSegments()) > 0  && $uri->getSegment(1) == "admin");
+	}
+
+	 
+	public function getClienteId(){
+		$usu= new Usuario_model();
+        $request = \Config\Services::request();
+        $IVASESSION= is_null($request->getHeader("Ivasession")) ? "" :  $request->getHeader("Ivasession")->getValue();
+        $res= $usu->where( "session_id",  $IVASESSION )->first();
+
+		if ($this->isAPI()) {
+			if (is_null($res)) {
+				return "false";
+			} else {
+				return $res->regnro;
+			}
+		}else{      return session("id"); }
+		
 	}
 
 }

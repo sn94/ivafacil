@@ -46,7 +46,7 @@
                      <label for="nf-password" class=" form-control-label form-control-sm -label">N° de factura:</label>
                  </div>
                  <div class="col-9 col-md-9">
-                     <input  oninput="solo_numeros_guiones(event)"  value="<?= $factura ?>" placeholder="000-000-0000000" maxlength="15" type="text" id="nf-password" name="factura" class=" form-control form-control-label form-control-sm ">
+                     <input oninput="solo_numeros_guiones(event)" value="<?= $factura ?>" placeholder="000-000-0000000" maxlength="15" type="text" id="nf-password" name="factura" class=" form-control form-control-label form-control-sm ">
                      <p style="color:red; font-size: 11px; font-weight: 600;" id="error-factura"></p>
                  </div>
 
@@ -141,25 +141,25 @@
      /** 
 Validaciones
  */
-function solo_numeros_guiones(ev) {
-        //0 48   9 57
-        if (ev.data == null) return;
-        if (   ev.data.charCodeAt() != 45   &&  (ev.data.charCodeAt() < 48 || ev.data.charCodeAt() > 57)) {
-            let cad = ev.target.value;
-            let cad_n = cad.substr(0, ev.target.selectionStart - 1) + cad.substr(ev.target.selectionStart + 1);
-            ev.target.value = cad_n;
-        }
-    }
+     function solo_numeros_guiones(ev) {
+         //0 48   9 57
+         if (ev.data == null) return;
+         if (ev.data.charCodeAt() != 45 && (ev.data.charCodeAt() < 48 || ev.data.charCodeAt() > 57)) {
+             let cad = ev.target.value;
+             let cad_n = cad.substr(0, ev.target.selectionStart - 1) + cad.substr(ev.target.selectionStart + 1);
+             ev.target.value = cad_n;
+         }
+     }
 
-function solo_numeros(ev) {
-        //0 48   9 57
-        if (ev.data == null) return;
-        if (  (ev.data.charCodeAt() < 48 || ev.data.charCodeAt() > 57)) {
-            let cad = ev.target.value;
-            let cad_n = cad.substr(0, ev.target.selectionStart - 1) + cad.substr(ev.target.selectionStart + 1);
-            ev.target.value = cad_n;
-        }
-    }
+     function solo_numeros(ev) {
+         //0 48   9 57
+         if (ev.data == null) return;
+         if ((ev.data.charCodeAt() < 48 || ev.data.charCodeAt() > 57)) {
+             let cad = ev.target.value;
+             let cad_n = cad.substr(0, ev.target.selectionStart - 1) + cad.substr(ev.target.selectionStart + 1);
+             ev.target.value = cad_n;
+         }
+     }
 
      function factura_input(ev) {
 
@@ -413,13 +413,13 @@ function solo_numeros(ev) {
          ev.preventDefault();
          if (campos_vacios()) return;
 
-         if ($("input[name=factura]").val() ==  "") {
-              alert("Por favor ingrese el número de factura");
-              return;
-          }
+         if ($("input[name=factura]").val() == "") {
+             alert("Por favor ingrese el número de factura");
+             return;
+         }
          //limpiar numero de factura
-        // let factu = $("input[name=factura]").val().replaceAll(/-+/g, "");
-        // $("input[name=factura]").val(factu);
+         // let factu = $("input[name=factura]").val().replaceAll(/-+/g, "");
+         // $("input[name=factura]").val(factu);
          //reemplazar comas por puntos, eliminar los otros puntos
          $("input[name=importe1]").val(limpiar_numero_para_float($("input[name=importe1]").val()));
          $("input[name=importe2]").val(limpiar_numero_para_float($("input[name=importe2]").val()));
@@ -439,9 +439,17 @@ function solo_numeros(ev) {
          let resp = await req.json();
          hide_loader();
          if ("data" in resp) {
-             alert(resp.data);
+             alert("ACTUALIZADO");
              window.location.reload();
-         } else alert(procesar_errores(resp.msj));
+         } else {
+             $("input[name=importe1]").val(dar_formato_millares($("input[name=importe1]").val()));
+             $("input[name=importe2]").val(dar_formato_millares($("input[name=importe2]").val()));
+             $("input[name=importe3]").val(dar_formato_millares($("input[name=importe3]").val()));
+             $("input[name=total]").val(dar_formato_millares($("input[name=total]").val()));
+             $("input[name=tcambio]").val(dar_formato_millares($("input[name=tcambio]").val()));
+
+             alert(procesar_errores(resp.msj));
+         }
 
 
          // ev.target.submit();
