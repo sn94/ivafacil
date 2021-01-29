@@ -74,11 +74,7 @@ use App\Models\Parametros_model;
         </div>
 
 
-        <!--cuadro comparativo de totales por cada año-->
-        <div id="comparativo-anio-2">
-
-
-        </div>
+      
     </div>
 
 
@@ -188,16 +184,7 @@ use App\Models\Parametros_model;
         $("#comparativo-anio").html(resp_html);
     }
 
-    async function comparativo_por_ejercicio() {
-        let loader = "<img style='z-index: 400000;position: absolute;top: 50%;left: 50%;'  src='<?= base_url("assets/img/loader.gif") ?>'   />";
-        $("#comparativo-anio-2").html(loader);
-        let url__ = "<?= base_url('cierres/comparativo-ejercicios-view') ?>";
-        let ElAnio = $("select[name=year]").val();
-        let req = await fetch(url__);
-        let resp_html = await req.text();
-        $("#comparativo-anio-2").html(resp_html);
-    }
-
+    
 
 
     window.onload = function() {
