@@ -13,7 +13,7 @@
     <meta name="description" content="Sufee Admin - HTML5 Admin Template">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="icon" type="image/png" href="<?= base_url("assets/img/Logo.jpg") ?>" />
+    <link rel="icon" type="image/png" href="<?= base_url("assets/img/Logo.jpg?".date('is')) ?>" />
 
     <link rel="stylesheet" href="<?= base_url("assets/template/vendors/bootstrap/dist/css/bootstrap.min.css") ?>">
     <link rel="stylesheet" href="<?= base_url("assets/template/vendors/font-awesome/css/font-awesome.min.css") ?>">
@@ -55,10 +55,7 @@
 
         .navbar,
         aside.left-panel {
-            background-image: url(<?= base_url("assets/ivax/assets/images/homebg2.jpg") ?>);
-
-            background-position: -50% 0%;
-
+            background:#9FD1BB;  
 
         }
 
@@ -74,7 +71,10 @@
 
         .navbar .navbar-nav li:hover .toggle_nav_button::before,
         .navbar .navbar-nav li .toggle_nav_button.nav-open::before {
-            color: #d5fec7 !important;
+             
+            color: #020022 !important;
+            font-family: mainfont;
+            font-size: 16px;
         }
     </style>
 
@@ -94,8 +94,8 @@
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-menu" aria-controls="main-menu" aria-expanded="false" aria-label="Toggle navigation">
                     <i class="fa fa-bars"></i>
                 </button>
-                <a class="navbar-brand" href="<?= base_url("admin/index") ?>"><img src="<?= base_url("assets/img/Logo.jpg") ?>" alt="Logo"></a>
-                <a class="navbar-brand hidden" href="<?= base_url("admin/index") ?>"><img src="<?= base_url("assets/img/Logo.jpg") ?>" alt="Logo"></a>
+                <a class="navbar-brand" href="<?= base_url("admin/index") ?>"><img src="<?= base_url("assets/img/Logo.png?".date('is')) ?>" alt="Logo"></a>
+                <a class="navbar-brand hidden" href="<?= base_url("admin/index") ?>"><img src="<?= base_url("assets/img/Logo.png?".date('is')) ?>" alt="Logo"></a>
             </div>
 
             <div id="main-menu" class="main-menu collapse navbar-collapse">
@@ -104,7 +104,7 @@
                     <h3 class="menu-title">Principal</h3>
 
                     <li class="menu-item-has-children dropdown">
-                        <a href="<?= base_url("admin/clientes") ?>" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Clientes</a>
+                        <a href="<?= base_url("admin/clientes") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-address-book-o"></i>Clientes</a>
                     </li>
 
 
@@ -122,28 +122,28 @@
                     <h3 class="menu-title">Configuración</h3>
 
                     <li class="menu-item-has-children dropdown">
-                        <a href="<?= base_url("admin/list") ?>" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Administradores</a>
+                        <a href="<?= base_url("admin/list") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-users"></i>Administradores</a>
 
                     </li>
                     <li class="menu-item-has-children dropdown">
-                        <a href="<?= base_url("admin/parametros/create") ?>" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Parametros</a>
-
-                    </li>
-
-                    <li class="menu-item-has-children dropdown">
-                        <a href="<?= base_url("admin/calendario") ?>" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Calendario perpetuo</a>
+                        <a href="<?= base_url("admin/parametros/create") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-wrench"></i>Parametros</a>
 
                     </li>
 
                     <li class="menu-item-has-children dropdown">
-                        <a href="<?= base_url("admin/monedas") ?>" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Monedas</a>
+                        <a href="<?= base_url("admin/calendario") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-calendar"></i>Calendario perpetuo</a>
+
+                    </li>
+
+                    <li class="menu-item-has-children dropdown">
+                        <a href="<?= base_url("admin/monedas") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-usd"></i>Monedas</a>
                     </li>
                     <li class="menu-item-has-children dropdown">
-                        <a href="<?= base_url("admin/planes") ?>" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Planes</a>
+                        <a href="<?= base_url("admin/planes") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-pagelines"></i>Planes</a>
 
                     </li>
                     <li class="menu-item-has-children dropdown">
-                        <a href="<?= base_url("admin/sign-out") ?>" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Cerrar sesión</a>
+                        <a href="<?= base_url("admin/sign-out") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-sign-out"></i>Cerrar sesión</a>
 
                     </li>
 

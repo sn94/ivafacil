@@ -10,11 +10,15 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>IVA FÁCIL</title>
- 
+
   <meta http-equiv="Cache-Control" content="no-cache" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta name="description" content="iva">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Expires" content="0">
+  <meta http-equiv="Last-Modified" content="0">
+  <meta http-equiv="Cache-Control" content="no-cache, mustrevalidate">
+  <meta http-equiv="Pragma" content="no-cache">
 
   <link rel="apple-touch-icon" href="apple-icon.png">
   <link rel="shortcut icon" href="favicon.ico">
@@ -30,10 +34,24 @@
 
   <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800' rel='stylesheet' type='text/css'>
   <style>
-    .navbar,
-    aside.left-panel {
-      background: #a5df99 !important;
-    }
+
+ 
+aside.left-panel {
+  /* background: #272c33; */
+  background-color: #9FD1BB !important;
+}
+
+.navbar { 
+  background: #9FD1BB !important;
+}
+
+ 
+.navbar, aside.left-panel {
+   
+  background-image: none  !important;
+}
+
+ 
 
     .navbar .navbar-brand,
     .navbar .navbar-nav li>a,
@@ -47,63 +65,58 @@
 
     .navbar .navbar-nav li:hover .toggle_nav_button::before,
     .navbar .navbar-nav li .toggle_nav_button.nav-open::before {
-      color: #e1fed8 !important;
+
+      color: #020022 !important;
+      font-family: mainfont;
+      font-size: 16px;
       text-transform: uppercase;
     }
-  
+
     <?php
 
-use App\Libraries\Mobile_Detect;
+    use App\Libraries\Mobile_Detect;
 
-$adaptativo = new Mobile_Detect();
-$estilo_ = " ";
-if ($adaptativo->isMobile())
-    $estilo_ = "body{  background-color: white; }";
-else
-    $estilo_ = "body{     background: url(".base_url("assets/ivax/assets/images/homebg.jpg") ."); }";
-echo    $estilo_;
-?>
-
- 
-   
-.navbar, aside.left-panel {
+    $adaptativo = new Mobile_Detect();
+    $estilo_ = " ";
+    if ($adaptativo->isMobile())
+      $estilo_ = "body{  background-color: white; }";
+    else
+      $estilo_ = "body{     background: url(" . base_url("assets/ivax/assets/images/homebg.jpg") . "); }";
+    echo    $estilo_;
+    ?>
     
-  /* background: #a5df99 !important; */
-  background: #000c !important;
-}
-
-
-</style>
+     
+  </style>
 </head>
 
 <body>
 
 
   <nav class="navbar navbar-expand-lg navbar-light text-light">
-    <a class="navbar-brand" href="<?=base_url("/")?>">
-      <img src="<?= base_url("assets/img/Logo.jpg") ?>" alt="Logo">
+    <a class="navbar-brand" href="<?= base_url("/") ?>">
+      <img src="<?= base_url("assets/img/Logo.jpg?" . date('is')) ?>" alt="Logo">
     </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarText">
       <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-          <a class="nav-link" href="<?=base_url("/")?>">Inicio </a>
+        <li class="nav-item active">
+          <a class="nav-link" href="<?= base_url("/") ?>">Inicio </a>
         </li>
         <li class="nav-item ">
-          <a class="nav-link" href="<?=base_url("movimiento/index")?>">Comprobantes </a>
+          <a class="nav-link" href="<?= base_url("movimiento/index") ?>">Comprobantes </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="<?=base_url("movimiento/informe_mes")?>">Movimientos del mes</a>
+          <a class="nav-link" href="<?= base_url("movimiento/informe_mes") ?>">Movimientos del mes</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" style="  font-weight: 600;color: #422efa;" href="<?=base_url("usuario/sign_out/N")?>">Cerrar sesión</a>
+          <a class="nav-link" style="  font-weight: 600;color: #422efa;" href="<?= base_url("usuario/sign_out/N") ?>">Cerrar sesión</a>
         </li>
       </ul>
-      <span class="navbar-text text-light"   >
-      <h5> <i class="fa fa-user"></i>
-     <?= session("ruc")."-".session("dv")?> </h5>
+      <span class="navbar-text text-light">
+        <h5> <i class="fa fa-user"></i>
+          <?= session("ruc") . "-" . session("dv") ?> </h5>
       </span>
     </div>
   </nav>
@@ -112,10 +125,10 @@ echo    $estilo_;
 
   <div class="container-fluid">
 
- 
-      <?= $this->renderSection("contenido") ?>
 
-      <!-- .content -->
+    <?= $this->renderSection("contenido") ?>
+
+    <!-- .content -->
   </div><!-- /#right-panel -->
 
   <!-- Right Panel -->

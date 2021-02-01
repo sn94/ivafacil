@@ -19,11 +19,11 @@ $base_url_for_resources = base_url() . "/assets/ivax/";
     <meta name="description" content="gestion de IVA">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="icon" type="image/png" href="<?= base_url("assets/img/Logo.jpg?" . date('is')) ?>" />
+    <link rel="icon" type="image/png" href="<?= base_url("assets/img/Logo.jpg?".date('is')) ?>" />
 
-    <link href='<?= base_url("assets/Marvel-Regular.ttf") ?>' rel='stylesheet' type='text/css'>
+    <link href='<?=base_url("assets/Marvel-Regular.ttf")?>' rel='stylesheet' type='text/css'>
 
-
+  
 
     <link rel="stylesheet" href="<?= $base_url_for_resources ?>assets/css/fonticons.css">
     <link rel="stylesheet" href="<?= $base_url_for_resources ?>assets/fonts/stylesheet.css">
@@ -46,20 +46,16 @@ $base_url_for_resources = base_url() . "/assets/ivax/";
 
 
     <style>
-        @import url("<?= base_url('assets/Marvel-Regular.ttf') ?>");
+       
+        @import url("<?=base_url('assets/Marvel-Regular.ttf')?>");
 
-        @font-face {
-            font-family: "mainfont";
-            src: url("<?= base_url('assets/Marvel-Regular.ttf') ?>");
+@font-face{
+    font-family: "mainfont";
+    src: url("<?=base_url('assets/Marvel-Regular.ttf')?>");
+    
+}
+      
 
-        }
-
-
-        html,
-        body {
-            background-color: #ddedc5;
-            background: linear-gradient(180deg, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 22%, #4A9E83 37%, #4A9E83 100%);
-        }
 
         .main_menu_bg .navbar-nav>li>a {
             font-weight: 600;
@@ -78,53 +74,53 @@ $base_url_for_resources = base_url() . "/assets/ivax/";
             margin-top: 0px;
         }
 
-     
+       
         .footer {
-            
-            background:  #3974B1 !important;
+            /* background: #2a2a2a; */
+            background: #21220b;
         }
-
 
         .footer a,
         p {
-            color: #1b3159;
             font-weight: 600;
             font-size: 26px;
-        }
+        } 
 
         .fa-phone {
             font-weight: 600;
             font-size: 26px;
         }
+ 
 
+ 
+ 
 
+.single_slider h2 {
+ 
+color: #7adb84;
+}
+.single_slider p { 
+color: #7adb84;
+}
 
-
-
-        .single_slider h2 {
-
-            color: #7adb84;
-        }
-
-        .single_slider p {
-            color: #7adb84;
-        }
-
-
-        .home-overlay-fluid {
-            padding: 20px 0px;
-
-            background-color:   rgba(0, 0, 0, 0);
-        }
-
-
-
-
-        .home {
-            background: none;
-        }
+ 
+.home-overlay-fluid { 
+  background-color: rgba(0, 0, 0, 0.83);
+}
     </style>
 
+<?php
+if( (new Mobile_Detect())->isMobile()  ):
+    $__estilo__ = <<< EOF
+    <style>
+    .home-overlay-fluid { 
+        padding: 100px 0px;
+    }
+    </style>
+    EOF;
+    echo  $__estilo__;
+endif;
+?>
 
 
 </head>

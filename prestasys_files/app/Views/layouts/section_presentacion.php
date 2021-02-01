@@ -6,23 +6,23 @@
                         <div class="slider">
                             <div class="single_slider wow fadeIn" data-wow-duration="2s">
                           
-                            <h2 style="font-family: mainfont;" >IVA Fácil</h2>
-                            <img  style="margin-bottom: 5px;"  src="<?= base_url("assets/img/Logo.jpg") ?>" alt="Logo">
+                        
+                            <img  style="margin-bottom: 5px;"  src="<?= base_url("assets/img/Logo.png?".date('is')) ?>" alt="Logo">
                               
-                                <p  style="font-family: mainfont;font-size: 40px;">Le ayudamos a presentar su IVA </p>
+                                <p  style="color: white; font-family: mainfont;font-size: 40px;">Le ayudamos a presentar su IVA </p>
                              
 
 
                                 <!-- BOTONES -->
                                 <div class="btn-group btn-group-lg" role="group" aria-label="...">
-                                <a style="font-weight: 600;color: #6afbab;background-color: #285736;" class="btn btn-lg  " href="<?=base_url("usuario/sign-in")?>">ENTRAR</a>
+                                <a style="border-radius: 25px;border: 1px solid #555;font-family: mainfont;font-weight: 600;color: #094624;background-color: #9FD1BB;" class="btn btn-lg  " href="<?=base_url("usuario/sign-in")?>">ENTRAR</a>
                                 </div>
                              
                                 <div class="btn-group btn-group-lg" role="group" aria-label="...">
-                                <a style="font-weight: 600;color: #6afbab;background-color: #2b6c35;"  class="btn btn-lg  " href="<?=base_url("usuario/create")?>">REGISTRARSE</a>
+                                <a style="border-radius: 25px;border: 1px solid #555;font-family: mainfont;font-weight: 600;color: #094624;background-color: #9FD1BB;"  class="btn btn-lg  " href="<?=base_url("usuario/create")?>">REGISTRARSE</a>
                                 </div>
                                 <div class="btn-group btn-group-lg" role="group" aria-label="...">
-                                <a  style="font-weight: 600;color: #6afbab;background-color: #285736;"  class="btn btn-lg  " href="<?=base_url("admin/sign-in")?>">ADMINISTRAR</a>
+                                <a  style="border-radius: 25px;border: 1px solid #555;font-family: mainfont;font-weight: 600;color: #094624;background-color: #9FD1BB;"  class="btn btn-lg  " href="<?=base_url("admin/sign-in")?>">ADMINISTRAR</a>
                                 </div>
                                 <!-- BOTONES -->
                                

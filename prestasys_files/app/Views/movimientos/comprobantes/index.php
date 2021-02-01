@@ -23,7 +23,7 @@
                  <div class="main_slider_area">
                      <div class="slider">
                          <div class="single_slider wow fadeIn" data-wow-duration="2s">
-                         <img src="<?= base_url("assets/img/Logo.jpg") ?>" alt="">
+                         <img src="<?= base_url("assets/img/Logo.jpg?".date('is')) ?>" alt="">
                              <a class="principal_boton" href="<?= base_url("compra/create/N") ?>"  >Factura de compra</a>
                              <a class="principal_boton" href="<?= base_url("venta/create/N") ?>" >Factura de venta</a>
 

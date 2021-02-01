@@ -12,7 +12,10 @@
     <title>Admin Login</title>
     <meta name="description" content="Iva facil">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Last-Modified" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache, mustrevalidate">
+    <meta http-equiv="Pragma" content="no-cache">
     <link rel="apple-touch-icon" href="apple-icon.png">
     <link rel="shortcut icon" href="favicon.ico">
 
@@ -55,7 +58,7 @@
 
         .login-form {
             /* background: #ffffff; */
-            background: #5491320f !important;
+            background: #ffffff !important;
 
         }
 
@@ -70,13 +73,13 @@
 
         div.row:nth-child(1) {
             /* background-color: #dfe8df; */
-            background-color: #18594d00 !important;
+            background-color: #ffffff !important;
         }
 
         /* Elemento | http://localhost/ivafacil/admin/sign-in */
 
         form.pt-0 {
-            background-color: #2cff0000 !important;
+            background-color: #ffffff !important;
         }
 
         /* Elemento | http://localhost/ivafacil/admin/sign-in */
@@ -104,7 +107,7 @@
 
         .pull-right>a:nth-child(1) {
             /* color: #fd4040; */
-            color: #ffe140 !important;
+            color: #ff1c1c !important;
         }
 
         /* Elemento | http://localhost/ivafacil/admin/sign-in */
@@ -180,24 +183,22 @@
                     <form onsubmit="login(event)" class="pt-0 pr-0 m-0 bg-light pb-2" action="<?= base_url('admin/sign-in') ?>" method="POST">
 
                         <div class="row m-0 " style="background-color: #dfe8df;">
-                            <div class="col-12 col-md-6">
-                                <div class="login-logo">
+                            <div class="col-12 col-md-12 p-0">
+                                <div class="login-logo m-0 p-0">
                                     <a href="index.html">
-                                        <img src="<?= base_url("assets/img/Logo.jpg") ?>" alt="Logo">
+                                        <img class="m-0 img-responsive" src="<?= base_url("assets/img/Logo_adm.jpg?".date('is')) ?>" alt="Logo">
                                     </a>
                                 </div>
                             </div>
-                            <div class="col-12 col-md-6 align-self-center">
-                                <h4 style="font-family: mainfont;font-size: 40px;color: #428e20;" class="">ADMINISTRACIÓN</h4>
-                            </div>
+                            
                         </div>
 
 
 
 
-                        <div class="row mb-1">
+                        <div class="row mb-1"   >
                             <div class="col-12">
-                                <label style="font-weight: 600;color: #555555;">Usuario:</label>
+                                <label style="font-family: mainfont; font-weight: 600;color: #303030 !important ;">Usuario:</label>
                             </div>
                             <div class="col-12">
                                 <input value="<?= isset($nick) ? $nick : '' ?>" maxlength="15" type="text" name="nick" class="  form-control form-control-label   ">
@@ -206,18 +207,20 @@
 
 
 
-                        <div class="form-group">
-                            <label style="font-weight: 600;color: #555555;">Password</label>
+                        <div class="form-group"   >
+                            <label style="font-family: mainfont;font-weight: 600;color: #303030  !important ;">Password</label>
                             <input value="<?= isset($pass_alt) ? $pass_alt  : '' ?>" type="password" name="pass" class="form-control" placeholder="Password">
                         </div>
 
                         <button type="submit" class="btn btn-success btn-flat m-b-30 m-t-30">INGRESAR</button>
                         <div class="checkbox">
                             <label>
-                                <input onchange="olvidar(event)" <?= isset($remember) ? 'checked' : '' ?> type="checkbox" name="remember" value="S"> <span style="font-weight: 600;color: #555555;">Recordar contraseña</span>
+                                <input onchange="olvidar(event)" <?= isset($remember) ? 'checked' : '' ?> type="checkbox" name="remember" value="S"> <span style="font-family: mainfont;font-weight: 600;color: #303030  !important ;">Recordar contraseña</span>
                             </label>
+                        </div>
+                        <div class="checkbox">
                             <label class="pull-right">
-                                <a style="color: #fd4040; font-weight: 600;" href="<?= base_url("admin/olvido-password") ?>">Olvidaste tu contraseña?</a>
+                                <a style="font-weight: 600;font-family: mainfont;" href="<?= base_url("admin/olvido-password") ?>">Olvidaste tu contraseña?</a>
                             </label>
 
                         </div>
@@ -237,7 +240,8 @@
     <script src="<?= base_url("assets/template/assets/js/main.js") ?>"></script>
 
     <script>
-    $= jQuery;
+        $ = jQuery;
+
         function olvidar(ev) {
 
             if (!ev.target.checked)

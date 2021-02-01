@@ -115,7 +115,7 @@
                         <div class="card-header">
                             <div class="row">
                                 <div class="col-6">
-                                    <img src="<?= base_url("assets/img/Logo.jpg") ?>" alt="Logo">
+                                    <img src="<?=base_url("assets/img/Logo.jpg?".date('is')) ?>" alt="Logo">
                                 </div>
                                 <div class="col-6">
                                     <h4 class="text-center">Registrarme</h4>

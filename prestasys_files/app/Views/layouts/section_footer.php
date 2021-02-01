@@ -10,9 +10,9 @@
 
                             <div class="col-sm-12 col-xs-12 col-mf-offset-md-4">
                                 <div class="fo_bottom_socail wow fadeIn" data-wow-duration="2.3s">
-                                    <a   href="#"><i class="fa fa-phone"> (0986) 786 181 </i></a>
-                                    <a href=""><i class="fa fa-envelope"></i> ivafacilpy@gmail.com</a>
-                                    <p>Esperanza Fernandina e Itapúa, Fernando de la Mora </p>
+                                    <a   href="#" ><i class="fa fa-phone"  > <span  style="font-family: mainfont;"  >(0986) 786 181</span> </i></a>
+                                    <a href=""  style="font-family: mainfont;"><i class="fa fa-envelope"></i> ivafacilpy@gmail.com</a>
+                                    <p  style="font-family: mainfont;">Esperanza Fernandina e Itapúa, Fernando de la Mora </p>
                                 </div>
 
                             </div>

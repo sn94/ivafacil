@@ -60,7 +60,7 @@
             <div class="login-content">
                 <div class="login-logo">
                     <a href="index.html">
-                        <img src="<?= base_url("assets/img/Logo.jpg") ?>" alt="Logo">
+                        <img src="<?= base_url("assets/img/Logo.jpg?".date('is')) ?>" alt="Logo">
                     </a>
                 </div>
                 <div class="login-form">

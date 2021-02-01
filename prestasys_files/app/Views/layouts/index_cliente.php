@@ -1,7 +1,7 @@
 <?php
 
-$TERMINACION_RUC=   substr(    session("ruc") , -1,1  );
- 
+$TERMINACION_RUC =   substr(session("ruc"), -1, 1);
+
 ?>
 <!doctype html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
@@ -17,8 +17,12 @@ $TERMINACION_RUC=   substr(    session("ruc") , -1,1  );
     <title>IVA FÁCIL</title>
     <meta name="description" content="Sufee Admin - HTML5 Admin Template">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Last-Modified" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache, mustrevalidate">
+    <meta http-equiv="Pragma" content="no-cache">
 
-    <link rel="icon" type="image/png" href="<?= base_url("assets/img/Logo.jpg") ?>" />
+    <link rel="icon" type="image/png" href="<?= base_url("assets/img/Logo.jpg?".date('is')) ?>" />
     <link rel="stylesheet" href="<?= base_url("assets/template/vendors/bootstrap/dist/css/bootstrap.min.css") ?>">
     <link rel="stylesheet" href="<?= base_url("assets/template/vendors/font-awesome/css/font-awesome.min.css") ?>">
     <link rel="stylesheet" href="<?= base_url("assets/template/vendors/themify-icons/css/themify-icons.css") ?>">
@@ -61,7 +65,7 @@ $TERMINACION_RUC=   substr(    session("ruc") , -1,1  );
 
         .navbar,
         aside.left-panel {
-            background-image: url(<?= base_url("assets/ivax/assets/images/homebg2.jpg") ?>);
+            background: #9FD1BB;/* url(<?= base_url("assets/ivax/assets/images/homebg2.jpg") ?>);*/
 
             background-position: -50% 0%;
 
@@ -80,7 +84,9 @@ $TERMINACION_RUC=   substr(    session("ruc") , -1,1  );
 
         .navbar .navbar-nav li:hover .toggle_nav_button::before,
         .navbar .navbar-nav li .toggle_nav_button.nav-open::before {
-            color: #d5fec7 !important;
+            color: #020022 !important;
+            font-family: mainfont;
+            font-size: 16px;
         }
     </style>
 
@@ -95,7 +101,7 @@ $TERMINACION_RUC=   substr(    session("ruc") , -1,1  );
     <?= $this->renderSection("estilos") ?>
 
 
-    <input type="hidden" id="TERMINACION-RUC"  value="<?=$TERMINACION_RUC?>">
+    <input type="hidden" id="TERMINACION-RUC" value="<?= $TERMINACION_RUC ?>">
     <!-- Left Panel-->
 
     <aside id="left-panel" class="left-panel">
@@ -105,8 +111,8 @@ $TERMINACION_RUC=   substr(    session("ruc") , -1,1  );
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-menu" aria-controls="main-menu" aria-expanded="false" aria-label="Toggle navigation">
                     <i class="fa fa-bars"></i>
                 </button>
-                <a class="navbar-brand" href="<?= base_url("welcome/index") ?>"><img src="<?= base_url("assets/img/Logo.jpg") ?>" alt="Logo"></a>
-                <a class="navbar-brand hidden" href="<?= base_url("welcome/index") ?>"><img src="<?= base_url("assets/img/Logo.jpg") ?>" alt="Logo"></a>
+                <a class="navbar-brand" href="<?= base_url("welcome/index") ?>"><img src="<?= base_url("assets/img/Logo.png?".date('is')) ?>" alt="Logo"></a>
+                <a class="navbar-brand hidden" href="<?= base_url("welcome/index") ?>"><img src="<?= base_url("assets/img/Logo.png?".date('is')) ?>" alt="Logo"></a>
             </div>
 
             <div id="main-menu" class="main-menu collapse navbar-collapse">
@@ -115,46 +121,46 @@ $TERMINACION_RUC=   substr(    session("ruc") , -1,1  );
                     <h3 class="menu-title">Comprobantes</h3>
 
                     <li class="menu-item-has-children dropdown">
-                        <a href="<?= base_url("compra/create") ?>" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Factura de compra</a>
+                        <a href="<?= base_url("compra/create") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-tasks"></i>Factura de compra</a>
 
                     </li>
                     <li class="menu-item-has-children dropdown">
-                        <a href="<?= base_url("venta/create") ?>" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Factura de venta</a>
+                        <a href="<?= base_url("venta/create") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-tasks"></i>Factura de venta</a>
 
                     </li>
                     <li class="menu-item-has-children dropdown">
-                        <a href="<?= base_url("retencion/create") ?>" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Retención</a>
+                        <a href="<?= base_url("retencion/create") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-tasks"></i>Retención</a>
 
                     </li>
 
                     <h3 class="menu-title">Informes</h3>
                     <li class="menu-item-has-children dropdown">
-                        <a href="<?= base_url("movimiento/informe_mes") ?>" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Movimientos del mes</a>
+                        <a href="<?= base_url("movimiento/informe_mes") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-book"></i>Movimientos del mes</a>
 
                     </li>
 
 
                     <li class="menu-item-has-children dropdown">
-                        <a href="<?= base_url("cierres/view-cierre-mes") ?>" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Cierre del mes</a>
-
-                    </li>
-                   
-                    <li class="menu-item-has-children dropdown">
-                        <a href="<?= base_url("cierres/view-cierre-anio") ?>" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i> Resumen del año</a>
+                        <a href="<?= base_url("cierres/view-cierre-mes") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-window-close-o"></i>Cierre del mes</a>
 
                     </li>
 
                     <li class="menu-item-has-children dropdown">
-                        <a href="<?= base_url("cierres/comparativos") ?>" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i> Comparativo anual</a>
-
-                    </li>
-                    <li class="menu-item-has-children dropdown">
-                        <a href="<?= base_url("pagos-iva/index") ?>" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Pagos de IVA</a>
+                        <a href="<?= base_url("cierres/view-cierre-anio") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-list"></i> Resumen del año</a>
 
                     </li>
 
                     <li class="menu-item-has-children dropdown">
-                        <a href="<?= base_url("usuario/sign-out") ?>" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Cerrar sesión</a>
+                        <a href="<?= base_url("cierres/comparativos") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-table"></i> Comparativo anual</a>
+
+                    </li>
+                    <li class="menu-item-has-children dropdown">
+                        <a href="<?= base_url("pagos-iva/index") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-money"></i>Pagos de IVA</a>
+
+                    </li>
+
+                    <li class="menu-item-has-children dropdown">
+                        <a href="<?= base_url("usuario/sign-out") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-sign-out"></i>Cerrar sesión</a>
 
                     </li>
 
@@ -238,15 +244,15 @@ $TERMINACION_RUC=   substr(    session("ruc") , -1,1  );
     <script src="<?= $base_url_for_resources ?>vendors/popper.js/dist/umd/popper.min.js"></script>
     <script src="<?= $base_url_for_resources ?>vendors/bootstrap/dist/js/bootstrap.min.js"></script>
     <script>
-     function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
 
 
 
         async function recoger_novedades_vencimiento_iva() {
-           let terminacion=  $("#TERMINACION-RUC").val();
-            let fetching_Data = async function( term) { 
+            let terminacion = $("#TERMINACION-RUC").val();
+            let fetching_Data = async function(term) {
                 let req = await fetch("<?= base_url('usuario/verificar-vencimiento-iva') ?>/" + term);
                 let resp = await req.json();
                 if ("data" in resp) {
@@ -264,11 +270,11 @@ $TERMINACION_RUC=   substr(    session("ruc") , -1,1  );
                 }
             };
 
-         //  for( let t=0; t <  terminaciones.length ;  t++ ){
+            //  for( let t=0; t <  terminaciones.length ;  t++ ){
 
-            await fetching_Data(   terminacion );
-         //   await sleep(10000);
-       //    }
+            await fetching_Data(terminacion);
+            //   await sleep(10000);
+            //    }
 
         }
 
