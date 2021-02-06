@@ -227,7 +227,7 @@ class Compra extends ResourceController
 	}
 
 
-	public function total_($cod_cliente, $MES = NULL, $YEAR = NULL)
+	public function total_($cod_cliente, $MES , $YEAR )
 	{
 		$request = \Config\Services::request();
 		$compras = (new Compras_model());

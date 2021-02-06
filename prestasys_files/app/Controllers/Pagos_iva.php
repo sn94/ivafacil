@@ -104,7 +104,8 @@ class Pagos_iva extends Controller {
 		$Ejercicio= is_null(  $ANIO ) ? date("Y")  :  $ANIO ;
 
 		$CLIENTE= is_null( $id )?  $this->getClienteId() :   $id;
-		$pendientes = (new Estado_mes_model())->where("anio",  $Ejercicio) ;
+		 
+		$pendientes = (new Estado_mes_model()); //->where("anio",  $Ejercicio) ;
 		
 		if( $estado == "P")
 		$pendientes= $pendientes->where("estado", "C");
@@ -157,6 +158,7 @@ class Pagos_iva extends Controller {
 
 		{
 			$datos = $this->request->getRawInput();
+			$datos['importe']=  abs(  $datos['importe'] );
 			//Desde la api
 			if( $this->isAPI())
 			{

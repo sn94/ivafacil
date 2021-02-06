@@ -7,7 +7,7 @@ $pagos_pendientes = isset($pagos_pendientes)  ? $pagos_pendientes :  [];
 <!-- TABLA PAGOS -->
 
 
-<button onclick="actualizar_grilla_pagos_realizados()" class="btn btn-success">PAGOS REALIZADOS</button>
+<button onclick="actualizar_grilla_pagos_realizados()" class="btn btn-success">IR A PAGOS REALIZADOS</button>
 <table class="table table-secondary text-dark">
     <thead>
         <tr style="font-family: mainfont;">

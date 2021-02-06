@@ -16,7 +16,7 @@ $SALDO = Utilidades::number_f($ESTADO_MES->saldo);
 
 
 echo  form_open(
-    "admin/clientes/pagos-iva/procesar",
+    "pagos-iva/create",
     [
         'id' => 'user-form',
         'class' => 'container p-0 p-md-2',

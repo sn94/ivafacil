@@ -734,8 +734,10 @@ dv
 	 
 		$usuarioObject = (new Usuario_model())->find( $CODCLIENTE);
 	 
-		$pagos=  (new Pago_model())->where("cliente",  $usuarioObject->regnro )->orderBy("fecha", "DESC")->first();
-		if(  is_null( $pagos ) ) 	return  array("msj"=>"Servicio no habilitado. Debe estar al día con el pago de los servicios", "code"=> 500 );
+		$pagos=  (new Pago_model())->where("cliente",  $usuarioObject->regnro )->orderBy("created_at", "DESC")->first();
+		 
+		if(  is_null( $pagos ) ) 
+			return  array("msj"=>"Servicio no habilitado. Debe estar al día con el pago de los servicios", "code"=> 500 );
 		else{
 			if( strtotime( date("Y-m-d H:i:s") )      <= strtotime( $pagos->validez) ) 
 			return array("data"=>"Habilitado", "code"=> 200 );
@@ -788,13 +790,13 @@ dv
 			$usuario_refere= $usuario__check['data'];
 
 			//Servicio habilitado , al dia?
-			/*$check_habilitado =  $this->servicio_habilitado($usuario_refere->regnro);
+		$check_habilitado =  $this->servicio_habilitado($usuario_refere->regnro);
 			if ($check_habilitado['code'] != 200) {
 				if ($this->API_MODE)
 				return $this->response->setJSON($check_habilitado);
 				else
 				return view("usuario/login", array("error" => $check_habilitado['msj']));
-			}*/
+			}
 
 			//Password correcta
 			$check_pass= $this->verify_password(  $usuario_refere->regnro);
@@ -927,9 +929,8 @@ dv
 
 				//Generar token de recuperacion
 				$token_recu_raw =  $Cliente->regnro.strtotime(date("Y-m-d H:i:s"));
-				$token_recu_hash=  password_hash(  $token_recu_raw, PASSWORD_BCRYPT );
-				//limpieza de slashes
-				$token_recu_hash=   preg_replace("/\\/+|\\\|&|\+/", "$", $token_recu_hash);
+				$token_recu_hash=  bin2hex(  $token_recu_raw  );
+				 
 				//Fecha de validez del token (1 dia)
 				$validez=  date("Y-m-d H:i",   strtotime(  date("Y-m-d H:i")." + 1 day"  )  );
 				//gUARDAR el token en registro de usuario
@@ -944,7 +945,10 @@ dv
 				$correo->setMensaje("usuario/recupero_password_email");
 				$correo->enviar();
 				/********* */
-				return $this->response->setJSON(  ['data'=> 'Notificado!', 'code'=> '200'] );
+				return $this->response->setJSON( 
+					 ['data'=>
+					  "Revise su bandeja de correo. Le hemos enviado un link de recuperación (Válido hasta el $validez)", 
+					  'code'=> '200'] );
 			} else{
 				return $this->response->setJSON(  ['msj'=> 'Email no registrado en el sistema', 'code'=> '500'] );
 			}
@@ -1079,8 +1083,8 @@ FROM `usuarios`
 	if ($argumento !=  "") {
 		$sql_str = 	$sql_str . "   where  usuarios.ruc like '%$argumento%'  or usuarios.cedula like '%$argumento%'  or usuarios.cliente like  '%$argumento%'  ";
 	}
-	//order by
-	$sql_str = $sql_str . "
+		//order by
+		$sql_str = $sql_str . "
 ORDER BY
  
  

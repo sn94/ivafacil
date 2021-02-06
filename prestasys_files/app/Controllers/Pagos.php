@@ -160,6 +160,8 @@ class Pagos extends Controller {
 			$validez = date("Y-m-d H:i:s",  strtotime(date("Y-m-d H:i:s") . " + $DIASPLAN days"));
 			$datos_plus = [
 			 
+				"ruc"=>  $Cliente_datos->ruc,
+				"dv"=>  $Cliente_datos->dv,
 				"validez" =>  $validez,
 				"plan" => $Cliente_datos->tipoplan, 
 				"precio" => $PlanDatos->precio,

@@ -45,23 +45,6 @@ use App\Models\Parametros_model;
 
     <div id="loaderplace" class="col-12"></div>
 
-    <div class="col-12 offset-md-2 col-md-8 ">
-   <span style="font-family: mainfont;"> Filtrar por el año</span>
-        <!--cargar anios -->
-        <select onchange="totales_cierre(event);comparativo_meses_del_anio();" name="year" style="font-size: 15px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
-            <?php
-            $year = date("Y");
-            foreach ($ANIOS as $m) {
-                if ($year ==  $m->anio)
-                    echo "<option selected value='$m->anio'>$m->anio</option>";
-                else
-                    echo "<option value='$m->anio'>$m->anio</option>";
-            }
-            if (sizeof($ANIOS) == 0)
-                echo "<option selected value='$year'>$year</option>";;
-            ?>
-        </select>
-    </div>
     
 
     <div class="col-12  offset-md-2 col-md-8 ">
@@ -188,7 +171,7 @@ use App\Models\Parametros_model;
         let loader = "<img style='z-index: 400000;position: absolute;top: 50%;left: 50%;'  src='<?= base_url("assets/img/loader.gif") ?>'   />";
         $("#comparativo-anio-2").html(loader);
         let url__ = "<?= base_url('cierres/comparativo-ejercicios-view') ?>";
-        let ElAnio = $("select[name=year]").val();
+       // let ElAnio = $("select[name=year]").val();
         let req = await fetch(url__);
         let resp_html = await req.text();
         $("#comparativo-anio-2").html(resp_html);
@@ -198,7 +181,7 @@ use App\Models\Parametros_model;
 
     window.onload = function() {
         //saldo_anterior_anio();
-        totales_cierre(); 
+       // totales_cierre(); 
         comparativo_por_ejercicio();
     };
 </script>

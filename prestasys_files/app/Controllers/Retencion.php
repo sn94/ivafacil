@@ -201,7 +201,7 @@ public function index(  $MES =null,  $ANIO=null){
 	}
 
 
-	public  function  total_($cod_cliente,  $MES= NULL,  $ANIO=  NULL)
+	public  function  total_($cod_cliente,  $MES,  $ANIO)
 	{
 		$request = \Config\Services::request();
 		$this->API_MODE =  $this->isAPI();

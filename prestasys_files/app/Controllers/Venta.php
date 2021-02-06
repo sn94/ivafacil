@@ -233,7 +233,7 @@ class Venta extends ResourceController {
 
 
 
-	public  function  total_($cod_cliente, $mes= NULL, $anio= NULL)
+	public  function  total_($cod_cliente, $mes, $anio)
 	{
 		$request = \Config\Services::request(); 
 

@@ -88,8 +88,9 @@ $routes->get('/api/cierre-mes/(:num)/(:num)', 'Cierres::cierre_mes/$1/$2'); // N
 $routes->get('/api/cierre-anio/(:num)', 'Cierres::cierre_anio/$1'); 
 $routes->get('/api/totales-mes/(:num)/(:num)',   'Cierres::totales_mes_session/$1/$2');
 $routes->get('/api/totales-anio/(:num)',   'Cierres::totales_anio_session/$1');
-$routes->get('/api/comparativo-anio/(:num)',   'Cierres::comparativo_anio_sess/$1');
-
+$routes->get('/api/comparativo-anios',   'Cierres::comparativo_ejercicios_view');
+$routes->get('/api/comparativo-meses/(:num)', 'Cierres::comparativo_anio_view_sess/$1'); //comparativos de todos los meses del anio
+ 
 
 //cierre_mes
 $routes->get('/api/usuario', 'Usuario::index'); 
@@ -106,6 +107,8 @@ $routes->get('/api/usuario/servicio-habilitado', 'Usuario::servicio_habilitado_s
 $routes->post('/api/usuario/nuevo-pago-iva', 'Pagos_iva::create'); 
 $routes->get('/api/usuario/pagos-iva/(:alpha)/(:num)', 'Pagos_iva::index_sess/$1/$2'); 
 $routes->post('api/usuario/marangatu', 'Usuario::set_marangatu_key'); 
+$routes->post('api/usuario/recupera-passw', 'Usuario::olvido_password'); 
+
 
 
  

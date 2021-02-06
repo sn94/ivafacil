@@ -316,9 +316,9 @@ public function totales_mes_session(  $MES= NULL, $ANIO= NULL){
 
 			$cierre =  new Estado_mes_model();
 			//numeros
-			$cf =  (new Compra())->total_( $CODCLIENTE,  $MES);
-			$df = (new Venta())->total_( $CODCLIENTE, $MES);
-			$reten = (new Retencion())->total_( $CODCLIENTE, $MES);
+			$cf =  (new Compra())->total_( $CODCLIENTE,  $MES, $ANIO);
+			$df = (new Venta())->total_( $CODCLIENTE, $MES, $ANIO);
+			$reten = (new Retencion())->total_( $CODCLIENTE, $MES,  $ANIO);
 
 			$total_importe_compras=  $cf->total10 +  $cf->total5;
 			$total_importe_ventas=  $df->total10 +  $df->total5;
@@ -985,12 +985,16 @@ public function resumen_anio_session(  $Year ){
 
 
 	//Comparativos 
+	//dE CADA EJERCICIO
 	public function  comparativos(   ){
 		$codcliente=  $this->getClienteId();
 		$anios=  (new Estado_anio_model())->select("anio")->where("codcliente",   $codcliente)->get()->getResult();
-
-		return view("movimientos/comparativos2", ['ANIOS'=>  $anios]);
+		 
+		return view("movimientos/comparativos2" ); //['ANIOS'=>  $anios]
 	}
+
+
+
 	public function  comparativo_anio( $CLIENTE,  $ANIO ){
 
 		$TodosLosMeses= [];
@@ -1018,8 +1022,17 @@ public function resumen_anio_session(  $Year ){
 		return $TodosLosMeses;
 	}
 
+
+/*
+***
+***
+	Comparativo entre cada mes del anio
+	*/
 	public function  comparativo_anio_view_sess(  $ANIO ){
 		$res= $this->comparativo_anio(  $this->getClienteId(),  $ANIO);
+		if( $this->isAPI())
+		return $this->response->setJSON(     [ "data"=>  ['anio'=>$ANIO, 'meses' =>  $res] , "code"=> "200"]   );
+		else
 		return view("movimientos/resumen_anio_form_compa1",  [  'ANIO'=>$ANIO, 'comparativo1' =>  $res ] );
 	}
 
@@ -1028,7 +1041,12 @@ public function resumen_anio_session(  $Year ){
 		$res= $this->comparativo_anio(  $this->getClienteId(),  $ANIO );
 		return $this->response->setJSON(   ['data'=>  $res , 'code'=>'200'] );
 	}
-
+/***
+ * *********
+ * ******
+ * 
+ * 
+ */
 
 
 
@@ -1050,6 +1068,9 @@ public function resumen_anio_session(  $Year ){
 			*/
 			array_push( $comparativo,  $totales_cierre );
 		endforeach;
+		if( $this->isAPI())
+		return $this->response->setJSON(  [  "data"=>     $comparativo,  "code"=> "200"  ]     );
+		else
 		return view("movimientos/resumen_anio_form_compa2",  ['comparativo2'=>  $comparativo] );
 
 		 
