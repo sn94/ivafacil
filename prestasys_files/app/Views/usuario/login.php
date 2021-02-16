@@ -64,9 +64,9 @@
     <div class="sufee-login d-flex align-content-center flex-wrap">
         <div class="container">
             <div class="login-content">
-                <div class="login-logo "  style="margin-bottom: 0px;">
+                <div class="login-logo bg-light "  style="margin-bottom: 0px;">
                     <a href="index.html">
-                        <img src="<?= base_url("assets/img/Logo.jpg?".date('is')) ?>" alt="Logo">
+                        <img style="width: 300px;height: 109px;" src="<?= base_url("assets/img/Logo.png?".date('is')) ?>" alt="Logo">
                     </a>
                 </div>
                 <div class="login-form">

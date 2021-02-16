@@ -1058,9 +1058,15 @@ public function resumen_anio_session(  $Year ){
 		->get()->getResult();
 
 		$comparativo= [];
+		$total_general= [ "importe_compras"=>0, "importe_ventas"=>0, "importe_retenc"=>0,"iva_compras"=>0,"iva_ventas"=>0] ;
 		foreach( $ejercicios as   $ANIO ):
 			$totales_cierre= $this->__totales_anio( $Cliente, $ANIO->anio );
 			$totales_cierre['anio']= $ANIO->anio;
+			$total_general['importe_compras']= $totales_cierre['importe_compras'];
+			$total_general['importe_ventas']= $totales_cierre['importe_ventas'];
+			$total_general['importe_retenc']= $totales_cierre['importe_retenc'];
+			$total_general['iva_compras']= $totales_cierre['compras'];
+			$total_general['iva_ventas']= $totales_cierre['ventas'];
 			/*
 			'importe_compras' 'importe_ventas' 'importe_retenc' 
 			'compras' 'ventas'  'ventas_anuladas_cant' 'ventas_anuladas_tot' 'ventas_anuladas_iva' 	'retencion' 
@@ -1069,7 +1075,7 @@ public function resumen_anio_session(  $Year ){
 			array_push( $comparativo,  $totales_cierre );
 		endforeach;
 		if( $this->isAPI())
-		return $this->response->setJSON(  [  "data"=>     $comparativo,  "code"=> "200"  ]     );
+		return $this->response->setJSON(  [  "data"=>     $comparativo, "totales"=>$total_general,  "code"=> "200"  ]     );
 		else
 		return view("movimientos/resumen_anio_form_compa2",  ['comparativo2'=>  $comparativo] );
 

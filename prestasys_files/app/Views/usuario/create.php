@@ -112,15 +112,16 @@
                     <div class="card text-light" style="background-color: #0a2602e0;">
 
 
-                        <div class="card-header">
+                        <div class="card-header" style="background-color:  #65d04e61 !important;">
                             <div class="row">
                                 <div class="col-6">
-                                    <img src="<?=base_url("assets/img/Logo.jpg?".date('is')) ?>" alt="Logo">
+                                    <img  style="width: 300px; height: 109px;" class="img-responsive" src="<?=base_url("assets/img/Logo.png?".date('is')) ?>" alt="Logo">
                                 </div>
                                 <div class="col-6">
-                                    <h4 class="text-center">Registrarme</h4>
+                                
                                 </div>
                             </div>
+                          
                         </div>
                         <div class="card-body">
                             <?php
@@ -145,7 +146,7 @@
                                 </div>
                                 <div class="col-12  col-md-6  mb-2 ">
                                     <button style="font-size: 12px;font-weight: 600;width:100%;" type="submit" class="btn btn-success btn-sm">
-                                        <i class="fa fa-dot-circle-o"></i> GUARDAR
+                                        <i class="fa fa-dot-circle-o"></i> REGISTRARME
                                     </button>
                                 </div>
 
