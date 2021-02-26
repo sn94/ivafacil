@@ -70,7 +70,7 @@ use App\Models\Parametros_model;
                 <?= view("movimientos/resumen_anio_form") ?>
             </div>
             <div class="card-footer" id="BOTON-CERRAR-AREA">
-<!--
+                <!--
                 <a onclick="cerrar( event)" style="font-size: 10px;font-weight: 600;" href=""cierres/cierre-anio" " class="btn btn-success">
                     <i class="fa fa-dot-circle-o"></i> CERRAR EL AÑO
                 </a>
@@ -79,12 +79,8 @@ use App\Models\Parametros_model;
             </div>
         </div>
     </div>
-
-     
-
-
 </div>
-
+ 
 <script>
     async function saldo_anterior_anio() {
         let loader = "<img style='z-index: 400000;position: absolute;top: 50%;left: 50%;'  src='<?= base_url("assets/img/loader.gif") ?>'   />";
@@ -154,8 +150,8 @@ use App\Models\Parametros_model;
         if (!confirm("Seguro que desea cerrar el año?")) return;
         let loader = "<img style='z-index: 400000;position: absolute;top: 50%;left: 50%;'  src='<?= base_url("assets/img/loader.gif") ?>'   />";
         $("#loaderplace").html(loader);
-        let url___=  ev.currentTarget.href+"/"+$("select[name=year]").val();
-        let req = await fetch( url___);
+        let url___ = ev.currentTarget.href + "/" + $("select[name=year]").val();
+        let req = await fetch(url___);
         let resp_json = await req.json();
         $("#loaderplace").html("");
         if ("data" in resp_json)
@@ -179,13 +175,13 @@ use App\Models\Parametros_model;
 
 
 
-    
+
 
 
 
     window.onload = function() {
         //saldo_anterior_anio();
-        totales_cierre(); 
+        totales_cierre();
     };
 </script>
 

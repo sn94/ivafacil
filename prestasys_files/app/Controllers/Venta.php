@@ -390,16 +390,17 @@ class Venta extends ResourceController
 		$ClienteCOD = $this->getClienteId();
 		if ($request->getMethod(true) == "GET") {
 
-
-
 			//Obtener ultimo numero de factura
 			$ultimo_nro = $this->generar_numero_factura();
 			//servicio habilitado
 			$habilitado =  (new Usuario())->servicio_habilitado($ClienteCOD);
 			if (array_key_exists("msj",  $habilitado))
 				return view("movimientos/comprobantes/venta/create", ['ultimo_numero' => $ultimo_nro, 'error' => $habilitado['msj']]);
-			else
-				return view("movimientos/comprobantes/venta/create", ['ultimo_numero' => $ultimo_nro]);
+			
+			//Verificar timbrado
+			$existe_timbrado= ((new Usuario_model())->find(  $ClienteCOD)->timbrado)  !=  "" ;
+			if( ! $existe_timbrado) 	return view("movimientos/comprobantes/venta/create", ['ultimo_numero' => $ultimo_nro, 'error' => "Recuerde registrar el número de timbrado en *MIS DATOS*"] );
+			return view("movimientos/comprobantes/venta/create", ['ultimo_numero' => $ultimo_nro]);
 		}
 
 
@@ -410,6 +411,12 @@ class Venta extends ResourceController
 		//Operacion habilitada
 		$oper_habilitada =   $this->operacion_habilitada($ClienteCOD,  $fecha_compro);
 		if (!is_null($oper_habilitada))  return  $oper_habilitada;
+
+		//Timbrado registrado?
+		$existe_timbrado= isset( $data['timbrado']) ? ( $data['timbrado']== "" ? false : true  ) : false;
+		$estado_anu= isset( $data['estado']) ? (  $data['estado'] =="B" ? true: false) : false;
+		if( $estado_anu && ! $existe_timbrado)  return $this->genericResponse(null, "Debe registrar un número de timbrado", 500);
+
 
 		//inferir otros datos del cliente
 		$ModeloCliente =  (new Usuario_model())->find($ClienteCOD);

@@ -41,12 +41,28 @@ use App\Models\Parametros_model;
 
 
 
+
+
+
 <div class="row">
+
+    <?php
+
+    $Parametro_Mensaje_ = (new Parametros_model())->first();
+    $MSJ_PANT_CIERRE_A =  !(is_null($Parametro_Mensaje_)) ? $Parametro_Mensaje_->MSJ_PANT_CIERRE_A :  "";
+    if ($MSJ_PANT_CIERRE_A !=  "") :
+    ?>
+        <div class="col-12 offset-md-2 col-md-8">
+            <p style="color: #026804; font-weight: 600;"> <?= $MSJ_PANT_CIERRE_A ?></p>
+        </div>
+        <div class="col-12 col-md-2"></div>
+
+    <?php endif; ?>
 
     <div id="loaderplace" class="col-12"></div>
 
     <div class="col-12 offset-md-2 col-md-8 ">
-   <span style="font-family: mainfont;"> Filtrar por el año</span>
+        <span style="font-family: mainfont;"> Filtrar por el año</span>
         <!--cargar anios -->
         <select onchange="totales_cierre(event);comparativo_meses_del_anio();" name="year" style="font-size: 15px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
             <?php
@@ -62,7 +78,7 @@ use App\Models\Parametros_model;
             ?>
         </select>
     </div>
-    
+
 
     <div class="col-12  offset-md-2 col-md-8 ">
         <h3 class="text-center">Cuadros comparativos</h3>
@@ -74,7 +90,7 @@ use App\Models\Parametros_model;
         </div>
 
 
-      
+
     </div>
 
 
@@ -149,8 +165,8 @@ use App\Models\Parametros_model;
         if (!confirm("Seguro que desea cerrar el año?")) return;
         let loader = "<img style='z-index: 400000;position: absolute;top: 50%;left: 50%;'  src='<?= base_url("assets/img/loader.gif") ?>'   />";
         $("#loaderplace").html(loader);
-        let url___=  ev.currentTarget.href+"/"+$("select[name=year]").val();
-        let req = await fetch( url___);
+        let url___ = ev.currentTarget.href + "/" + $("select[name=year]").val();
+        let req = await fetch(url___);
         let resp_json = await req.json();
         $("#loaderplace").html("");
         if ("data" in resp_json)
@@ -184,7 +200,7 @@ use App\Models\Parametros_model;
         $("#comparativo-anio").html(resp_html);
     }
 
-    
+
 
 
     window.onload = function() {

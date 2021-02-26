@@ -29,7 +29,7 @@ class Filters extends BaseConfig
 				'usuario/create', 'usuario/sign-in', 'usuario/sign_in', 
 				'api/usuario/sign-in', 'api/usuario/create','api/usuario/ruc/*', 'api/usuario/digito-verificador/*',
 				'api/usuario/recupera-passw',
-				'auxiliar/*', 'api/ciudades', 'api/planes', 'api/monedas',
+				'auxiliar/*', 'api/ciudades', 'api/planes', 'api/monedas', 'api/mensajes',
 				'admin',  'admin/*', 'home', 'welcome/publico',
 				'usuario/olvido-password','usuario/recuperar-password', 'usuario/recuperar-password/*',
 				'admin/olvido-password', 'admin/recuperar-password', 'admin/recuperar-password/*'

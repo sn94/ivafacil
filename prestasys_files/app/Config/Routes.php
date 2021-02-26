@@ -47,6 +47,7 @@ $routes->get('/', 'Welcome::index'); //pagina principal del cliente
 $routes->get('/api/ciudades', 'Auxiliar::ciudades'); 
 $routes->get('/api/planes', 'Auxiliar::planes'); 
 $routes->get('/api/monedas', 'Auxiliar::monedas'); 
+$routes->get('/api/mensajes', 'Parametros::leer_mensajes'); 
 
 $routes->get('/api/compras', 'Compra::index'); 
 $routes->post('/api/compras/create', 'Compra::create'); 
