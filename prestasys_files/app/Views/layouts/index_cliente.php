@@ -22,7 +22,7 @@ $TERMINACION_RUC =   substr(session("ruc"), -1, 1);
     <meta http-equiv="Cache-Control" content="no-cache, mustrevalidate">
     <meta http-equiv="Pragma" content="no-cache">
 
-    <link rel="icon" type="image/png" href="<?= base_url("assets/img/Logo.jpg?".date('is')) ?>" />
+    <link rel="icon" type="image/png" href="<?= base_url("assets/img/Logo.jpg?" . date('is')) ?>" />
     <link rel="stylesheet" href="<?= base_url("assets/template/vendors/bootstrap/dist/css/bootstrap.min.css") ?>">
     <link rel="stylesheet" href="<?= base_url("assets/template/vendors/font-awesome/css/font-awesome.min.css") ?>">
     <link rel="stylesheet" href="<?= base_url("assets/template/vendors/themify-icons/css/themify-icons.css") ?>">
@@ -52,20 +52,31 @@ $TERMINACION_RUC =   substr(session("ruc"), -1, 1);
 
         }
 
+
+        /**Espacio entre opciones del menu  */
+        .navbar .navbar-nav li.menu-item-has-children a { 
+            line-height: 3px;
+        }
+
         h1,
         h2,
         h3,
         h4,
         h4,
         h5,
-        h6 {
+        h6,
+        label {
             font-family: mainfont;
         }
 
+        label {
+            font-size: 18px !important;
+        }
 
         .navbar,
         aside.left-panel {
-            background: #9FD1BB;/* url(<?= base_url("assets/ivax/assets/images/homebg2.jpg") ?>);*/
+            background: #9FD1BB;
+            /* url(<?= base_url("assets/ivax/assets/images/homebg2.jpg") ?>);*/
 
             background-position: -50% 0%;
 
@@ -111,8 +122,8 @@ $TERMINACION_RUC =   substr(session("ruc"), -1, 1);
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-menu" aria-controls="main-menu" aria-expanded="false" aria-label="Toggle navigation">
                     <i class="fa fa-bars"></i>
                 </button>
-                <a class="navbar-brand" href="<?= base_url("welcome/index") ?>"><img src="<?= base_url("assets/img/Logo.png?".date('is')) ?>" alt="Logo"></a>
-                <a class="navbar-brand hidden" href="<?= base_url("welcome/index") ?>"><img src="<?= base_url("assets/img/Logo.png?".date('is')) ?>" alt="Logo"></a>
+                <a class="navbar-brand" href="<?= base_url("welcome/index") ?>"><img src="<?= base_url("assets/img/Logo.png?" . date('is')) ?>" alt="Logo"></a>
+                <a class="navbar-brand hidden" href="<?= base_url("welcome/index") ?>"><img src="<?= base_url("assets/img/Logo.png?" . date('is')) ?>" alt="Logo"></a>
             </div>
 
             <div id="main-menu" class="main-menu collapse navbar-collapse">
@@ -182,7 +193,7 @@ $TERMINACION_RUC =   substr(session("ruc"), -1, 1);
             <div class="header-menu">
 
                 <div class="col-sm-7 col-md-7" id="NOVEDADES">
-                    <a id="menuToggle" class="menutoggle pull-left"><i class="fa fa fa-tasks"></i></a>
+                    <a id="menuToggle" class="menutoggle pull-left d-none"><i class="fa fa fa-tasks"></i></a>
                     <div class="header-left">
 
 

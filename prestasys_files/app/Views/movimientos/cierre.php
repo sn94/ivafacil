@@ -8,6 +8,9 @@ use App\Models\Parametros_model;
 <?= $this->section("estilos") ?>
 
 <style>
+#TABLA-CIERRE-MES tbody tr td{
+padding: 0px;
+}
     .card-header>h4:nth-child(1) {
 
         font-weight: 600;
@@ -36,7 +39,7 @@ use App\Models\Parametros_model;
 <div class="row">
 
 
-    <div class="col-12 offset-md-3 col-md-6 ">
+    <div class="col-12 offset-md-2 col-md-8 ">
         <div class="card">
             <div class="card-header">
                 <h4 class="text-center">Cierre del mes:
@@ -73,13 +76,14 @@ use App\Models\Parametros_model;
                 </h4>
             </div>
             <div class="card-body card-block p-0">
-            <div class="alert">
+                <div class="alert">
                     <?= view("plantillas/message") ?>
 
                 </div>
-                <form action="" method="post" class="container">
 
-                    <table class="table table-light">
+
+                <div class="table-responsive">
+                    <table class="table table-light" id="TABLA-CIERRE-MES">
                         <thead>
                             <tr>
                                 <th></th>
@@ -87,20 +91,22 @@ use App\Models\Parametros_model;
                                 <th class="text-center">Exenta</th>
                                 <th class="text-center">5%</th>
                                 <th class="text-center">10%</th>
+                                <th class="text-center">TOTALES</th>
                                 <th class="text-center">IVA</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <th>
+                                <td>
                                     <?php if (isset($edicion_saldo_inicial)  &&  $edicion_saldo_inicial) : ?>
-                                        <a href="<?= base_url("usuario/actualizar-saldo") ?>">
-                                            <i class="fa fa-refresh" aria-hidden="true"></i>
+                                        <a class="p-0 m-0" href="<?= base_url("usuario/actualizar-saldo") ?>">
+                                            <i class="fa fa-refresh m-0" aria-hidden="true"></i>
                                         </a>
                                     <?php endif; ?>
 
-                                </th>
+                                </td>
                                 <td>Saldo Inicial</td>
+                                <td></td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
@@ -113,6 +119,7 @@ use App\Models\Parametros_model;
                                 <td id="compras-exenta" class="text-right"></td>
                                 <td id="compras-5" class="text-right"></td>
                                 <td id="compras-10" class="text-right"></td>
+                                <td id="compras-tot" class="text-right"></td>
                                 <td id="compras-iva" class="text-right"></td>
                             </tr>
                             <tr>
@@ -121,6 +128,7 @@ use App\Models\Parametros_model;
                                 <td id="ventas-exenta" class="text-right"></td>
                                 <td id="ventas-5" class="text-right"></td>
                                 <td id="ventas-10" class="text-right"></td>
+                                <td id="ventas-tot" class="text-right"></td>
                                 <td id="ventas-iva" class="text-right"></td>
                             </tr>
                             <tr>
@@ -129,34 +137,32 @@ use App\Models\Parametros_model;
                                 <td id="retencion-exenta" class="text-right"></td>
                                 <td></td>
                                 <td></td>
+                                <td id="retencion-tot" class="text-right"></td>
                                 <td id="retencion-iva" class="text-right"></td>
                             </tr>
 
                             <tr id="saldo-row">
                                 <td></td>
                                 <td>Saldo final</td>
-                                <td id="saldo-descri" colspan="3"></td>
+                                <td id="saldo-descri" colspan="4"></td>
                                 <td id="saldo" class="text-right"></td>
                             </tr>
                         </tbody>
                     </table>
-                    <div class="row form-group">
-                        <?php
+                </div>
+                <div class="row form-group">
+                    <?php
 
-                        $Parametro_Mensaje_ = (new Parametros_model())->first();
-                        $MSJ_PANT_CIERRE_M =  !(is_null($Parametro_Mensaje_)) ? $Parametro_Mensaje_->MSJ_PANT_CIERRE_M :  "";
-                        if ($MSJ_PANT_CIERRE_M !=  "") :
-                        ?>
-                            <div class="col-12">
-                                <p style="text-align: center;color: #ae0000; font-weight: 600;"><?= $MSJ_PANT_CIERRE_M ?> </p>
-                            </div>
-                        <?php endif; ?>
-                    </div>
+                    $Parametro_Mensaje_ = (new Parametros_model())->first();
+                    $MSJ_PANT_CIERRE_M =  !(is_null($Parametro_Mensaje_)) ? $Parametro_Mensaje_->MSJ_PANT_CIERRE_M :  "";
+                    if ($MSJ_PANT_CIERRE_M !=  "") :
+                    ?>
+                        <div class="col-12">
+                            <p style="text-align: center;color: #ae0000; font-weight: 600;"><?= $MSJ_PANT_CIERRE_M ?> </p>
+                        </div>
+                    <?php endif; ?>
+                </div>
 
-
-
-
-                </form>
             </div>
             <div id="loaderplace" class="col-12"></div>
             <div class="card-footer">
@@ -194,8 +200,8 @@ use App\Models\Parametros_model;
 
         let compras_iva10 = parseFloat(resp_json.compras_iva10);
         let compras_iva5 = parseFloat(resp_json.compras_iva5);
-        
-        let compras_total_iva =  Math.round(  compras_iva10 + compras_iva5 );
+
+        let compras_total_iva = Math.round(compras_iva10 + compras_iva5);
 
         let ventas_total_exe = parseInt(resp_json.ventas_total_exe);
         let ventas_total_10 = parseInt(resp_json.ventas_total_10);
@@ -214,7 +220,7 @@ use App\Models\Parametros_model;
         let saldo = parseInt(resp_json.saldo) + saldo_a;
         let saldo_descri =
             (s_fisco > s_contri) ? "A FAVOR DE LA SET " :
-            ((s_fisco < s_contri) ? "a favor del contribuyente" : (s_fisco == 0 ? "-" : "IVA C,F = IVA D.F"));
+            ((s_fisco < s_contri) ? "A FAVOR DEL CONTRIBUYENTE" : (s_fisco == 0 ? "-" : "IVA C,F = IVA D.F"));
 
 
 
@@ -225,16 +231,19 @@ use App\Models\Parametros_model;
         $("#compras-exenta").text(dar_formato_millares(compras_total_exe));
         $("#compras-10").text(dar_formato_millares(compras_total_10));
         $("#compras-5").text(dar_formato_millares(compras_total_5));
+        $("#compras-tot").text(dar_formato_millares(compras_total_10 + compras_total_5));
         $("#compras-iva").text(dar_formato_millares(compras_total_iva));
 
         $("#ventas-exenta").text(dar_formato_millares(ventas_total_exe));
         $("#ventas-10").text(dar_formato_millares(ventas_total_10));
         $("#ventas-5").text(dar_formato_millares(ventas_total_5));
+        $("#ventas-tot").text(dar_formato_millares(ventas_total_10 + ventas_total_5));
         $("#ventas-iva").text(dar_formato_millares(ventas_total_iva));
 
 
         //  $("#retencion-exenta").text(dar_formato_millares(retencion));
         $("#retencion-exenta").text("");
+        $("#retencion-tot").text(dar_formato_millares(retencion));
         $("#retencion-iva").text(dar_formato_millares(retencion));
 
         $("#saldo").text(dar_formato_millares(saldo));

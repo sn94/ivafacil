@@ -46,8 +46,8 @@ use App\Helpers\Utilidades;
             <th class="p-0 text-right">EX</th>
             <th class="p-0 text-right">5%</th>
             <th class="p-0 text-right">10%</th>
-            <th class="p-0 text-right">IVA</th>
             <th class="p-0 text-right">TOTAL</th>
+            <th class="p-0 text-right">IVA</th>
 
         </tr>
     </thead>
@@ -63,8 +63,9 @@ use App\Helpers\Utilidades;
                 <td class="pb-0 text-right"> <?= Utilidades::number_f($it->importe3) ?></td>
                 <td class="pb-0 text-right"> <?= Utilidades::number_f($it->importe2) ?> </td>
                 <td class="pb-0 text-right"> <?= Utilidades::number_f($it->importe1) ?></td>
-                <td class="pb-0 text-right"> <?= Utilidades::number_f($it->iva1+ $it->iva2 ) ?></td>
                 <td class="pb-0 text-right"> <?= Utilidades::number_f($it->total) ?></td>
+                <td class="pb-0 text-right"> <?= Utilidades::number_f($it->iva1+ $it->iva2 ) ?></td>
+               
 
             </tr>
         <?php

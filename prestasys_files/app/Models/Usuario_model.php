@@ -17,7 +17,7 @@ class Usuario_model extends Model {
       'domicilio', 'rubro', 'ciudad', 'pass_anterior', 'origen',
       'session_id', 'session_expire', 'remember', 'remember_pass', 'remember_expire', 'fondo',
       'ultimo_nro', 'saldo_IVA', 'token_recu', 'token_validez',
-      'clave_marangatu'
+      'clave_marangatu',  'timbrado'
    ];
 
     

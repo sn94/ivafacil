@@ -11,13 +11,13 @@ $email =  isset($usuario) ?  $usuario->email :  "";
 $domicilio =  isset($usuario) ?  $usuario->domicilio :  "";
 $telefono =  isset($usuario) ?  $usuario->telefono :  "";
 $celular =  isset($usuario) ?  $usuario->celular :  "";
-$saldo_IVA = isset($usuario) ?  Utilidades::number_f($usuario->saldo_IVA) :  "0";
 
 $ciudad =  isset($usuario) ?  $usuario->ciudad :  "";
 $tipoplan =  isset($usuario) ?  $usuario->tipoplan :  "";
 $rubro =  isset($usuario) ?  $usuario->rubro :  "";
-$ultimo_nro = isset($usuario) ?     $usuario->ultimo_nro : "";
-$clave_marangatu=  isset(  $usuario) ?  $usuario->clave_marangatu  : "";
+
+
+
 ?>
 
 <input type="hidden" name="tipo" value="C"><!-- C= cliente  -->
@@ -140,55 +140,9 @@ $clave_marangatu=  isset(  $usuario) ?  $usuario->clave_marangatu  : "";
         </div>
     </div>
 
-
-    <div class="col-12 col-md-6">
-        <div class="row form-group">
-            <div class="col-4 col-md-5 pl-md-3 pl-0">
-                <label for="nf-password" class=" form-control-label form-control-sm -label" style="font-weight: 600;">
-                    Saldo Inicial <?= date("Y") ?> : <span></span></label>
-            </div>
-            <div class="col-8 col-md-7">
-
-                <!--Campo de saldo inicial editable ?  -->
-                <?php
-
-                $reg_anio =
-                    (new Estado_mes_model())->where("codcliente", session("id"))->where("anio", date("Y"))->first();
-
-                $yaestaCerrado =  !is_null($reg_anio) ? (($reg_anio->estado == "P") ? "" : "disabled")  :   "";
-                ?>
-                <input <?= $yaestaCerrado ?> onfocus="if(this.value=='0') this.value='';" onblur="if(this.value=='') this.value='0';" value="<?= $saldo_IVA ?>" maxlength="10" oninput="formatear( event)" type="text" name="saldo_IVA" class=" form-control form-control-label form-control-sm ">
-
-
-            </div>
-        </div>
+    <div class="col-12 pb-2" style="background: #BBDEFB;">
+        <?= view("usuario/form_user_params") ?>
     </div>
-
-
-    <div class="col-12 col-md-6">
-        <div class="row form-group">
-            <div class="col-12 col-md-6 pl-md-3 pl-0">
-                <label for="nf-password" class=" form-control-label form-control-sm -label" style="font-weight: 600;">
-                    Última factura de venta: <span></span></label>
-            </div>
-            <div class="col-12 col-md-6">
-                <input oninput="solo_num_guiones(event)" value="<?= $ultimo_nro ?>"   maxlength="15" type="text" name="ultimo_nro" class=" form-control form-control-label form-control-sm ">
-            </div>
-        </div>
-
-        <div class="row form-group">
-            <div class="col-12 col-md-6 pl-md-3 pl-0">
-                <label for="nf-password" class=" form-control-label form-control-sm -label" style="font-weight: 600;">
-                    Clave de acceso Marangatu: <span></span></label>
-            </div>
-            <div class="col-12 col-md-6">
-                <input maxlength="80" value="<?= $clave_marangatu ?>"     type="text" name="clave_marangatu" class=" form-control form-control-label form-control-sm ">
-            </div>
-        </div>
-
-
-    </div>
-
 
 
 
@@ -277,7 +231,7 @@ $clave_marangatu=  isset(  $usuario) ?  $usuario->clave_marangatu  : "";
 <script>
     function clean_number(arg) {
         try {
-             
+
             arg.val(arg.val().replaceAll(/\.|,|\-/g, ""));
         } catch (er) {}
     }

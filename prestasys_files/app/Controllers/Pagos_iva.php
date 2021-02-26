@@ -113,7 +113,7 @@ class Pagos_iva extends Controller {
 		$pendientes= $pendientes->where("estado", "L");
 
 		$pendientes= $pendientes->where("codcliente", $CLIENTE)->get()->getResult();
-
+ 
 		if ($this->request->isAJAX()) {
 			if(  $this->isAdminView()) {
 				if( $estado == "P")

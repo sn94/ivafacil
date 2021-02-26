@@ -1,6 +1,12 @@
 <?php
 
 use App\Helpers\Utilidades;
+use App\Models\Usuario_model;
+
+//User data
+$userData= (new Usuario_model())->where(  "regnro", session("id") )
+->where(  "ruc", session("ruc") )
+->where(  "dv", session("dv") )->first();
 
 
 $regnro = isset($venta) ?  $venta->regnro : "";
@@ -20,6 +26,7 @@ $iva2 = isset($venta) ?  Utilidades::number_f($venta->iva2) : "0";
 $iva3 = isset($venta) ?  Utilidades::number_f($venta->iva3) : "0";
 $origen = isset($venta) ?  Utilidades::number_f($venta->origen) : "W";
 $estado =  isset($venta)  ? ($venta->estado == "A" ? "" : "checked")  : "";
+$timbrado= isset($venta) ? $venta->timbrado : (  $userData->timbrado );
 ?>
 
 
@@ -54,7 +61,7 @@ $estado =  isset($venta)  ? ($venta->estado == "A" ? "" : "checked")  : "";
                     <input oninput="solo_numeros_guiones(event)" value="<?= $factura ?>" placeholder="000-000-0000000" maxlength="15" type="text" id="nf-password" name="factura" class=" form-control form-control-label form-control-sm mb-0 ">
 
                     <span style="font-size: 11px; font-weight: 600;color: red;">
-                        ANULADO <input <?= $estado ?> type="checkbox" name="estado" value="B">
+                        ANULADO <input onchange="mostrarTimbrado(event)" <?= $estado ?> type="checkbox" name="estado" value="B">
                     </span>
                     <p style="color:red; font-size: 11px; font-weight: 600;" id="error-factura"></p>
                 </div>
@@ -78,6 +85,11 @@ $estado =  isset($venta)  ? ($venta->estado == "A" ? "" : "checked")  : "";
 
         <div class="col-12 col-md-6">
             <div class="row">
+                <div id="TIMBRADO" class="col-12 d-none"  style="display: grid;grid-template-columns: 40% 60%;"> 
+                    <label style="grid-column-start: 1;" for="nf-password" class=" form-control-label form-control-sm -label">N° Timbrado:</label>
+                    <input style="grid-column-start: 2;" value="<?=$timbrado?>"    type="text" id="nf-password" name="timbrado" class=" form-control form-control-label form-control-sm text-right ">
+                </div>
+
                 <div class="col-3 col-md-3  pl-md-3 pl-0">
                     <label for="nf-password" class=" form-control-label form-control-sm -label">10%:</label>
                 </div>
@@ -483,6 +495,17 @@ Validaciones
 
 
 
+
+
+
+
+    function mostrarTimbrado( ev){
+
+        let check=  $(ev.currentTarget).prop("checked");
+        if( check) 
+        $("#TIMBRADO").removeClass("d-none");
+        else  $("#TIMBRADO").addClass("d-none");
+    }
 
     //init
     window.onload = function() {

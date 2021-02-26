@@ -4,14 +4,14 @@
             <th colspan="8">Año <?= $ANIO?></th>
         </tr>
         <tr   style="font-family: mainfont;" >
-            <th class="text-center">MES</th>
-            <th class="text-center">SALDO INICIAL</th>
-            <th class="text-center">VENTA</th>
-            <th class="text-center">COMPRA</th>
-            <th class="text-center">RETENCIÓN</th>
-            <th class="text-center">IVA</th>
-            <th class="text-center">PAGO</th>
-            <th class="text-center">SALDO</th>
+            <th class="text-center p-0">MES</th>
+            <th class="text-center p-0">SALDO INICIAL</th>
+            <th class="text-center p-0">VENTA</th>
+            <th class="text-center p-0">COMPRA</th>
+            <th class="text-center p-0">RETENCIÓN</th>
+            <th class="text-center p-0">IVA</th>
+            <th class="text-center p-0">PAGO</th>
+            <th class="text-center p-0">SALDO</th>
         </tr>
 
     </thead>
@@ -48,14 +48,14 @@
         ?>
 
             <tr>
-                <td class="text-left"><?= $mes ?></td>
-                <td class="text-right"><?= $saldo_ini ?></td>
-                <td class="text-right"><?= $venta ?></td>
-                <td class="text-right"><?= $compra ?></td>
-                <td class="text-right"><?= $retenci ?></td>
-                <td class="text-right"><?= $total_iva ?></td>
-                <td class="text-right"><?= $pago ?></td>
-                <td class="text-right"><?= $saldo ?></td>
+                <td class="text-left p-0"><?= $mes ?></td>
+                <td class="text-right p-0"><?= $saldo_ini ?></td>
+                <td class="text-right p-0"><?= $venta ?></td>
+                <td class="text-right p-0" ><?= $compra ?></td>
+                <td class="text-right p-0"><?= $retenci ?></td>
+                <td class="text-right p-0"><?= $total_iva ?></td>
+                <td class="text-right p-0"><?= $pago ?></td>
+                <td class="text-right p-0"><?= $saldo ?></td>
 
             </tr>
         <?php endforeach;
@@ -74,14 +74,14 @@
     </tbody>
     <tfoot>
         <tr class="bg-dark text-light">
-            <td class="text-left">Totales</td>
-            <td class="text-right"> -  </td>
-            <td class="text-right"><?= $T_2?></td>
-            <td class="text-right"><?= $T_3?></td>
-            <td class="text-right"><?= $T_4?></td>
-            <td class="text-right"><?= $T_5?></td>
-            <td class="text-right"><?= $T_6?></td>
-            <td class="text-right">  -</td> 
+            <td class="text-left p-0">Totales</td>
+            <td class="text-right p-0"> -  </td>
+            <td class="text-right p-0"><?= $T_2?></td>
+            <td class="text-right p-0"><?= $T_3?></td>
+            <td class="text-right p-0"><?= $T_4?></td>
+            <td class="text-right p-0"><?= $T_5?></td>
+            <td class="text-right p-0"><?= $T_6?></td>
+            <td class="text-right p-0">  -</td> 
         </tr>
     </tfoot>
 </table>

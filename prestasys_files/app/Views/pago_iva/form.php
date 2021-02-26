@@ -12,7 +12,7 @@ $RUC =  $ESTADO_MES->ruc;
 $DV =  $ESTADO_MES->dv;
 $MES =  $ESTADO_MES->mes;
 $ANIO = $ESTADO_MES->anio;
-$SALDO = Utilidades::number_f($ESTADO_MES->saldo);
+$SALDO = Utilidades::number_f(  abs($ESTADO_MES->saldo));
 
 
 echo  form_open(
