@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Helpers\Facturacion;
 use App\Helpers\Utilidades;
 use App\Libraries\pdf_gen\PDF;
 use App\Models\Monedas_model;
@@ -277,8 +278,8 @@ class Venta extends ResourceController
 		$cod_cliente = $this->getClienteId();
 		$compras = (new Ventas_model());
 
-		$MES= date("m");
-		$ANIO= date("Y");
+		$MES = date("m");
+		$ANIO = date("Y");
 		$lista_co = $this->total_($cod_cliente,  $MES, $ANIO);
 		return $response->setJSON($lista_co);
 	}
@@ -380,6 +381,13 @@ class Venta extends ResourceController
 		else  return NULL;
 	}
 
+
+
+
+
+
+
+
 	public function create()
 	{
 
@@ -396,10 +404,10 @@ class Venta extends ResourceController
 			$habilitado =  (new Usuario())->servicio_habilitado($ClienteCOD);
 			if (array_key_exists("msj",  $habilitado))
 				return view("movimientos/comprobantes/venta/create", ['ultimo_numero' => $ultimo_nro, 'error' => $habilitado['msj']]);
-			
+
 			//Verificar timbrado
-			$existe_timbrado= ((new Usuario_model())->find(  $ClienteCOD)->timbrado)  !=  "" ;
-			if( ! $existe_timbrado) 	return view("movimientos/comprobantes/venta/create", ['ultimo_numero' => $ultimo_nro, 'error' => "Recuerde registrar el número de timbrado en *MIS DATOS*"] );
+			$existe_timbrado = ((new Usuario_model())->find($ClienteCOD)->timbrado)  !=  "";
+			if (!$existe_timbrado) 	return view("movimientos/comprobantes/venta/create", ['ultimo_numero' => $ultimo_nro, 'error' => "Recuerde registrar el número de timbrado en *MIS DATOS*"]);
 			return view("movimientos/comprobantes/venta/create", ['ultimo_numero' => $ultimo_nro]);
 		}
 
@@ -413,9 +421,9 @@ class Venta extends ResourceController
 		if (!is_null($oper_habilitada))  return  $oper_habilitada;
 
 		//Timbrado registrado?
-		$existe_timbrado= isset( $data['timbrado']) ? ( $data['timbrado']== "" ? false : true  ) : false;
-		$estado_anu= isset( $data['estado']) ? (  $data['estado'] =="B" ? true: false) : false;
-		if( $estado_anu && ! $existe_timbrado)  return $this->genericResponse(null, "Debe registrar un número de timbrado", 500);
+		$existe_timbrado = isset($data['timbrado']) ? ($data['timbrado'] == "" ? false : true) : false;
+		$estado_anu = isset($data['estado']) ? ($data['estado'] == "B" ? true : false) : false;
+		if ($estado_anu && !$existe_timbrado)  return $this->genericResponse(null, "Debe registrar un número de timbrado", 500);
 
 
 		//inferir otros datos del cliente
@@ -448,32 +456,14 @@ class Venta extends ResourceController
 			try {
 				$data['origen'] = ($this->isAPI()) ? "A" : "W"; //ORIGEN Aplicacion
 				//calculo interno del iva
-				$iva1 = $data['importe1'] / 11;
-				$iva2 = $data['importe2'] / 21;
-				$iva3 =  $data['importe3'];
-				$data['iva1'] =  $iva1;
-				$data['iva2'] =  $iva2;
-				$data['iva3'] = $iva3;
-				$data["total"] =  $data['importe1']  + $data['importe2']  + $data['importe3'];
+				$data = Facturacion::calcular_iva($data);
 				$data['estado'] =  array_key_exists("estado",  $data) ? $data['estado'] : "A";
 
 
 				//Convertir a guaranies
 				if ($moneda != 1) {
-					$cambio = $data['tcambio'];
-					$im1 = $data['importe1'];
-					$im2 = $data['importe2'];
-					$im3 = $data['importe3'];
-
-					$data['importe1'] =  intval($cambio) * intval($im1);
-					$data['importe2'] =  intval($cambio) * intval($im2);
-					$data['importe3'] =  intval($cambio) * intval($im3);
-					$data['iva1'] =  intval($cambio) * intval($iva1);
-					$data['iva2'] =  intval($cambio) * intval($iva2);
-					$data['iva3'] =  intval($cambio) * intval($iva3);
-					$data["total"] =  $data['importe1']  + $data['importe2']  + $data['importe3'];
+					$data = Facturacion::convertir_a_moneda_nacional($data);
 				}
-
 
 				//Crear nuevo registro de ejercicio si es necesario
 				(new Cierres())->crear_ejercicio();
@@ -567,28 +557,12 @@ class Venta extends ResourceController
 			try {
 
 				//calculo interno del iva
-				$iva1 = $data['importe1'] / 11;
-				$iva2 = $data['importe2'] / 21;
-				$iva3 =  $data['importe3'];
-				$data['iva1'] =  $iva1;
-				$data['iva2'] =  $iva2;
-				$data['iva3'] = $iva3;
-				$data["total"] =  $data['importe1']  + $data['importe2']  + $data['importe3'];
+				$data =  Facturacion::calcular_iva($data);
 				$data['estado'] =  array_key_exists("estado",  $data) ? $data['estado'] : "A";
 
 				//Convertir a guaranies
 				if ($Moneda_definida  &&  $moneda != 1) {
-					$cambio = $data['tcambio'];
-					$im1 = $data['importe1'];
-					$im2 = $data['importe2'];
-					$im3 = $data['importe3'];
-					$data['importe1'] =  intval($cambio) * intval($im1);
-					$data['importe2'] =  intval($cambio) * intval($im2);
-					$data['importe3'] =  intval($cambio) * intval($im3);
-					$data['iva1'] =  intval($cambio) * intval($iva1);
-					$data['iva2'] =  intval($cambio) * intval($iva2);
-					$data['iva3'] =  intval($cambio) * intval($iva3);
-					$data["total"] =  $data['importe1']  + $data['importe2']  + $data['importe3'];
+					$data =  Facturacion::convertir_a_moneda_nacional($data);
 				}
 
 				$usu->where("codcliente", $ClienteCOD)

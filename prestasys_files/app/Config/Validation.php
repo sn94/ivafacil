@@ -262,7 +262,15 @@ class Validation
 
 	public $compras = [
 		 
-		  
+		'iva_incluido' =>
+		[
+			'rules'  => 'required|alpha|max_length[1]',
+			'errors' => [
+				'required' => 'Indica si se trata de IVA INCLUIDO',
+				'max_length' => 'El campo iva_incluido solo permite un caracter',
+				'alpha'=> 'El campo iva_incluido es de tipo alfabético'
+			]
+		],
 		'fecha' =>
 		[
 			'rules'  => 'required|valid_date',
@@ -327,6 +335,15 @@ class Validation
 	];
 	public $ventas = [
 		 
+		'iva_incluido' =>
+		[
+			'rules'  => 'required|alpha|max_length[1]',
+			'errors' => [
+				'required' => 'Indica si se trata de IVA INCLUIDO',
+				'max_length' => 'El campo iva_incluido solo permite un caracter',
+				'alpha'=> 'El campo iva_incluido es de tipo alfabético'
+			]
+		],
 		'fecha' =>
 		[
 			'rules'  => 'required|valid_date',
@@ -392,7 +409,15 @@ class Validation
 
 
 	public $ventas_update = [
-		 
+		'iva_incluido' =>
+		[
+			'rules'  => 'required|alpha|max_length[1]',
+			'errors' => [
+				'required' => 'Indica si se trata de IVA INCLUIDO',
+				'max_length' => 'El campo iva_incluido solo permite un caracter',
+				'alpha'=> 'El campo iva_incluido es de tipo alfabético'
+			]
+		],
 		'fecha' =>
 		[
 			'rules'  => 'if_exist|valid_date',

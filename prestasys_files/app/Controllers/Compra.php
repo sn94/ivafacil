@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Helpers\Facturacion;
 use App\Helpers\Utilidades;
 use App\Libraries\pdf_gen\PDF;
 use App\Models\Compras_model;
@@ -261,7 +262,9 @@ class Compra extends ResourceController
 		$request = \Config\Services::request();
 	 
 		$codcliente = $this->getClienteId();
-		$lista_co =  $this->total_($codcliente);
+		$MES=  date("m");
+		$ANIO=  date("Y");
+		$lista_co =  $this->total_($codcliente,  $MES, $ANIO);
 		$response =  \Config\Services::response();
 		return $response->setJSON($lista_co);
 	}
@@ -271,7 +274,10 @@ class Compra extends ResourceController
 
 
 
+ 
 
+
+	 
 
 
 	public function create()
@@ -339,27 +345,11 @@ class Compra extends ResourceController
 			try {
 
 				//calculo interno del iva
-				$iva1 =  $data['importe1'] / 11;
-				$iva2 = $data['importe2'] / 21;
-				$iva3 =  $data['importe3'];
-				$data['iva1'] =  $iva1;
-				$data['iva2'] =  $iva2;
-				$data['iva3'] = $iva3;
-				$data["total"] =  $data['importe1']  + $data['importe2']  + $data['importe3']  ;
+				$data= Facturacion::calcular_iva(  $data ); 
 
 				//Convertir a guaranies
 				if ($moneda != 1) {
-					$cambio = $data['tcambio'];
-					$im1 = $data['importe1'];//10%
-					$im2 = $data['importe2']; //5%
-					$im3 = $data['importe3']; //EXE
-					$data['importe1'] =  intval($cambio) * intval($im1);
-					$data['importe2'] =  intval($cambio) * intval($im2);
-					$data['importe3'] =  intval($cambio) * intval($im3);
-					$data['iva1'] =  intval($cambio) * intval($iva1);
-					$data['iva2'] =  intval($cambio) * intval($iva2);
-					$data['iva3'] =  intval($cambio) * intval($iva3);
-					$data["total"] =  $data['importe1']  + $data['importe2']  + $data['importe3'];
+					$data= Facturacion::convertir_a_moneda_nacional(  $data ); 
 				}
 				//Crear nuevo registro de ejercicio si es necesario
 				(new Cierres())->crear_ejercicio();
@@ -469,29 +459,12 @@ class Compra extends ResourceController
 			if( ! isset($data['importe3'] ) ) $data['importe3'] = 0;
 			$resu = []; //Resultado de la operacion
 			try {
-			 
 					//calculo interno del iva
-					$iva1 = $data['importe1'] / 11 ;
-					$iva2 = $data['importe2'] / 21 ;
-					$iva3 =  $data['importe3'];
-					$data['iva1'] =  $iva1;
-					$data['iva2'] =  $iva2;
-					$data['iva3'] = $iva3;
-					$data["total"] =  $data['importe1']  + $data['importe2']  + $data['importe3']  ;
+					$data=  Facturacion::calcular_iva(  $data ); 
 
 				//Convertir a guaranies
 				if ($moneda != 1) {
-					$cambio = $data['tcambio'];
-					$im1 =  $data['importe1']  ;
-					$im2 =  $data['importe2'] ;
-					$im3 =  $data['importe3']; 
-					$data['importe1'] =  intval($cambio) * intval($im1);
-					$data['importe2'] =  intval($cambio) * intval($im2);
-					$data['importe3'] =  intval($cambio) * intval($im3);
-					$data['iva1'] =  intval($cambio) * intval($iva1);
-					$data['iva2'] =  intval($cambio) * intval($iva2);
-					$data['iva3'] =  intval($cambio) * intval($iva3);
-					$data["total"] =  $data['importe1']  + $data['importe2']  + $data['importe3'];
+					$data=  Facturacion::convertir_a_moneda_nacional(  $data ); 
 				}
 
 				$cod_cliente = $data['codcliente'];

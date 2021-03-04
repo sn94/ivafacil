@@ -17,7 +17,7 @@ class Compras_model extends Model {
    protected $allowedFields = 
   [ 
    'ruc','codcliente','dv','fecha','factura','moneda','tcambio','importe1','importe2','importe3','total','iva1',
-   'iva2','iva3','origen'
+   'iva2','iva3' ,  'iva_incluido' ,'origen'
   ];
     
   

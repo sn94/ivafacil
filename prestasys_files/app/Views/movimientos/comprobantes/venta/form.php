@@ -4,9 +4,9 @@ use App\Helpers\Utilidades;
 use App\Models\Usuario_model;
 
 //User data
-$userData= (new Usuario_model())->where(  "regnro", session("id") )
-->where(  "ruc", session("ruc") )
-->where(  "dv", session("dv") )->first();
+$userData = (new Usuario_model())->where("regnro", session("id"))
+    ->where("ruc", session("ruc"))
+    ->where("dv", session("dv"))->first();
 
 
 $regnro = isset($venta) ?  $venta->regnro : "";
@@ -24,9 +24,10 @@ $total = isset($venta) ?  Utilidades::number_f($venta->total) : "0";
 $iva1 = isset($venta) ?  Utilidades::number_f($venta->iva1) : "0";
 $iva2 = isset($venta) ?  Utilidades::number_f($venta->iva2) : "0";
 $iva3 = isset($venta) ?  Utilidades::number_f($venta->iva3) : "0";
+$iva_incluido = isset($compra) ?  ($compra->iva_incluido == "S" ? "checked" : "") : "checked";
 $origen = isset($venta) ?  Utilidades::number_f($venta->origen) : "W";
 $estado =  isset($venta)  ? ($venta->estado == "A" ? "" : "checked")  : "";
-$timbrado= isset($venta) ? $venta->timbrado : (  $userData->timbrado );
+$timbrado = isset($venta) ? $venta->timbrado : ($userData->timbrado);
 ?>
 
 
@@ -85,9 +86,9 @@ $timbrado= isset($venta) ? $venta->timbrado : (  $userData->timbrado );
 
         <div class="col-12 col-md-6">
             <div class="row">
-                <div id="TIMBRADO" class="col-12 d-none"  style="display: grid;grid-template-columns: 40% 60%;"> 
+                <div id="TIMBRADO" class="col-12 d-none" style="display: grid;grid-template-columns: 40% 60%;">
                     <label style="grid-column-start: 1;" for="nf-password" class=" form-control-label form-control-sm -label">N° Timbrado:</label>
-                    <input style="grid-column-start: 2;" value="<?=$timbrado?>"    type="text" id="nf-password" name="timbrado" class=" form-control form-control-label form-control-sm text-right ">
+                    <input style="grid-column-start: 2;" value="<?= $timbrado ?>" type="text" id="nf-password" name="timbrado" class=" form-control form-control-label form-control-sm text-right ">
                 </div>
 
                 <div class="col-3 col-md-3  pl-md-3 pl-0">
@@ -125,6 +126,11 @@ $timbrado= isset($venta) ? $venta->timbrado : (  $userData->timbrado );
     <div class="row">
         <div class="col-12 col-md-6">
             <div class="container-fluid p-0" style="border-bottom: 1px solid #cecece;border-right: 1px solid #cecece; border-left: 1px solid #cecece;border-radius: 20px;">
+
+                <span style="font-size: 12px; font-weight: 600;color: green;">
+                <input type="hidden" name="iva_incluido" value="N"  disabled>
+                    CALCULAR COMO IVA INCLUIDO <input onchange="mutar_indicador_iva_incluido(event)" <?= $iva_incluido ?> type="checkbox" name="iva_incluido" value="S">
+                </span>
 
                 <h6 class="text-center" style="color: #515050;font-weight: 600;border: 1px solid #cecece;background-color: #b7b3b3;border-radius: 10px 10px 0px 0px;">Total IVA</h6>
                 <div class="row form-group">
@@ -314,12 +320,30 @@ Validaciones
     }
 
 
+
+    function esIVA_INCLUIDO(){
+        return  $("input[type=checkbox][name=iva_incluido]").prop("checked") ;
+     }
+
+
+   function mutar_indicador_iva_incluido(ev){
+
+       if( $(ev.target).prop("checked")) 
+       $("input[type=hidden][name=iva_incluido]").prop("disabled", true);
+       else 
+       $("input[type=hidden][name=iva_incluido]").prop("disabled", false);
+       totalizar();
+     }
+
+
     function totalizar(ev) {
 
-        if (parseInt($("select[name=moneda]").val()) == 1)
-            formatear_entero(ev);
-        else
-            formatear_decimal(ev);
+        if (ev != undefined) {
+            if (parseInt($("select[name=moneda]").val()) == 1)
+                formatear_entero(ev);
+            else
+                formatear_decimal(ev);
+        }
 
         let monto1 = limpiar_numero_para_float($("input[name=importe1]").val());
         let monto2 = limpiar_numero_para_float($("input[name=importe2]").val());
@@ -329,12 +353,19 @@ Validaciones
         let monto3_f = isNaN(parseFloat(monto3)) ? 0 : parseFloat(monto3);
 
         let tot = monto1_f + monto2_f + monto3_f;
-        console.log(monto1_f, monto2_f, monto3_f, tot);
+
         $("input[name=total]").val(dar_formato_millares(tot));
-        //calculos de iva
+        //calculos de iva 
+        //TIPO CALCULO: IVA INCLUIDO
         let iva1 = Math.round(monto1_f / 11);
         let iva2 = Math.round(monto2_f / 21);
         let iva3 = 0;
+        /**No incluido */
+        if (!( esIVA_INCLUIDO() )) {
+            iva1 = Math.round(monto1_f * (10 / 100));
+            iva2 = Math.round(monto2_f * (5 / 100));
+            iva3 = 0;
+        }
         $("input[name=iva1]").val(iva1);
         $("input[name=iva2]").val(iva2);
         $("input[name=iva3]").val(iva3);
@@ -499,12 +530,12 @@ Validaciones
 
 
 
-    function mostrarTimbrado( ev){
+    function mostrarTimbrado(ev) {
 
-        let check=  $(ev.currentTarget).prop("checked");
-        if( check) 
-        $("#TIMBRADO").removeClass("d-none");
-        else  $("#TIMBRADO").addClass("d-none");
+        let check = $(ev.currentTarget).prop("checked");
+        if (check)
+            $("#TIMBRADO").removeClass("d-none");
+        else $("#TIMBRADO").addClass("d-none");
     }
 
     //init
