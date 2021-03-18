@@ -432,13 +432,13 @@ class Venta extends ResourceController
 		$data['ruc'] =  $ModeloCliente->ruc;
 		$data['dv'] = $ModeloCliente->dv;
 		$data['origen'] =   $this->isAPI() ?  "A"   : "W";
-		if (!isset($data['importe1'])) $data['importe1'] = 0;
-		if (!isset($data['importe2'])) $data['importe2'] = 0;
-		if (!isset($data['importe3'])) $data['importe3'] = 0;
+		 
 
 
 		//Validar factura normal o anulada?
-		$validacion_selectiva = array_key_exists("estado", $data) ? $this->validate("ventas_anuladas")  :  $this->validate("ventas");
+		$validacion_selectiva = (array_key_exists("estado", $data)  &&  $data['estado']=="B") 
+		? $this->validate("ventas_anuladas")  : 
+		 $this->validate("ventas");
 
 		if ($validacion_selectiva) { //Validacion OK
 
@@ -455,6 +455,7 @@ class Venta extends ResourceController
 			$db->transStart();
 			try {
 				$data['origen'] = ($this->isAPI()) ? "A" : "W"; //ORIGEN Aplicacion
+				$data['iva_incluido']= "S";/**Unico modo hasta ahora */
 				//calculo interno del iva
 				$data = Facturacion::calcular_iva($data);
 				$data['estado'] =  array_key_exists("estado",  $data) ? $data['estado'] : "A";
@@ -507,6 +508,7 @@ class Venta extends ResourceController
 
 		$request = \Config\Services::request();
 		$ClienteCOD =  $this->getClienteId();
+
 		if ($request->getMethod(true) == "GET") {
 			$regis =  (new Ventas_model())->find($cod_venta);
 
@@ -522,22 +524,33 @@ class Venta extends ResourceController
 		$usu = new Ventas_model();
 
 		$data = $this->request->getRawInput();
-		$fecha_compro =  $data['fecha'];
-		//Operacion habilitada
-		$oper_habilitada =   $this->operacion_habilitada($ClienteCOD,  $fecha_compro);
-		if (!is_null($oper_habilitada))  return  $oper_habilitada;
 		//inferir otros datos del cliente
 		$ModeloCliente =  (new Usuario_model())->find($ClienteCOD);
 		$data["codcliente"] = $ClienteCOD;
 		$data['ruc'] =  $ModeloCliente->ruc;
 		$data['dv'] = $ModeloCliente->dv;
 		$data['origen'] =   $this->isAPI() ?  "A"   : "W";
+		
+		//Determinar el Estado 
+		$ElEstadoAnulado= isset( $data['estado']) ? ( $data['estado']=="B" ? true : false ) :  false;
+		if( $ElEstadoAnulado)  return $this->anular( $data['regnro'] );
+
+		//Modelo de ventas
+		$modeloVentas= (new Ventas_model())->find(   $data['regnro'] );
+
+		$fecha_compro =  isset($data['fecha']) ?  $data['fecha']  :   $modeloVentas->fecha  ;
+
+		//Operacion habilitada
+		$oper_habilitada =   $this->operacion_habilitada($ClienteCOD,  $fecha_compro);
+		if (!is_null($oper_habilitada))  return  $oper_habilitada;
+		
 
 
 		if ($this->validate('ventas_update')) { //Validacion OK
 
 			$moneda = "";
 			$Moneda_definida = array_key_exists("moneda",  $data);
+
 			if (array_key_exists("moneda",  $data)) {
 				$moneda =  $data["moneda"];
 				if (!$moneda && !is_null((new Monedas_model())->find($moneda))) {
@@ -550,9 +563,7 @@ class Venta extends ResourceController
 			}
 
 			$resu = []; //Resultado de la operacion
-			if (!isset($data['importe1'])) $data['importe1'] = 0;
-			if (!isset($data['importe2'])) $data['importe2'] = 0;
-			if (!isset($data['importe3'])) $data['importe3'] = 0;
+			 
 
 			try {
 

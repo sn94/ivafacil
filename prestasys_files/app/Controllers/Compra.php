@@ -22,7 +22,7 @@ class Compra extends ResourceController
 
 	protected $modelName = "App\Models\Compras_model";
 	protected $format = "json";
-	 
+
 
 	public function __construct()
 	{
@@ -50,11 +50,12 @@ class Compra extends ResourceController
 
 
 
-	private function getClienteId(){
-		$usu= new Usuario_model();
-        $request = \Config\Services::request();
-        $IVASESSION= is_null($request->getHeader("Ivasession")) ? "" :  $request->getHeader("Ivasession")->getValue();
-        $res= $usu->where( "session_id",  $IVASESSION )->first();
+	private function getClienteId()
+	{
+		$usu = new Usuario_model();
+		$request = \Config\Services::request();
+		$IVASESSION = is_null($request->getHeader("Ivasession")) ? "" :  $request->getHeader("Ivasession")->getValue();
+		$res = $usu->where("session_id",  $IVASESSION)->first();
 
 		if ($this->isAPI()) {
 			if (is_null($res)) {
@@ -62,8 +63,9 @@ class Compra extends ResourceController
 			} else {
 				return $res->regnro;
 			}
-		}else{      return session("id"); }
-		
+		} else {
+			return session("id");
+		}
 	}
 
 
@@ -94,63 +96,64 @@ class Compra extends ResourceController
 	//Subinformes
 
 
-	public function index_se($CLIENTE , $MES ,   $ANIO )
+	public function index_se($CLIENTE, $MES,   $ANIO)
 	{
- 
+
 		$compras = (new Compras_model());
 		$db = \Config\Database::connect();
 
 		//Segun los parametros
 		//Parametros: mes y anio 
-		$cliente= $CLIENTE;
+		$cliente = $CLIENTE;
 		$year =      $ANIO;
 		$month =  $MES;
- 
+
 		$lista_co = $compras
 			->where("codcliente", $cliente)
 			->where("year(fecha)", $year)
-			->where("month(fecha)", $month)
-			;
+			->where("month(fecha)", $month);
 
-		 //Contar
-		$TotalRegistros=   $lista_co->countAllResults();
- 
+		//Contar
+		$TotalRegistros =   $lista_co->countAllResults();
+
 		if ($this->isAPI()) {
 			$lista_co = $lista_co
-			->where("codcliente", $cliente)
-			->where("year(fecha)", $year)
-			->where("month(fecha)", $month)
-			->orderBy("fecha")
-			->get()->getResult();
+				->where("codcliente", $cliente)
+				->where("year(fecha)", $year)
+				->where("month(fecha)", $month)
+				->orderBy("fecha")
+				->get()->getResult();
 			return $this->respond(array("data" => $lista_co, "code" => 200));
 		} else {
 
-			$numero_filas= 10;
-			$pagina=  isset( $_GET['page'] ) ?  $_GET['page']  : 0;
+			$numero_filas = 10;
+			$pagina =  isset($_GET['page']) ?  $_GET['page']  : 0;
 
-			$lista_co=  $lista_co 
-			->where("codcliente", $cliente)
-			->where("year(fecha)", $year)
-			->where("month(fecha)", $month)
-			->orderBy("fecha")
-			->limit(   $numero_filas ,  $pagina)->get()->getResult();
-		 
+			$lista_co =  $lista_co
+				->where("codcliente", $cliente)
+				->where("year(fecha)", $year)
+				->where("month(fecha)", $month)
+				->orderBy("fecha")
+				->limit($numero_filas,  $pagina)->get()->getResult();
+
 			$lista_pagi =  $lista_co;   //; 
-		 
-			$ViewParams=  	[
+
+			$ViewParams =  	[
 				'compras' =>  $lista_pagi,
 				//'compras_pager' => $lista_co->pager,
-				'TotalRegistros'=> $TotalRegistros,
+				'TotalRegistros' => $TotalRegistros,
 				'year' => $year,
 				'month' => $month,
-				'CLIENTE'=>  $cliente,
-				'EVENT_HANDLER'=>"_informe_compras(event)",
-				'MODO'=>  $this->isAdminView() ? "ADMIN":  "CLIENT"
+				'CLIENTE' =>  $cliente,
+				'EVENT_HANDLER' => "_informe_compras(event)",
+				'MODO' =>  $this->isAdminView() ? "ADMIN" :  "CLIENT"
 			];
 
-			 
+
 			return view(
-				"movimientos/informes/grill_compras", $ViewParams);
+				"movimientos/informes/grill_compras",
+				$ViewParams
+			);
 
 			/*if ($this->isAdminView()) {
 				return view(
@@ -170,10 +173,10 @@ class Compra extends ResourceController
 	public function index($MES = NULL,   $ANIO =   NULL)
 	{
 
-	 
-		$cliente = $this->getClienteId(); 
-			$request = \Config\Services::request();
-			
+
+		$cliente = $this->getClienteId();
+		$request = \Config\Services::request();
+
 		//Segun los parametros
 
 		//Parametros: mes y anio
@@ -228,7 +231,7 @@ class Compra extends ResourceController
 	}
 
 
-	public function total_($cod_cliente, $MES , $YEAR )
+	public function total_($cod_cliente, $MES, $YEAR)
 	{
 		$request = \Config\Services::request();
 		$compras = (new Compras_model());
@@ -260,10 +263,10 @@ class Compra extends ResourceController
 	public  function  total()
 	{
 		$request = \Config\Services::request();
-	 
+
 		$codcliente = $this->getClienteId();
-		$MES=  date("m");
-		$ANIO=  date("Y");
+		$MES =  date("m");
+		$ANIO =  date("Y");
 		$lista_co =  $this->total_($codcliente,  $MES, $ANIO);
 		$response =  \Config\Services::response();
 		return $response->setJSON($lista_co);
@@ -274,10 +277,10 @@ class Compra extends ResourceController
 
 
 
- 
 
 
-	 
+
+
 
 
 	public function create()
@@ -285,43 +288,43 @@ class Compra extends ResourceController
 
 		$request = \Config\Services::request();
 		if ($request->getMethod(true) == "GET") {
-			$mensajes= (new Usuario())->servicio_habilitado(  $this->getClienteId())    ;
-			 
-			if( array_key_exists("msj",  $mensajes)  )
-			return view("movimientos/comprobantes/compra/create", ['error'=>  $mensajes['msj'] ]);
+			$mensajes = (new Usuario())->servicio_habilitado($this->getClienteId());
+
+			if (array_key_exists("msj",  $mensajes))
+				return view("movimientos/comprobantes/compra/create", ['error' =>  $mensajes['msj']]);
 			else
-			return view("movimientos/comprobantes/compra/create"  );
+				return view("movimientos/comprobantes/compra/create");
 		}
 		//Manejo POST
 
-		  
+
 		$usu = new Compras_model();
 
 		$data = $this->request->getRawInput();
-		$fecha_compro=  $data['fecha'];
-		$mes_fecha_compro=   date("m",   strtotime( $fecha_compro ) );
-		$anio_fecha_anio=   date("Y",   strtotime( $fecha_compro ) );
+		$fecha_compro =  $data['fecha'];
+		$mes_fecha_compro =   date("m",   strtotime($fecha_compro));
+		$anio_fecha_anio =   date("Y",   strtotime($fecha_compro));
 
 		//Al dia
-		$habilitado =  (new Usuario())->servicio_habilitado(  $this->getClienteId());
-		if (  array_key_exists("msj",  $habilitado ) )
+		$habilitado =  (new Usuario())->servicio_habilitado($this->getClienteId());
+		if (array_key_exists("msj",  $habilitado))
 			return $this->response->setJSON(['msj' =>  $habilitado['msj'],  'code' => "500"]);
-		
+
 
 		//verificar mes abierto
-		if(  (new Cierres())->esta_cerrado($mes_fecha_compro, $anio_fecha_anio)  )
-		return  $this->response->setJSON(  ['msj'=>  "El mes ya esta cerrado",  "code"=>  "500"]);
+		if ((new Cierres())->esta_cerrado($mes_fecha_compro, $anio_fecha_anio))
+			return  $this->response->setJSON(['msj' =>  "El mes ya esta cerrado",  "code" =>  "500"]);
 
-			//inferir otros datos del cliente
-			$ModeloCliente=  (new Usuario_model())->find(  $this->getClienteId());
-			$data["codcliente"]= $ModeloCliente->regnro;
-			$data['ruc']=  $ModeloCliente->ruc;
-			$data['dv']= $ModeloCliente->dv;
-			$data['origen']=   $this->isAPI() ?  "A"   : "W";
-			if( ! isset($data['importe1'] ) ) $data['importe1'] = 0;
-			if( ! isset($data['importe2'] ) ) $data['importe2'] = 0;
-			if( ! isset($data['importe3'] ) ) $data['importe3'] = 0;
-		
+		//inferir otros datos del cliente
+		$ModeloCliente =  (new Usuario_model())->find($this->getClienteId());
+		$data["codcliente"] = $ModeloCliente->regnro;
+		$data['ruc'] =  $ModeloCliente->ruc;
+		$data['dv'] = $ModeloCliente->dv;
+		$data['origen'] =   $this->isAPI() ?  "A"   : "W";
+		if (!isset($data['importe1'])) $data['importe1'] = 0;
+		if (!isset($data['importe2'])) $data['importe2'] = 0;
+		if (!isset($data['importe3'])) $data['importe3'] = 0;
+
 		if ($this->validate('compras')) { //Validacion OK
 
 			$cod_cliente =  $data["codcliente"];
@@ -345,11 +348,11 @@ class Compra extends ResourceController
 			try {
 
 				//calculo interno del iva
-				$data= Facturacion::calcular_iva(  $data ); 
+				$data = Facturacion::calcular_iva($data);
 
 				//Convertir a guaranies
 				if ($moneda != 1) {
-					$data= Facturacion::convertir_a_moneda_nacional(  $data ); 
+					$data = Facturacion::convertir_a_moneda_nacional($data);
 				}
 				//Crear nuevo registro de ejercicio si es necesario
 				(new Cierres())->crear_ejercicio();
@@ -396,75 +399,67 @@ class Compra extends ResourceController
 			//servicio habilitado
 			$habilitado =  (new Usuario())->servicio_habilitado($this->getClienteId());
 			if (array_key_exists("msj",  $habilitado))
-			return view(
-				"movimientos/comprobantes/compra/update",
-				["compra" => $regis,  "error" =>  $habilitado['msj']]
-			);
+				return view(
+					"movimientos/comprobantes/compra/update",
+					["compra" => $regis,  "error" =>  $habilitado['msj']]
+				);
 			else
-			return view(
-				"movimientos/comprobantes/compra/update",
-				["compra" => $regis]
-			);
+				return view(
+					"movimientos/comprobantes/compra/update",
+					["compra" => $regis]
+				);
 		}
 
 		//Manejo POST
 
-	 
+
 		$usu = new Compras_model();
 
 		$data = $this->request->getRawInput();
-		$fecha_compro=  $data['fecha'];
-		$mes_fecha_compro=   date("m",   strtotime( $fecha_compro ) );
-		$anio_fecha_anio=   date("Y",   strtotime( $fecha_compro ) );
+		//Validar codigo cliente
+		//$data["codcliente"]=  $this->getClienteId();
 
-
-		if(  (new Cierres())->esta_cerrado( $mes_fecha_compro, $anio_fecha_anio)  )
-		return  $this->response->setJSON(  ['msj'=>  "El mes ya esta cerrado",  "code"=>  "500"]);
+		$fecha_compro =  $data['fecha'];
+		$fecha_validacion= Facturacion::fechaDeComprobanteEsValida(  $fecha_compro);
+		if( !is_null($fecha_validacion))  return  $fecha_validacion;
 		
+
 		//Verificar si el periodo-ejercicio esta cerrado o fuera de rango
-	//	$Operacion_fecha_invalida = (new Cierres())->fecha_operacion_invalida($data['fecha']);
-	//	if (!is_null($Operacion_fecha_invalida))  return $Operacion_fecha_invalida;
+		//	$Operacion_fecha_invalida = (new Cierres())->fecha_operacion_invalida($data['fecha']);
+		//	if (!is_null($Operacion_fecha_invalida))  return $Operacion_fecha_invalida;
 		//***** Fin check tiempo*/
-
-
-		$data['origen'] =  $this->isAPI() ? "A" : "W";
+ 
+		//Cliente
+		$ModeloCliente =  (new Usuario_model())->find($this->getClienteId());
+		//inferir otros datos del cliente 
+		$data["codcliente"] = $ModeloCliente->regnro;
+		$data['ruc'] =  $ModeloCliente->ruc;
+		$data['dv'] = $ModeloCliente->dv;
+		$data['origen'] =   $this->isAPI() ?  "A"   : "W";
+		//Compra
+		$ModeloCompra= (new Compras_model())->find($data['regnro']);
 
 		if ($this->validate('compras')) { //Validacion OK
 
-			$cod_cliente =  $data["codcliente"];
-			if (!$cod_cliente && !is_null((new Usuario_model())->find($cod_cliente))) {
-				return  $this->genericResponse(null,  "Codigo de cliente: $cod_cliente no existe", 500);
-			}
 
-			$moneda =  $data["moneda"];
+			/**Validacion Moneda */
+			$moneda = isset(  $data["moneda"] ) ?  $data["moneda"] : $ModeloCompra->moneda  ;
 			if (!$moneda && !is_null((new Monedas_model())->find($moneda))) {
 				return $this->genericResponse(null,  "Codigo de moneda: $moneda no existe", 500);
 			}
-
 			if ($moneda != "1" && (!isset($data['tcambio'])  ||  $data['tcambio'] == "")) {
 				return $this->genericResponse(null,  "Indique el monto para cambio de moneda", 500);
 			}
 
-
-			
-			//inferir otros datos del cliente
-			$ModeloCliente=  (new Usuario_model())->find(  $this->getClienteId());
-			$data["codcliente"]= $ModeloCliente->regnro;
-			$data['ruc']=  $ModeloCliente->ruc;
-			$data['dv']= $ModeloCliente->dv;
-			$data['origen']=   $this->isAPI() ?  "A"   : "W";
-
-			if( ! isset($data['importe1'] ) ) $data['importe1'] = 0;
-			if( ! isset($data['importe2'] ) ) $data['importe2'] = 0;
-			if( ! isset($data['importe3'] ) ) $data['importe3'] = 0;
+		
 			$resu = []; //Resultado de la operacion
 			try {
-					//calculo interno del iva
-					$data=  Facturacion::calcular_iva(  $data ); 
+				//calculo interno del iva
+				$data =  Facturacion::calcular_iva($data);
 
 				//Convertir a guaranies
 				if ($moneda != 1) {
-					$data=  Facturacion::convertir_a_moneda_nacional(  $data ); 
+					$data =  Facturacion::convertir_a_moneda_nacional($data);
 				}
 
 				$cod_cliente = $data['codcliente'];
@@ -472,8 +467,6 @@ class Compra extends ResourceController
 					->where("regnro", $data['regnro'])
 					->set($data)
 					->update();
-
-
 				$resu = $this->genericResponse((new Compras_model())->find($data['regnro']), null, 200);
 			} catch (Exception $e) {
 				$resu = $this->genericResponse(null, "Hubo un error al registrar ($e)", 500);
@@ -517,7 +510,7 @@ class Compra extends ResourceController
 	public function delete($id = null)
 	{
 
- 
+
 		$us = (new Compras_model())->find($id);
 
 		if (is_null($us))
@@ -545,13 +538,13 @@ class Compra extends ResourceController
 			$params =  $this->request->getRawInput();
 			$Mes = $params['month'];
 			$Anio =  $params['year'];
-			$Cliente =  ( array_key_exists("cliente",  $params)) ?  $params['cliente']  : session("id");
+			$Cliente =  (array_key_exists("cliente",  $params)) ?  $params['cliente']  : session("id");
 
 			$lista =	(new Compras_model())
 				->where("codcliente",   $Cliente)
 				->where("year(fecha)", $Anio)
 				->where(" month( fecha) ",  $Mes)->get()->getResult();
- 
+
 
 			if ($tipo == "PDF") return  $this->pdf($lista, $Cliente);
 			if ($tipo == "JSON") return $this->response->setJSON($lista);
@@ -562,7 +555,7 @@ class Compra extends ResourceController
 
 
 
-	public function pdf($lista, $CLIENTE=NULL)
+	public function pdf($lista, $CLIENTE = NULL)
 	{
 
 
@@ -604,7 +597,7 @@ class Compra extends ResourceController
 		$t_iva10 = 0;
 
 		foreach ($lista as $row) {
-			$fecha=  Utilidades::fecha_f(  $row->fecha);
+			$fecha =  Utilidades::fecha_f($row->fecha);
 			$comprobante = Utilidades::formato_factura($row->factura);
 			$exenta = Utilidades::number_f($row->importe3);
 			$iva5 = Utilidades::number_f($row->importe2);

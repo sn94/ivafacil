@@ -266,7 +266,7 @@ class Validation
 		[
 			'rules'  => 'required|alpha|max_length[1]',
 			'errors' => [
-				'required' => 'Indica si se trata de IVA INCLUIDO',
+				'required' => 'Indica (S) si se trata de IVA INCLUIDO, (N) si es IVA EXTERNO',
 				'max_length' => 'El campo iva_incluido solo permite un caracter',
 				'alpha'=> 'El campo iva_incluido es de tipo alfabético'
 			]
@@ -335,7 +335,7 @@ class Validation
 	];
 	public $ventas = [
 		 
-		'iva_incluido' =>
+		/*'iva_incluido' =>
 		[
 			'rules'  => 'required|alpha|max_length[1]',
 			'errors' => [
@@ -343,7 +343,7 @@ class Validation
 				'max_length' => 'El campo iva_incluido solo permite un caracter',
 				'alpha'=> 'El campo iva_incluido es de tipo alfabético'
 			]
-		],
+		],*/
 		'fecha' =>
 		[
 			'rules'  => 'required|valid_date',
@@ -409,7 +409,7 @@ class Validation
 
 
 	public $ventas_update = [
-		'iva_incluido' =>
+	/*	'iva_incluido' =>
 		[
 			'rules'  => 'required|alpha|max_length[1]',
 			'errors' => [
@@ -417,7 +417,7 @@ class Validation
 				'max_length' => 'El campo iva_incluido solo permite un caracter',
 				'alpha'=> 'El campo iva_incluido es de tipo alfabético'
 			]
-		],
+		],*/
 		'fecha' =>
 		[
 			'rules'  => 'if_exist|valid_date',
@@ -542,6 +542,44 @@ class Validation
 		]  
 		 
 	];
+
+
+	public $retencion_update = [
+		 
+		 
+		 
+		'fecha' =>
+		[
+			'rules'  => 'required|valid_date',
+			'errors' => [
+				'required' => 'Proporciona la fecha de factura',
+				'valid_date' => 'Proporcione una fecha válida de factura'
+			]
+		], 
+		'moneda'  =>
+		[
+			'rules'  => 'if_exist|max_length[2]|integer',
+			'errors' => [
+				'required' => 'Indique código de moneda',
+				'max_length' => 'El código de moneda no debe sobrepasar los 2 dígitos',
+				'integer' => 'El código de moneda solo admite valores numéricos'
+
+			]
+		], 
+
+		'importe' => 
+		[
+			'rules'  => 'if_exist|max_length[15]|numeric',
+			'errors' => [
+				 
+				'max_length' => 'El importe retenido no debe sobrepasar los 15 dígitos',
+				'integer' => 'El importe retenido solo admite valores numéricos'
+
+			]
+		]  
+		 
+	];
+
 
 
 	public $admins= [

@@ -33,6 +33,7 @@
             $i_venta = Utilidades::number_f($cmp['t_i_ventas']);
             $i_compra = Utilidades::number_f($cmp['t_i_compras']);
             $i_retencion = Utilidades::number_f($cmp['t_retencion']);
+          
             $total_iva = Utilidades::number_f(($cmp['t_i_compras']   + $cmp['t_retencion']) -  $cmp['t_i_ventas']);
             $pago =   Utilidades::number_f($cmp['pago']);
             $saldo =   Utilidades::number_f($cmp['saldo'] +  $cmp['saldo_inicial']);

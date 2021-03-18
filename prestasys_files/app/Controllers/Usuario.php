@@ -175,7 +175,7 @@ class Usuario extends ResourceController {
 		$us= (new Usuario_model())
 				->select("regnro, ruc, dv, tipoplan, email, cliente, cedula, 
 				telefono, celular, domicilio, ciudad, rubro,
-				saldo_IVA, ultimo_nro, clave_marangatu")->
+				saldo_IVA, ultimo_nro, clave_marangatu, timbrado ")->
 				where("regnro", $id  )->first();
 		 
 	 
@@ -191,7 +191,8 @@ class Usuario extends ResourceController {
 	{
 		$this->API_MODE=  $this->isAPI();
 		$us= (new Usuario_model())
-				->select("regnro, ruc, dv, tipoplan, email, cliente, cedula, telefono, celular, domicilio, ciudad, rubro")->
+				->select("regnro, ruc, dv, tipoplan, email, cliente, cedula, telefono, celular, domicilio, ciudad, rubro,
+				timbrado")->
 				where("concat(ruc,dv)", $ruc  )->first();
 		 
 	 

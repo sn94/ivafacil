@@ -14,7 +14,7 @@ class Ventas_model extends Model {
    protected $returnType     = 'object';/** */
    protected $allowedFields = [
       'ruc','dv','codcliente','fecha','factura','moneda','tcambio','importe1','importe2','importe3','total',
-      'iva1','iva2','iva3',   'iva_incluido' , 'origen', 'estado'
+      'iva1','iva2','iva3',   'iva_incluido' , 'origen', 'estado', 'timbrado'
    ];
 
     public function __construct(){

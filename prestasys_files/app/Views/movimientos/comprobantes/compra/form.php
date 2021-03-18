@@ -17,7 +17,7 @@
     $total = isset($compra) ?  Utilidades::number_f($compra->total) : "0";
     $iva1 = isset($compra) ?  Utilidades::number_f($compra->iva1) : "0";
     $iva2 = isset($compra) ?  Utilidades::number_f($compra->iva2) : "0";
-    $iva_incluido = isset($compra) ?  ($compra->iva_incluido == "S" ? "checked" : "") : "checked";
+    $iva_incluido = isset($compra) ?  ($compra->iva_incluido == "S" ? "" : "checked") : "";
     $origen = isset($compra) ?  Utilidades::number_f($compra->origen) : "W";
     ?>
  <?php if (isset($compra)) : ?>
@@ -105,8 +105,8 @@
              <div class="container-fluid p-0" style="border-bottom: 1px solid #cecece;border-right: 1px solid #cecece; border-left: 1px solid #cecece;border-radius: 20px;">
 
                  <span style="font-size: 12px; font-weight: 600;color: green;">
-                 <input type="hidden" name="iva_incluido" value="N"  disabled>
-                     CALCULAR COMO IVA INCLUIDO <input onchange="mutar_indicador_iva_incluido(event)" <?= $iva_incluido ?> type="checkbox" name="iva_incluido" value="S">
+                     <input type="hidden" name="iva_incluido" value="S">
+                     CALCULAR COMO IVA EXTERNO <input onchange="mutar_indicador_iva_incluido(event)" <?= $iva_incluido ?> type="checkbox">
                  </span>
 
                  <h6 class="text-center" style="color: #515050;font-weight: 600;border: 1px solid #cecece;background-color: #b7b3b3;border-radius: 10px 10px 0px 0px;">Total IVA</h6>
@@ -290,17 +290,17 @@ Validaciones
      }
 
 
-     function esIVA_INCLUIDO(){
-        return  $("input[type=checkbox][name=iva_incluido]").prop("checked") ;
+     function esIVA_INCLUIDO() {
+         return ($("input[name=iva_incluido]").val() == "S");
      }
 
-     function mutar_indicador_iva_incluido(ev){
+     function mutar_indicador_iva_incluido(ev) {
 
-       if( $(ev.target).prop("checked")) 
-       $("input[type=hidden][name=iva_incluido]").prop("disabled", true);
-       else 
-       $("input[type=hidden][name=iva_incluido]").prop("disabled", false);
-       totalizar();
+         if ($(ev.target).prop("checked")) //calcular como externo
+             $("input[type=hidden][name=iva_incluido]").val("N");
+         else
+             $("input[type=hidden][name=iva_incluido]").val("S");
+         totalizar();
      }
 
      function totalizar(ev) {
@@ -319,15 +319,14 @@ Validaciones
          let monto3_f = isNaN(parseFloat(monto3)) ? 0 : parseFloat(monto3);
 
          let tot = monto1_f + monto2_f + monto3_f;
-
-         $("input[name=total]").val(dar_formato_millares(tot));
+       
          //calculos de iva
          //TIPO CALCULO: IVA INCLUIDO
          let iva1 = Math.round(monto1_f / 11);
          let iva2 = Math.round(monto2_f / 21);
          let iva3 = 0;
          /**No incluido */
-         if (!( esIVA_INCLUIDO())  ) {
+         if (!(esIVA_INCLUIDO())) {
              iva1 = Math.round(monto1_f * (10 / 100));
              iva2 = Math.round(monto2_f * (5 / 100));
              iva3 = 0;
@@ -337,6 +336,17 @@ Validaciones
          $("input[name=iva3]").val(iva3);
          $("#iva1").val(dar_formato_millares(iva1));
          $("#iva2").val(dar_formato_millares(iva2));
+         
+         if (!esIVA_INCLUIDO()) {
+             //Sera IVA externo?
+             let iva10 = limpiar_numero_para_float($("#iva1").val());
+             let iva5 = limpiar_numero_para_float($("#iva2").val());
+             let totalIVA = parseInt(iva10) + parseInt(iva5);
+             //Sumar lo anterior al total, si es IVA externo
+             tot = tot + totalIVA;
+         }
+
+         $("input[name=total]").val(dar_formato_millares(tot));
 
      }
 

@@ -110,13 +110,13 @@ class Cierres extends Controller
 			'compras_total_exe' => intval($cf->totalexe),
 			'compras_iva10' => round($cf->iva1),
 			'compras_iva5' => round($cf->iva2),
-			'compras_total_iva'=>  round($cf->iva1) +  round($cf->iva2),
+			'compras_total_iva' =>  round($cf->iva1) +  round($cf->iva2),
 			'ventas_total_10' => intval($df->total10),
 			'ventas_total_5' => intval($df->total5),
 			'ventas_total_exe' => intval($df->totalexe),
 			'ventas_iva10' => round($df->iva1),
 			'ventas_iva5' => round($df->iva2),
-			'ventas_total_iva'=> round($df->iva1)+   round($df->iva2),
+			'ventas_total_iva' => round($df->iva1) +   round($df->iva2),
 			'retencion' => (intval($reten->importe)),
 			'saldo' => $saldo,
 			'saldo_anterior' =>  $saldo_a,
@@ -223,18 +223,18 @@ class Cierres extends Controller
 
 			//obtener registro del cierre de mes recientemente realizado
 
-			$parametros = []; 
+			$parametros = [];
 			//*****totales*** */
 			$TOTALES = $this->totales($CODCLIENTE, $MES, $ANIO, "ARRAY");
 			/***Facturas anuladas */
-			$ANULADAS=  (new Ventas_model())
-			->select("factura")
-			->where("codcliente", $CODCLIENTE)
-			->where("MONTH(fecha)", $MES)
-			->where("YEAR(fecha)", $ANIO)
-			->where("ESTADO", "B")->get()->getResult();
+			$ANULADAS =  (new Ventas_model())
+				->select("factura")
+				->where("codcliente", $CODCLIENTE)
+				->where("MONTH(fecha)", $MES)
+				->where("YEAR(fecha)", $ANIO)
+				->where("ESTADO", "B")->get()->getResult();
 
-			$parametros = array_merge(['CLIENTE' => $CLIENTE, 'ANULADAS'=> $ANULADAS],  $TOTALES);
+			$parametros = array_merge(['CLIENTE' => $CLIENTE, 'ANULADAS' => $ANULADAS],  $TOTALES);
 
 			$correo = new Correo();
 			$correo->setDestinatario($dest);
@@ -543,7 +543,74 @@ class Cierres extends Controller
 
 	public function __totales_anio($CLIENTE,  $ANIO = NULL)
 	{
+		$supertotales = $this->comparativo_anio($this->getClienteId(),  $ANIO);
 
+		$cf =  (new Compra())->total_anio($CLIENTE, $ANIO);
+		$df = (new Venta())->total_anio($CLIENTE, $ANIO);
+		$reten = (new Retencion())->total_anio($CLIENTE, $ANIO);
+
+		$YEAR = is_null($ANIO)  ? date("Y") :   $ANIO;
+
+		//Total en importes
+		$total_importe_compras = 0;
+		$total_importe_ventas = 0;
+		$total_importe_retenci = 0;
+		$s_contri = 0;
+		$s_fisco = 0;
+		//Saldo
+		$saldo = 0;
+		//saldo inicial
+		$saldo_ini = 0;   
+
+		foreach ($supertotales as $supertotal) :
+			$total_importe_compras += $supertotal['t_impo_compras'];
+			$total_importe_ventas += $supertotal['t_impo_ventas'];
+			$total_importe_retenci += $supertotal['t_retencion'];
+			$s_contri += $supertotal['t_i_compras'];
+			$s_fisco += $supertotal['t_i_ventas'];
+			//Saldo
+			$saldo +=   $supertotal['saldo'];
+			//saldo inicial
+			$saldo_ini += $supertotal['saldo_inicial'];  //$this->__saldo_anterior_anio($CLIENTE, $YEAR);
+
+		endforeach;
+
+		//A favor de hacienda
+
+
+
+		//Anulados En venta
+		$fv_anuladas = (new Venta())->anuladas_($CLIENTE, NULL,  $YEAR);
+		$fv_cant =  $fv_anuladas->cantidad;
+		$fv_tot =  $fv_anuladas->total;
+		$fv_iva =  $fv_anuladas->total_iva;
+		//total en pago
+		$total_en_pagos = (new Estado_mes_model())->select('if( SUM(pago) is null, 0, SUM(PAGO) ) AS PAGOS ')
+			->where("codcliente",  $CLIENTE)->where("anio",  $YEAR)
+			->first();
+
+		return
+			[
+				'importe_compras' => $total_importe_compras,
+				'importe_ventas' => $total_importe_ventas,
+				'importe_retenc' =>  $total_importe_retenci,
+				'compras' => $s_contri,
+				'ventas' => $s_fisco,
+				'ventas_anuladas_cant' => $fv_cant,
+				'ventas_anuladas_tot' => $fv_tot,
+				'ventas_anuladas_iva' => $fv_iva,
+				'retencion' => $total_importe_retenci,
+				'saldo' => $saldo,
+				'saldo_inicial' => $saldo_ini,
+				'pago' =>  $total_en_pagos->PAGOS
+			];
+	}
+
+	/*
+
+	public function __totales_anio($CLIENTE,  $ANIO = NULL)
+	{
+		//$this->comparativo_anio($this->getClienteId(),  $ANIO);
 		$cf =  (new Compra())->total_anio($CLIENTE, $ANIO);
 		$df = (new Venta())->total_anio($CLIENTE, $ANIO);
 		$reten = (new Retencion())->total_anio($CLIENTE, $ANIO);
@@ -591,6 +658,7 @@ class Cierres extends Controller
 			];
 	}
 
+	*/
 	public function totales_anio_session($YEAR = NULL)
 	{
 		$response =  \Config\Services::response();
@@ -1066,6 +1134,8 @@ class Cierres extends Controller
 			return view("movimientos/resumen_anio_form_compa1",  ['ANIO' => $ANIO, 'comparativo1' =>  $res]);
 	}
 
+
+
 	public function  comparativo_anio_sess($ANIO)
 	{
 
@@ -1090,17 +1160,24 @@ class Cierres extends Controller
 			->get()->getResult();
 
 		$comparativo = [];
-		$total_general = ["importe_compras" => 0, "importe_ventas" => 0, "importe_retenc" => 0,
-		 "iva_compras" => 0, "iva_ventas" => 0,  "pagos"=> 0 ];
+		$total_general = [
+			"importe_compras" => 0, "importe_ventas" => 0, "importe_retenc" => 0,
+			"iva_compras" => 0, "iva_ventas" => 0, "total_iva" => 0,  "pagos" => 0
+		];
 		foreach ($ejercicios as   $ANIO) :
+			//$datosDelMes= $this->comparativo_anio($this->getClienteId(),  $ANIO)[ ];
 			$totales_cierre = $this->__totales_anio($Cliente, $ANIO->anio);
 			$totales_cierre['anio'] = $ANIO->anio;
+
 			$total_general['importe_compras'] += $totales_cierre['importe_compras'];
 			$total_general['importe_ventas'] += $totales_cierre['importe_ventas'];
 			$total_general['importe_retenc'] += $totales_cierre['importe_retenc'];
 			$total_general['iva_compras'] += $totales_cierre['compras'];
 			$total_general['iva_ventas'] += $totales_cierre['ventas'];
-			$total_general['pagos']+=  $totales_cierre['pago'];
+			//temppr
+			$total_general['total_iva'] += $totales_cierre['saldo'];
+			//$total_general['total_iva'] +=  $totales_cierre['compras'] + $totales_cierre['importe_retenc'] - $totales_cierre['ventas'];
+			$total_general['pagos'] +=  $totales_cierre['pago'];
 			/*
 			'importe_compras' 'importe_ventas' 'importe_retenc' 
 			'compras' 'ventas'  'ventas_anuladas_cant' 'ventas_anuladas_tot' 'ventas_anuladas_iva' 	'retencion' 
@@ -1108,6 +1185,8 @@ class Cierres extends Controller
 			*/
 			array_push($comparativo,  $totales_cierre);
 		endforeach;
+
+
 		if ($this->isAPI())
 			return $this->response->setJSON(["data" =>     $comparativo, "totales" => $total_general,  "code" => "200"]);
 		else
