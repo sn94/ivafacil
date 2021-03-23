@@ -6,8 +6,7 @@ use App\Helpers\Utilidades;
 <?= $this->section("estilos") ?>
 
 <style>
-    /* Elemento | http://localhost/ivafacil/usuario/view-cierre-mes */
-
+    
     .card-header>h4:nth-child(1) {
 
         font-weight: 600;
@@ -53,7 +52,8 @@ $SALDO=  isset( $saldo )?  Utilidades::number_f(   $saldo  ) :  0;
             <div class="card-body card-block p-0">
                 <form onsubmit="cerrar( event)" action="<?= base_url("usuario/actualizar-saldo") ?>" method="get" class="container">
 
-                    <p style="color:black; font-weight: 600;">Antes de cerrar este período, puede proporcionar el saldo inicial para el ejercicio <?= date("Y") ?>. O simplemente puede omitir este paso (en este caso el saldo inicial se considerará como cero)</p>
+                    <p style="color:black; font-weight: 600;">
+                    Antes de cerrar este período, puede proporcionar el saldo inicial para el mismo. O simplemente puede omitir este paso (en este caso el saldo inicial se considerará como cero)</p>
                     <div class="row form-group">
                         <div class="col-12 col-md-3 pl-md-3 pl-0">
                             <label for="nf-password" class=" form-control-label form-control-sm -label">Saldo inicial:</label>

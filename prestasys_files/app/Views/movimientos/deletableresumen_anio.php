@@ -8,8 +8,7 @@ use App\Models\Parametros_model;
 <?= $this->section("estilos") ?>
 
 <style>
-    /* Elemento | http://localhost/ivafacil/usuario/view-cierre-mes */
-
+     
     .card-header>h4:nth-child(1) {
 
         font-weight: 600;
@@ -41,28 +40,11 @@ use App\Models\Parametros_model;
 
 
 
-
-
-
 <div class="row">
-
-    <?php
-
-    $Parametro_Mensaje_ = (new Parametros_model())->first();
-    $MSJ_PANT_CIERRE_A =  !(is_null($Parametro_Mensaje_)) ? $Parametro_Mensaje_->MSJ_PANT_CIERRE_A :  "";
-    if ($MSJ_PANT_CIERRE_A !=  "") :
-    ?>
-        <div class="col-12 offset-md-2 col-md-8">
-            <p style="color: #026804; font-weight: 600;"> <?= $MSJ_PANT_CIERRE_A ?></p>
-        </div>
-        <div class="col-12 col-md-2"></div>
-
-    <?php endif; ?>
 
     <div id="loaderplace" class="col-12"></div>
 
     <div class="col-12 offset-md-2 col-md-8 ">
-        <span style="font-family: mainfont;"> Filtrar por el año</span>
         <!--cargar anios -->
         <select onchange="totales_cierre(event);comparativo_meses_del_anio();" name="year" style="font-size: 15px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
             <?php
@@ -78,24 +60,26 @@ use App\Models\Parametros_model;
             ?>
         </select>
     </div>
-
-
     <div class="col-12  offset-md-2 col-md-8 ">
-        <h3 class="text-center">Cuadros comparativos</h3>
+        <div class="card">
+            <div class="card-header">
+                <h4 class="text-center">Resumen del año: <span id="ANIO-LABEL"><?= date("Y") ?></span> </h4>
+            </div>
+            <div class="card-body card-block p-0" id="CIERRE-ANIO">
+                <?= view("movimientos/resumen_anio_form") ?>
+            </div>
+            <div class="card-footer" id="BOTON-CERRAR-AREA">
+                <!--
+                <a onclick="cerrar( event)" style="font-size: 10px;font-weight: 600;" href=""cierres/cierre-anio" " class="btn btn-success">
+                    <i class="fa fa-dot-circle-o"></i> CERRAR EL AÑO
+                </a>
 
-        <!--cuadro comparativo de totales por cada mes en un año determinado-->
-        <div id="comparativo-anio">
-
-
+-->
+            </div>
         </div>
-
-
-
     </div>
-
-
 </div>
-
+ 
 <script>
     async function saldo_anterior_anio() {
         let loader = "<img style='z-index: 400000;position: absolute;top: 50%;left: 50%;'  src='<?= base_url("assets/img/loader.gif") ?>'   />";
@@ -190,15 +174,6 @@ use App\Models\Parametros_model;
 
 
 
-    async function comparativo_meses_del_anio() {
-        let loader = "<img style='z-index: 400000;position: absolute;top: 50%;left: 50%;'  src='<?= base_url("assets/img/loader.gif") ?>'   />";
-        $("#comparativo-anio").html(loader);
-        let url__ = "<?= base_url('cierres/comparativo-anio-view-sess') ?>";
-        let ElAnio = $("select[name=year]").val();
-        let req = await fetch(url__ + "/" + ElAnio);
-        let resp_html = await req.text();
-        $("#comparativo-anio").html(resp_html);
-    }
 
 
 
@@ -206,8 +181,6 @@ use App\Models\Parametros_model;
     window.onload = function() {
         //saldo_anterior_anio();
         totales_cierre();
-        comparativo_meses_del_anio();
-        comparativo_por_ejercicio();
     };
 </script>
 

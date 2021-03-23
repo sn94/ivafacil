@@ -54,4 +54,8 @@ if (session("id") != "") {
 
 
  <h1 class="text-center m-5">Bienvenido</h1>
+
+
+  
+ 
  <?= $this->endSection() ?>

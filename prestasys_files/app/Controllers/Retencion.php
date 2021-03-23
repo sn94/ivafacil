@@ -292,7 +292,7 @@ class Retencion extends ResourceController
 		//if (!is_null($Operacion_fecha_invalida))  return $Operacion_fecha_invalida;
 		//***** Fin check tiempo*/
 
-		if ($this->API_MODE)  $data['origen'] = "A";
+		$data['origen'] = $this->isAPI() ? "A" : "W";
 
 
 		if ($this->validate('retencion')) { //Validacion OK
@@ -314,8 +314,7 @@ class Retencion extends ResourceController
 				$data["codcliente"] = $ModeloCliente->regnro;
 				$data['ruc'] =  $ModeloCliente->ruc;
 				$data['dv'] = $ModeloCliente->dv;
-				$data['origen'] =   $this->isAPI() ?  "A"   : "W";
-
+				 
 
 				$data = Facturacion::convertir_a_moneda_nacional($data);
 

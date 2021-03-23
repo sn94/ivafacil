@@ -25,7 +25,7 @@ class Filters extends BaseConfig
 			// 'csrf',
 			'logged_user' =>
 			['except' => [
-				"/",
+				"/",  
 				'usuario/create', 'usuario/sign-in', 'usuario/sign_in', 
 				'api/usuario/sign-in', 'api/usuario/create' , 'api/usuario/digito-verificador/*',
 				'api/usuario/recupera-passw',
@@ -35,7 +35,7 @@ class Filters extends BaseConfig
 				'admin/olvido-password', 'admin/recuperar-password', 'admin/recuperar-password/*'
 			]],
 			'admin_user' =>
-			['except' => [ 
+			['except' => [  
 				'admin/sign-in', 'home', 'welcome/publico', 
 				'usuario/*', 
 				"compra/*", 'venta/*', 'retencion/*',  'movimiento/*' ,'welcome/*','cierres/*', 'pagos/*', 'pagos-iva/*',
@@ -70,7 +70,7 @@ class Filters extends BaseConfig
 		'admin_user'=> 
 		['before'=> [ 
 			  "admin/parametros/*",  "admin/calendario/*",  "admin/monedas/*",  "admin/planes/*",  "admin/clientes/*",
-			"admin/view-cierre-mes/*",  "admin/cierre-mes/*",  "admin/estados-mes/*",  "admin/cierre-anio/*",
+			   "admin/cierre-mes/*",  "admin/estados-mes/*",  "admin/cierre-anio/*",
 			"admin/deshacer-cierre-mes/*",  "admin/recordar-pago/*", 
 
 			 ]

@@ -8,8 +8,7 @@ use App\Models\Parametros_model;
 <?= $this->section("estilos") ?>
 
 <style>
-    /* Elemento | http://localhost/ivafacil/usuario/view-cierre-mes */
-
+   
     .card-header>h4:nth-child(1) {
 
         font-weight: 600;
@@ -35,29 +34,62 @@ use App\Models\Parametros_model;
 
 
 
-<input type="hidden" id="info-totales" value="<?= base_url("cierres/totales-anio-session") ?>">
+<input type="hidden" id="info-totales" value="<?= base_url("cierres/totales-anio") ?>">
 
 <!-- Menu de Usuario -->
 
 
 
+
+
+
 <div class="row">
+
+    <?php
+
+    $Parametro_Mensaje_ = (new Parametros_model())->first();
+    $MSJ_PANT_CIERRE_A =  !(is_null($Parametro_Mensaje_)) ? $Parametro_Mensaje_->MSJ_PANT_CIERRE_A :  "";
+    if ($MSJ_PANT_CIERRE_A !=  "") :
+    ?>
+        <div class="col-12 offset-md-2 col-md-8">
+            <p style="color: #026804; font-weight: 600;"> <?= $MSJ_PANT_CIERRE_A ?></p>
+        </div>
+        <div class="col-12 col-md-2"></div>
+
+    <?php endif; ?>
 
     <div id="loaderplace" class="col-12"></div>
 
-    
+    <div class="col-12 offset-md-2 col-md-8 ">
+        <span style="font-family: mainfont;"> Filtrar por el año</span>
+        <!--cargar anios -->
+        <select onchange="totales_cierre(event);comparativo_meses_del_anio();" name="year" style="font-size: 15px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
+            <?php
+            $year = date("Y");
+            foreach ($ANIOS as $m) {
+                if ($year ==  $m->anio)
+                    echo "<option selected value='$m->anio'>$m->anio</option>";
+                else
+                    echo "<option value='$m->anio'>$m->anio</option>";
+            }
+            if (sizeof($ANIOS) == 0)
+                echo "<option selected value='$year'>$year</option>";;
+            ?>
+        </select>
+    </div>
+
 
     <div class="col-12  offset-md-2 col-md-8 ">
         <h3 class="text-center">Cuadros comparativos</h3>
 
-         
-
-
-        <!--cuadro comparativo de totales por cada año-->
-        <div id="comparativo-anio-2">
+        <!--cuadro comparativo de totales por cada mes en un año determinado-->
+        <div id="comparativo-anio">
 
 
         </div>
+
+
+
     </div>
 
 
@@ -132,8 +164,8 @@ use App\Models\Parametros_model;
         if (!confirm("Seguro que desea cerrar el año?")) return;
         let loader = "<img style='z-index: 400000;position: absolute;top: 50%;left: 50%;'  src='<?= base_url("assets/img/loader.gif") ?>'   />";
         $("#loaderplace").html(loader);
-        let url___=  ev.currentTarget.href+"/"+$("select[name=year]").val();
-        let req = await fetch( url___);
+        let url___ = ev.currentTarget.href + "/" + $("select[name=year]").val();
+        let req = await fetch(url___);
         let resp_json = await req.json();
         $("#loaderplace").html("");
         if ("data" in resp_json)
@@ -160,29 +192,27 @@ use App\Models\Parametros_model;
     async function comparativo_meses_del_anio() {
         let loader = "<img style='z-index: 400000;position: absolute;top: 50%;left: 50%;'  src='<?= base_url("assets/img/loader.gif") ?>'   />";
         $("#comparativo-anio").html(loader);
-        let url__ = "<?= base_url('cierres/comparativo-anio-view-sess') ?>";
+     
         let ElAnio = $("select[name=year]").val();
-        let req = await fetch(url__ + "/" + ElAnio);
+        let url__ = "<?= base_url('cierres/comparativo-periodos') ?>/"+ElAnio;
+
+        let req = await fetch( url__, {
+            headers:{
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
         let resp_html = await req.text();
         $("#comparativo-anio").html(resp_html);
     }
 
-    async function comparativo_por_ejercicio() {
-        let loader = "<img style='z-index: 400000;position: absolute;top: 50%;left: 50%;'  src='<?= base_url("assets/img/loader.gif") ?>'   />";
-        $("#comparativo-anio-2").html(loader);
-        let url__ = "<?= base_url('cierres/comparativo-ejercicios-view') ?>";
-       // let ElAnio = $("select[name=year]").val();
-        let req = await fetch(url__);
-        let resp_html = await req.text();
-        $("#comparativo-anio-2").html(resp_html);
-    }
 
 
 
     window.onload = function() {
         //saldo_anterior_anio();
-       // totales_cierre(); 
-        comparativo_por_ejercicio();
+        totales_cierre();
+        comparativo_meses_del_anio();
+    //    comparativo_por_ejercicio();
     };
 </script>
 

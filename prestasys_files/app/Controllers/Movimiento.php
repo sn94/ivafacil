@@ -63,7 +63,7 @@ class Movimiento extends BaseController {
 
 	
 	public function r_cierre(){
-		return view("movimientos/cierre");
+		return view("movimientos/cierre_mes/index");
 	}
 
 

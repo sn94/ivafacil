@@ -39,19 +39,16 @@ class Facturacion
             $iva1 =  $datos['importe1'] * (10 / 100);
             $iva2 = $datos['importe2'] * (5 / 100);
             $iva3 =  0;
+            //Sumar iva 10 a su importe 
+            $datos['importe1'] =  $datos['importe1'] + round( $iva1);
+            //Sumar iva 5 a su importe
+            $datos['importe2'] =  $datos['importe2'] + round( $iva2);
         }
 
         $datos['iva1'] =  $iva1;
         $datos['iva2'] =  $iva2;
         $datos['iva3'] = $iva3;
-
         $datos["total"] =  $datos['importe1']  + $datos['importe2']  + $datos['importe3'];
-
-        //Si es Iva externo Sumar los ivas
-        if (!$ES_IVA_INCLUIDO) {
-
-            $datos["total"] += $datos['iva1'] +  $datos['iva2'] + $datos['iva3'];
-        }
         return $datos;
     }
 
@@ -62,16 +59,20 @@ class Facturacion
      * */
     public static function  convertir_a_moneda_nacional($data)
     {
+        $cambio = $data['tcambio'];
+        if(    $cambio  == ""   ||   $cambio== "0")  $cambio = 1;
+
         if (array_key_exists("importe",    $data)) {
             //En caso retencion
-            $cambio = $data['tcambio'];
+           
             $im = $data['importe'];
             $datos = $data;
+           
             $datos['importe'] =  intval($cambio) * intval($im);
+
             return $datos;
         }
-        $cambio = $data['tcambio'];
-
+       
         $im1 = $data['importe1']; //10%
         $im2 = $data['importe2']; //5%
         $im3 = $data['importe3']; //EXE

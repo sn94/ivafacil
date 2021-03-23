@@ -8,8 +8,7 @@ use App\Models\Parametros_model;
 <?= $this->section("estilos") ?>
 
 <style>
-    /* Elemento | http://localhost/ivafacil/usuario/view-cierre-mes */
-
+   
     .card-header>h4:nth-child(1) {
 
         font-weight: 600;
@@ -45,42 +44,24 @@ use App\Models\Parametros_model;
 
     <div id="loaderplace" class="col-12"></div>
 
-    <div class="col-12 offset-md-2 col-md-8 ">
-        <!--cargar anios -->
-        <select onchange="totales_cierre(event);comparativo_meses_del_anio();" name="year" style="font-size: 15px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
-            <?php
-            $year = date("Y");
-            foreach ($ANIOS as $m) {
-                if ($year ==  $m->anio)
-                    echo "<option selected value='$m->anio'>$m->anio</option>";
-                else
-                    echo "<option value='$m->anio'>$m->anio</option>";
-            }
-            if (sizeof($ANIOS) == 0)
-                echo "<option selected value='$year'>$year</option>";;
-            ?>
-        </select>
-    </div>
-    <div class="col-12  offset-md-2 col-md-8 ">
-        <div class="card">
-            <div class="card-header">
-                <h4 class="text-center">Resumen del año: <span id="ANIO-LABEL"><?= date("Y") ?></span> </h4>
-            </div>
-            <div class="card-body card-block p-0" id="CIERRE-ANIO">
-                <?= view("movimientos/resumen_anio_form") ?>
-            </div>
-            <div class="card-footer" id="BOTON-CERRAR-AREA">
-                <!--
-                <a onclick="cerrar( event)" style="font-size: 10px;font-weight: 600;" href=""cierres/cierre-anio" " class="btn btn-success">
-                    <i class="fa fa-dot-circle-o"></i> CERRAR EL AÑO
-                </a>
 
--->
-            </div>
+
+    <div class="col-12  offset-md-2 col-md-8 ">
+        <h3 class="text-center">Cuadros comparativos</h3>
+
+
+
+
+        <!--cuadro comparativo de totales por cada año-->
+        <div id="comparativo-anio-2">
+
+
         </div>
     </div>
+
+
 </div>
- 
+
 <script>
     async function saldo_anterior_anio() {
         let loader = "<img style='z-index: 400000;position: absolute;top: 50%;left: 50%;'  src='<?= base_url("assets/img/loader.gif") ?>'   />";
@@ -173,15 +154,28 @@ use App\Models\Parametros_model;
     }
 
 
+ 
+    async function comparativo_por_ejercicio() {
+        let loader = "<img style='z-index: 400000;position: absolute;top: 50%;left: 50%;'  src='<?= base_url("assets/img/loader.gif") ?>'   />";
+        $("#comparativo-anio-2").html(loader);
+        let url__ = "<?= base_url('cierres/comparativo-ejercicios') ?>";
 
+        let req = await fetch(url__, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+        let resp_html = await req.text();
 
-
+        $("#comparativo-anio-2").html(resp_html);
+    }
 
 
 
     window.onload = function() {
         //saldo_anterior_anio();
-        totales_cierre();
+        // totales_cierre(); 
+        comparativo_por_ejercicio();
     };
 </script>
 

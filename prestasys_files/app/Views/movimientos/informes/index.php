@@ -53,7 +53,7 @@ if ($MODO == "ADMIN") {
     $INFO_VENTAS_A = base_url("venta/index");
     $INFO_RETENCION =  base_url("retencion/index");
     $INFO_SALDO_ANTERIOR =  base_url("cierres/leer-saldo-anterior-sess");
-    $INFO_TOTALES = base_url('cierres/totales-mes-session');
+    $INFO_TOTALES = base_url('cierres/totales-mes');
 }
 
 ?>

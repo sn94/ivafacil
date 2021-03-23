@@ -8,9 +8,10 @@ use App\Models\Parametros_model;
 <?= $this->section("estilos") ?>
 
 <style>
-#TABLA-CIERRE-MES tbody tr td{
-padding: 0px;
-}
+    #TABLA-CIERRE-MES tbody tr td {
+        padding: 0px;
+    }
+
     .card-header>h4:nth-child(1) {
 
         font-weight: 600;
@@ -29,8 +30,9 @@ padding: 0px;
 <?= $this->section("contenido") ?>
 
 
+<input type="hidden" id="info-totales-html" value="<?= base_url("cierres/view-cierre-mes") ?>">
 
-<input type="hidden" id="info-totales" value="<?= base_url("cierres/totales_mes_session") ?>">
+<input type="hidden" id="info-totales" value="<?= base_url("cierres/totales_mes") ?>">
 
 <!-- Menu de Usuario -->
 
@@ -47,7 +49,7 @@ padding: 0px;
 
 
                     <!--cargar meses -->
-                    <select onchange="totales_cierre()" id="month" style="font-size: 15px; border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
+                    <select onchange="totales_cierre_html()" id="month" style="font-size: 15px; border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
                         <?php
                         for ($m = 1; $m <= 12; $m++) {
                             $nom_mes = Utilidades::monthDescr($m);
@@ -58,7 +60,7 @@ padding: 0px;
                         }
                         ?>
                     </select>
-                    <select onchange="totales_cierre()" id="year" style="font-size: 15px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
+                    <select onchange="totales_cierre_html()" id="year" style="font-size: 15px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
                         <?php
                         $year = date("Y");
                         foreach ($ANIOS as $m) {
@@ -82,73 +84,8 @@ padding: 0px;
                 </div>
 
 
-                <div class="table-responsive">
-                    <table class="table table-light" id="TABLA-CIERRE-MES">
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th></th>
-                                <th class="text-center">Exenta</th>
-                                <th class="text-center">5%</th>
-                                <th class="text-center">10%</th>
-                                <th class="text-center">TOTALES</th>
-                                <th class="text-center">IVA</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <?php if (isset($edicion_saldo_inicial)  &&  $edicion_saldo_inicial) : ?>
-                                        <a class="p-0 m-0" href="<?= base_url("usuario/actualizar-saldo") ?>">
-                                            <i class="fa fa-refresh m-0" aria-hidden="true"></i>
-                                        </a>
-                                    <?php endif; ?>
-
-                                </td>
-                                <td>Saldo Inicial</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td id="saldo-anterior" class="text-right">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td>Compras</td>
-                                <td id="compras-exenta" class="text-right"></td>
-                                <td id="compras-5" class="text-right"></td>
-                                <td id="compras-10" class="text-right"></td>
-                                <td id="compras-tot" class="text-right"></td>
-                                <td id="compras-iva" class="text-right"></td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td>Ventas</td>
-                                <td id="ventas-exenta" class="text-right"></td>
-                                <td id="ventas-5" class="text-right"></td>
-                                <td id="ventas-10" class="text-right"></td>
-                                <td id="ventas-tot" class="text-right"></td>
-                                <td id="ventas-iva" class="text-right"></td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td>Retención</td>
-                                <td id="retencion-exenta" class="text-right"></td>
-                                <td></td>
-                                <td></td>
-                                <td id="retencion-tot" class="text-right"></td>
-                                <td id="retencion-iva" class="text-right"></td>
-                            </tr>
-
-                            <tr id="saldo-row">
-                                <td></td>
-                                <td>Saldo final</td>
-                                <td id="saldo-descri" colspan="4"></td>
-                                <td id="saldo" class="text-right"></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="table-responsive" id="TABLA-CIERRE-MES-AJAX">
+                    <?= view("movimientos/cierre_mes/ajax") ?>
                 </div>
                 <div class="row form-group">
                     <?php
@@ -180,10 +117,35 @@ padding: 0px;
 </div>
 
 <script>
-    async function totales_cierre() {
-
+    function show_loader() {
         let loader = "<img style='z-index: 400000;position: absolute;top: 50%;left: 50%;'  src='<?= base_url("assets/img/loader.gif") ?>'   />";
         $("#loaderplace").html(loader);
+    }
+
+    function hide_loader() {
+        $("#loaderplace").html("");
+    }
+    async function totales_cierre_html() {
+        show_loader();
+
+        //ruta 
+        let mes_ = $("#month").val();
+        let anio_ = $("#year").val();
+ 
+        let Route_to = $("#info-totales-html").val() + "/" + mes_ + "/" + anio_;
+        let req = await fetch(Route_to, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+        let htm = await req.text();
+        hide_loader();
+        $("#TABLA-CIERRE-MES-AJAX").html(htm);
+    }
+
+    async function totales_cierre() {
+
+        show_loader();
 
         //ruta 
         let mes_ = $("#month").val();
@@ -192,7 +154,7 @@ padding: 0px;
         let Route_to = $("#info-totales").val() + "/" + mes_ + "/" + anio_;
         let req = await fetch(Route_to);
         let resp_json = await req.json();
-        $("#loaderplace").html("");
+        hide_loader();
 
         let compras_total_exe = parseInt(resp_json.compras_total_exe);
         let compras_total_10 = parseInt(resp_json.compras_total_10);
@@ -302,7 +264,7 @@ padding: 0px;
 
 
     window.onload = function() {
-        totales_cierre();
+        //   totales_cierre();
     };
 </script>
 

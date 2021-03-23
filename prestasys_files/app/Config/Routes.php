@@ -79,18 +79,22 @@ $routes->get('/api/retencion/(:num)', 'Retencion::show/$1');
 $routes->delete('/api/retencion/(:num)', 'Retencion::delete/$1');
 $routes->get('/api/retencion/list/(:num)/(:num)', 'Retencion::index/$1/$2'); 
 $routes->post('/api/retencion/list', 'Retencion::index'); 
+/*Devuelve los detalles de cada comprobante registrado en el mes junto a los totales respectivos
+en IVA CF IVA DF Retencion */
+$routes->get('/api/estados-mes/(:num)/(:num)/(:num)', 'Cierres::resumen_mes/$1/$2/$3'); //Mes anio ClienteId
+$routes->get('/api/estados-mes/(:num)/(:num)', 'Cierres::resumen_mes/$1/$2'); //Mes anio
+/*Devuelve los totales de cada mes en el anio */
+$routes->get('/api/estados-anio/(:num)/(:num)', 'Cierres::resumen_anio/$1/$2'); //Anio Clienteid
+$routes->get('/api/estados-anio/(:num)', 'Cierres::resumen_anio/$1'); //Anio
 
-$routes->get('/api/estados-mes/(:num)/(:num)/(:num)', 'Cierres::resumen_mes/$1/$2/$3'); 
-$routes->get('/api/estados-mes/(:num)/(:num)', 'Cierres::resumen_mes_session/$1/$2'); 
-$routes->get('/api/estados-anio/(:num)/(:num)', 'Cierres::resumen_anio/$1/$2'); 
-$routes->get('/api/estados-anio/(:num)', 'Cierres::resumen_anio_session/$1'); 
 $routes->get('/api/cierre-mes', 'Cierres::cierre_mes'); 
 $routes->get('/api/cierre-mes/(:num)/(:num)', 'Cierres::cierre_mes/$1/$2'); // Nueva
 $routes->get('/api/cierre-anio/(:num)', 'Cierres::cierre_anio/$1'); 
-$routes->get('/api/totales-mes/(:num)/(:num)',   'Cierres::totales_mes_session/$1/$2');
-$routes->get('/api/totales-anio/(:num)',   'Cierres::totales_anio_session/$1');
-$routes->get('/api/comparativo-anios',   'Cierres::comparativo_ejercicios_view');
-$routes->get('/api/comparativo-meses/(:num)', 'Cierres::comparativo_anio_view_sess/$1'); //comparativos de todos los meses del anio
+$routes->get('/api/totales-mes/(:num)/(:num)',   'Cierres::totales_mes/$1/$2');//Mes anio
+$routes->get('/api/totales-anio/(:num)',   'Cierres::totales_anio/$1');//Anio param
+$routes->get('/api/comparativo-anios',   'Cierres::comparativo_ejercicios');
+$routes->get('/api/comparativo-meses/(:num)', 'Cierres::comparativo_periodos/$1'); 
+													//comparativos de todos los meses del anio
  
 
 //cierre_mes
@@ -182,16 +186,16 @@ $routes->get('/admin/clientes/saldo-anterior/(:num)/(:num)/(:num)', 'Cierres::le
 $routes->get('/admin/clientes/novedades', 'Usuario::novedades'); 
 $routes->get('/admin/clientes/novedades-venci-iva/(:num)', 'Usuario::verificar_vencimiento_iva/$1'); 
  //admin cierres
- $routes->get('/admin/view-cierre-mes/(:num)', 'Cierres::view_cierre_mes/$1'); //HTML
-$routes->get('/admin/cierre-mes/(:num)', 'Cierres::info_mes_cierre/$1'); 
-$routes->get('/admin/cierre-mes/(:num)/(:num)/(:num)', 'Cierres::info_mes_cierre/$1/$2/$3'); 
+ 
+$routes->get('/admin/cierre-mes/(:num)/(:num)/(:num)', 'Cierres::resumen_mes/$1/$2/$3'); //mes anio cliente
 $routes->get('/admin/estados-mes/(:num)/(:num)/(:num)', 'Cierres::resumen_mes/$1/$2/$3'); 
 $routes->get('/admin/estados-mes/(:num)', 'Cierres::resumen_mes/$1'); 
 $routes->get('/admin/cierre-anio/(:num)', 'Cierres::info_anio_cierre/$1'); 
-$routes->get('/admin/totales-mes/(:num)/(:num)/(:num)',   'Cierres::totales/$1/$2/$3');
+$routes->get('/admin/totales-mes/(:num)/(:num)/(:num)',   'Cierres::totales_mes/$1/$2/$3');//mes anio cliente
 //eliminar 
-$routes->get("/admin/deshacer-cierre-mes/(:num)/(:num)/(:num)",   "Cierres::deshacer_cierre_mes/$1/$2/$3");
+$routes->get("/admin/deshacer-cierre-mes/(:num)/(:num)/(:num)",   "Cierres::deshacer_cierre_mes/$1/$2/$3");//mes anio cliente
 $routes->get('/admin/recordar-pago/(:num)', 'Usuario::email_recordar_pago/$1'); 
+
 
 /**
  * --------------------------------------------------------------------

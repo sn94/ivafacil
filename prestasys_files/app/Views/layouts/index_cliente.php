@@ -157,12 +157,12 @@ $TERMINACION_RUC =   substr(session("ruc"), -1, 1);
                     </li>
 
                     <li class="menu-item-has-children dropdown">
-                        <a href="<?= base_url("cierres/view-cierre-anio") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-list"></i> Resumen del año</a>
+                        <a href="<?= base_url("cierres/comparativo-periodos") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-list"></i> Resumen del año</a>
 
                     </li>
 
                     <li class="menu-item-has-children dropdown">
-                        <a href="<?= base_url("cierres/comparativos") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-table"></i> Comparativo anual</a>
+                        <a href="<?= base_url("cierres/comparativo-ejercicios") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-table"></i> Comparativo anual</a>
 
                     </li>
                     <li class="menu-item-has-children dropdown">

@@ -320,7 +320,7 @@ Validaciones
 
 
     function esIVA_INCLUIDO() {
-        return $("input[type=checkbox][name=iva_incluido]").prop("checked");
+        return $("input[type=hidden][name=iva_incluido]").val() ==  "S";
     }
 
 
