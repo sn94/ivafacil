@@ -1,9 +1,17 @@
 <?php
 
 use App\Helpers\Utilidades;
+use App\Models\Estado_anio_model;
 use App\Models\Parametros_model;
 
+
+//Lista de anios ya registrados
+$ANIOS =  (new Estado_anio_model())->select("anio")
+    ->where("codcliente",   $codcliente)->get()->getResult();
 ?>
+
+
+
 <?= $this->extend("layouts/index_cliente") ?>
 <?= $this->section("estilos") ?>
 
@@ -28,6 +36,8 @@ use App\Models\Parametros_model;
 <?= $this->endSection() ?>
 
 <?= $this->section("contenido") ?>
+
+
 
 
 <input type="hidden" id="info-totales-html" value="<?= base_url("cierres/view-cierre-mes") ?>">
@@ -78,10 +88,6 @@ use App\Models\Parametros_model;
                 </h4>
             </div>
             <div class="card-body card-block p-0">
-                <div class="alert">
-                    <?= view("plantillas/message") ?>
-
-                </div>
 
 
                 <div class="table-responsive" id="TABLA-CIERRE-MES-AJAX">
@@ -102,13 +108,7 @@ use App\Models\Parametros_model;
 
             </div>
             <div id="loaderplace" class="col-12"></div>
-            <div class="card-footer">
-
-                <a onclick="cerrar( event)" style="font-size: 10px;font-weight: 600;" href="<?= base_url("cierres/cierre-mes") ?>" class="btn btn-success">
-                    <i class="fa fa-dot-circle-o"></i> CERRAR EL MES
-                </a>
-
-            </div>
+          
         </div>
     </div>
 
@@ -131,7 +131,7 @@ use App\Models\Parametros_model;
         //ruta 
         let mes_ = $("#month").val();
         let anio_ = $("#year").val();
- 
+
         let Route_to = $("#info-totales-html").val() + "/" + mes_ + "/" + anio_;
         let req = await fetch(Route_to, {
             headers: {

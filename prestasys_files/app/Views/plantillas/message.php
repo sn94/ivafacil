@@ -10,7 +10,7 @@
 <?php elseif( isset($error) ) :  ?>
 
     <div class="alert alert-danger">
-           
+    <b>No permitido </b>
     <ul>
     <?php 
     

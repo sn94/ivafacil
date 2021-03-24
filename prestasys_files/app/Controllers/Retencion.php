@@ -275,23 +275,12 @@ class Retencion extends ResourceController
 		$usu = new Retencion_model();
 		$data = $this->request->getRawInput();
 		$fecha_compro =  $data['fecha'];
-		$mes_fecha_compro =   date("m",   strtotime($fecha_compro));
-		$anio_fecha_anio =   date("Y",   strtotime($fecha_compro));
+	 
+		//Operacion habilitada Por fecha comprobante, y pago al dia por servicio
+		$oper_habilitada =  (new Cierres())->operacion_habilitada($this->getClienteId(),  $fecha_compro);
+		if (!is_null($oper_habilitada))  return  $oper_habilitada;
 
-		//Al dia
-		$habilitado =  (new Usuario())->servicio_habilitado($this->getClienteId());
-		if (array_key_exists("msj",  $habilitado))
-			return $this->response->setJSON(['msj' =>  $habilitado['msj'],  'code' => "500"]);
-
-
-		if ((new Cierres())->esta_cerrado($mes_fecha_compro,  $anio_fecha_anio))
-			return  $this->response->setJSON(['msj' =>  "El mes ya esta cerrado",  "code" =>  "500"]);
-
-		//Verificar si el periodo-ejercicio esta cerrado o fuera de rango
-		//$Operacion_fecha_invalida = (new Cierres())->fecha_operacion_invalida($data['fecha']);
-		//if (!is_null($Operacion_fecha_invalida))  return $Operacion_fecha_invalida;
-		//***** Fin check tiempo*/
-
+		
 		$data['origen'] = $this->isAPI() ? "A" : "W";
 
 
@@ -314,12 +303,12 @@ class Retencion extends ResourceController
 				$data["codcliente"] = $ModeloCliente->regnro;
 				$data['ruc'] =  $ModeloCliente->ruc;
 				$data['dv'] = $ModeloCliente->dv;
-				 
+
 
 				$data = Facturacion::convertir_a_moneda_nacional($data);
 
 				//Crear nuevo registro de ejercicio si es necesario
-				(new Cierres())->crear_ejercicio();
+				(new Cierres())->crear_periodos_ejercicios(  $fecha_compro);
 
 				$id = $usu->insert($data);
 				$resu = $this->genericResponse((new Retencion_model())->find($id), null, 200);
@@ -382,16 +371,12 @@ class Retencion extends ResourceController
 		$codRetencion = 	$data['regnro'];
 
 		/**Verificar fecha  */
-		$fecha_compro =  $data['fecha'];
-		$fecha_validacion = Facturacion::fechaDeComprobanteEsValida($fecha_compro);
-		if (!is_null($fecha_validacion)) return $fecha_validacion;
+		$fecha_compro =  $data['fecha']; 
+		//Operacion habilitada Por fecha comprobante, y pago al dia por servicio
+		$oper_habilitada =  (new Cierres())->operacion_habilitada($this->getClienteId(),  $fecha_compro);
+		if (!is_null($oper_habilitada))  return  $oper_habilitada;
 
-
-		//Verificar si el periodo-ejercicio esta cerrado o fuera de rango
-
-		//	$Operacion_fecha_invalida= (new Cierres())->fecha_operacion_invalida(  $data['fecha'] );
-		//if (  !is_null($Operacion_fecha_invalida))  return $Operacion_fecha_invalida;
-		//***** Fin check tiempo*/
+ 
 
 
 		if ($this->validate('retencion_update')) { //Validacion OK
@@ -411,6 +396,8 @@ class Retencion extends ResourceController
 
 			$resu = []; //Resultado de la operacion
 			try {
+
+				(new Cierres())->crear_periodos_ejercicios(	$fecha_compro );
 				$retencionObj = new Retencion_model();
 				$retencionObj->set($data)
 					->where("regnro", $codRetencion)

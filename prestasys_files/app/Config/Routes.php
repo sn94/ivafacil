@@ -181,7 +181,7 @@ $routes->get("/admin/clientes/list-pagos-iva/(:num)/(:alpha)",  'Pagos_iva::inde
 $routes->get('/admin/clientes/pagos-iva/procesar/(:num)', 'Pagos_iva::create/$1'); 
 $routes->post('/admin/clientes/pagos-iva/procesar', 'Pagos_iva::create'); 
 //saldo
-$routes->get('/admin/clientes/saldo-anterior/(:num)/(:num)/(:num)', 'Cierres::leer_saldo_anterior/$1/$2/$3');
+$routes->get('/admin/clientes/saldo-anterior/(:num)/(:num)/(:num)', 'Cierres::calcular_saldo_anterior/$1/$2/$3');
 //admin clientes novedades
 $routes->get('/admin/clientes/novedades', 'Usuario::novedades'); 
 $routes->get('/admin/clientes/novedades-venci-iva/(:num)', 'Usuario::verificar_vencimiento_iva/$1'); 

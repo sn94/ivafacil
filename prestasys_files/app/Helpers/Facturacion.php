@@ -97,17 +97,5 @@ class Facturacion
 
     /**Validaciones */
 
-
-    public static function fechaDeComprobanteEsValida($fecha_compro)
-    {
-        $mes_fecha_compro =   date("m",   strtotime($fecha_compro));
-        $anio_fecha_anio =   date("Y",   strtotime($fecha_compro));
-
-
-        $response = \Config\Services::response();
-        if ((new Cierres())->esta_cerrado($mes_fecha_compro, $anio_fecha_anio))
-            return  $response->setJSON(['msj' =>  "El mes ya esta cerrado",  "code" =>  "500"]);
-        else
-            return NULL;
-    }
+ 
 }

@@ -40,7 +40,9 @@ $SALDO_REAL = $saldo + $saldo_anterior;
 </style>
 
 
-El cliente con RUC°: <?= $CLIENTE->ruc . "-" . $CLIENTE->dv ?> ha cerrado el mes de <?= Utilidades::monthDescr(date("m")) ?>.
+El cliente con RUC°: <?= $CLIENTE->ruc . "-" . $CLIENTE->dv ?> 
+ha cerrado el mes de <?= Utilidades::monthDescr( $MES) ?>.
+
 <h4 style="text-decoration: underline;">Sumas y Saldos</h4>
 
 <table style="border: 1px solid black;">
@@ -53,7 +55,10 @@ El cliente con RUC°: <?= $CLIENTE->ruc . "-" . $CLIENTE->dv ?> ha cerrado el me
             <th>IMPUESTO</th>
         </tr>
     </thead>
-
+    <tr style="background-color: green;color: white;">
+            <td colspan="3">Saldo inicial:</td>
+            <td class="text-right"> <?= Utilidades::number_f($saldo_anterior) ?></td>
+        </tr>
     <tbody>
         <tr style="background-color: green;color: white;">
             <td colspan="4">VENTAS</td>
@@ -122,10 +127,7 @@ El cliente con RUC°: <?= $CLIENTE->ruc . "-" . $CLIENTE->dv ?> ha cerrado el me
         </tr>
 
 
-        <tr style="background-color: green;color: white;">
-            <td colspan="3">Saldo inicial:</td>
-            <td class="text-right"> <?= Utilidades::number_f($saldo_anterior) ?></td>
-        </tr>
+        
 
         <tr>
             <?php if ($SALDO_REAL < 0) :    ?>

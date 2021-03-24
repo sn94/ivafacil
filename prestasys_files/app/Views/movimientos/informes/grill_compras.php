@@ -5,7 +5,8 @@ use App\Helpers\Utilidades;
 
 
 $compras_reportes_download_link_PDF =  ($MODO == "ADMIN")  ?  base_url("admin/clientes/compras-informes/PDF") :  base_url("compra/informes/PDF");
-$compras_reportes_download_link_JSON =  ($MODO == "ADMIN")  ? base_url("admin/clientes/compras-informes/JSON")  :   base_url("compra/informes/JSON");
+$compras_reportes_download_link_JSON =  ($MODO == "ADMIN")  ?
+    base_url("admin/clientes/compras-informes/JSON")  :   base_url("compra/informes/JSON");
 ?>
 
 <!--   GENERACION DE INFORME  --->
@@ -23,6 +24,14 @@ $compras_reportes_download_link_JSON =  ($MODO == "ADMIN")  ? base_url("admin/cl
 </script>
 <form id="compras-reports" method="POST" action="<?= $compras_reportes_download_link_PDF  ?>" target="_blank">
     <!--cargar anios -->
+
+
+    <?php if (isset($CLIENTE)) : ?>
+        <input type="hidden" name="cliente" value="<?= $CLIENTE ?>">
+    <?php endif; ?>
+
+    <input type="hidden" name="month" value="<?= date("m") ?>">
+    <input  type="hidden"  name="year" value="<?= date("Y") ?>">
 
 
 
@@ -75,7 +84,7 @@ $compras_reportes_download_link_JSON =  ($MODO == "ADMIN")  ? base_url("admin/cl
                     <td class="pb-0 text-right"> <?= Utilidades::number_f($it->importe1) ?></td>
                     <td class="pb-0 text-right"> <?= Utilidades::number_f($it->total) ?></td>
                     <td class="pb-0 text-right"> <?= Utilidades::number_f($it->iva1 + $it->iva2) ?> </td>
-                   
+
 
                 </tr>
         <?php

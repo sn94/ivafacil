@@ -38,6 +38,7 @@ $INFO_VENTAS_A = "";
 $INFO_RETENCION = "";
 $INFO_SALDO_ANTERIOR = "";
 $INFO_TOTALES = "";
+$INFO_CLIENTE = "";
 
 //modo de rutas
 if ($MODO == "ADMIN") {
@@ -45,19 +46,21 @@ if ($MODO == "ADMIN") {
     $INFO_VENTAS =  base_url("admin/clientes/ventas/$CLIENTE");
     $INFO_VENTAS_A = base_url("admin/clientes/ventas/$CLIENTE");
     $INFO_RETENCION =  base_url("admin/clientes/retencion/$CLIENTE");
-    $INFO_SALDO_ANTERIOR =  base_url("admin/clientes/saldo-anterior/$CLIENTE");
-    $INFO_TOTALES = base_url("admin/totales-mes/$CLIENTE");
+    $INFO_SALDO_ANTERIOR =  base_url("admin/clientes/saldo-anterior");
+    $INFO_TOTALES = base_url("admin/totales-mes");
+    $INFO_CLIENTE =  $CLIENTE;
 } else {
     $INFO_COMPRAS =  base_url("compra/index");
     $INFO_VENTAS =  base_url("venta/index");
     $INFO_VENTAS_A = base_url("venta/index");
     $INFO_RETENCION =  base_url("retencion/index");
-    $INFO_SALDO_ANTERIOR =  base_url("cierres/leer-saldo-anterior-sess");
+    $INFO_SALDO_ANTERIOR =  base_url("cierres/calcular-saldo-anterior");
     $INFO_TOTALES = base_url('cierres/totales-mes');
 }
 
 ?>
 
+<input type="hidden" id="info-cliente" value="<?= $INFO_CLIENTE ?>">
 <input type="hidden" id="info-compras" value="<?= $INFO_COMPRAS ?>">
 <input type="hidden" id="info-ventas" value="<?= $INFO_VENTAS ?>">
 <input type="hidden" id="info-ventas-a" value="<?= $INFO_VENTAS_A ?>">
@@ -396,14 +399,26 @@ if ($MODO == "ADMIN") {
         let mes = $("select[name=month]").val();
         let anio = $("select[name=year]").val();
         //saldo anterior
-        let saldo_anterior_url = $("#info-saldo-anterior").val();
-        let req = await fetch(saldo_anterior_url + '/' + mes + '/' + anio);
+
+        let saldo_anterior_url = $("#info-saldo-anterior").val() + '/' + mes + '/' + anio;
+        let idcliente = $("#info-cliente").val();
+        if (idcliente != "") saldo_anterior_url += "/" + idcliente;
+        let req = await fetch(saldo_anterior_url, {
+            headers: {
+                formato: "JSON"
+            }
+        });
         let resp = await req.json();
         let saldo_ini = 0;
         if ("data" in resp) saldo_ini = resp.data;
 
         //otros totales-mes-session
-        let req_2 = await fetch($("#info-totales").val() + '/' + mes + '/' + anio);
+
+        let totalesUrl = $("#info-totales").val() + '/' + mes + '/' + anio;
+        if (idcliente != "") totalesUrl += "/" + idcliente;
+
+
+        let req_2 = await fetch(totalesUrl);
         let resp_2 = await req_2.json();
         //totales en  iva compra  venta retencion
         let c = 0;
@@ -490,11 +505,19 @@ if ($MODO == "ADMIN") {
 
 
     async function cargar_tablas() {
-          informe_ventas();
-         informe_ventas_anuladas();
-          informe_compras();
-         informe_retencion();
-       totales();
+
+
+        await informe_ventas();
+        await informe_ventas_anuladas();
+        await informe_compras();
+        await informe_retencion();
+        await totales();
+
+
+        let mes = $("select[name=month]").val();
+        let anio = $("select[name=year]").val();
+        $("form input[name=month]").val(mes);
+        $("form input[name=year]").val(anio);
         //   $("ul.pagination li").addClass("btn btn-dark btn-sm").css("font-weight", "600");
     }
 
@@ -523,6 +546,7 @@ if ($MODO == "ADMIN") {
         let resp = await req.json();
         if ("data" in resp) {
             action();
+
         } else {
             alert(procesar_errores(data.msj));
         }

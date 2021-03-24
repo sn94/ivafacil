@@ -5,13 +5,13 @@ use App\Helpers\Utilidades;
 $compraExenta = isset($compras_total_exe) ?  $compras_total_exe :  0;
 $compraI10 = isset($compras_total_10) ?  $compras_total_10 :  0;;
 $compraI5 = isset($compras_total_5) ?  $compras_total_5 :  0;;
-$compraTotal =  isset($compras_total_10) ?  ($compras_total_10 +$compras_total_5)  :  0; ;
+$compraTotal =  isset($compras_total_10) ?  ($compras_total_10 + $compras_total_5)  :  0;;
 $compraTotalIva = isset($compras_total_iva) ?  $compras_total_iva :  0;;
 
 $ventaExenta = isset($ventas_total_exe) ?  $ventas_total_exe :  0;;
 $ventaI10 = isset($ventas_total_10) ?  $ventas_total_10 :  0;;
 $ventaI5 = isset($ventas_total_5) ?  $ventas_total_5 :  0;;
-$ventaTotal =  isset($ventas_total_10) ?  ($ventas_total_10 + $ventas_total_5):  0;
+$ventaTotal =  isset($ventas_total_10) ?  ($ventas_total_10 + $ventas_total_5) :  0;
 $ventaTotalIva = isset($ventas_total_iva) ?  $ventas_total_iva :  0;
 
 $retencionTotal = isset($retencion) ?  $retencion :  0;;
@@ -22,20 +22,19 @@ $saldoMonto = isset($saldo) && isset($saldo_anterior) ? ($saldo + $saldo_anterio
 //Determinar descripcion del saldo
 $s_fisco = $ventaTotalIva;
 $s_contri = $compraTotalIva + $retencionTotal;
-$saldo_contri_fisco=  ($s_contri - $s_fisco) + $saldo_anterior;
- 
+$saldo_contri_fisco =  ($s_contri - $s_fisco) + $saldo_anterior;
+
 //contextualizar colores para presentar saldo
 //#saldo-row  [table-success | table-danger]
 //#saldo-descri [red |  green]
 $saldoDescripcion =
-    ($saldo_contri_fisco < 0 ) ? "A FAVOR DE LA SET " : ( $saldo_contri_fisco >0 ? "A FAVOR DEL CONTRIBUYENTE" 
-     : "SALDO CERO" );
+    ($saldo_contri_fisco < 0) ? "A FAVOR DE LA SET " : ($saldo_contri_fisco > 0 ? "A FAVOR DEL CONTRIBUYENTE"
+        : "SALDO CERO");
 
-$saldoDescripcionColor=   ($saldo_contri_fisco < 0 )? " style='color: red;' " :
-(  ($saldo_contri_fisco > 0 ) ? " style='color: green;' " : (" style='color: black;' ")  );
+$saldoDescripcionColor =   ($saldo_contri_fisco < 0) ? " style='color: red;' " : (($saldo_contri_fisco > 0) ? " style='color: green;' " : (" style='color: black;' "));
 
-$saldoDescripcionFondo=   ($saldo_contri_fisco < 0 ) ? " class='table-danger' " : (
-    ($saldo_contri_fisco > 0 )? " class='table-success' ": " class='table-secondary' "  ) ;
+$saldoDescripcionFondo =   ($saldo_contri_fisco < 0) ? " class='table-danger' " : (
+    ($saldo_contri_fisco > 0) ? " class='table-success' " : " class='table-secondary' ");
 
 
 
@@ -43,25 +42,30 @@ $saldoDescripcionFondo=   ($saldo_contri_fisco < 0 ) ? " class='table-danger' " 
 
 //Formatear numericos
 
-$compraExenta=  Utilidades::number_f(  $compraExenta);
-$compraI10=  Utilidades::number_f(  $compraI10);
-$compraI5=  Utilidades::number_f(  $compraI5);
-$compraTotal=  Utilidades::number_f(  $compraTotal);
-$compraTotalIva=  Utilidades::number_f(  $compraTotalIva);
+$compraExenta =  Utilidades::number_f($compraExenta);
+$compraI10 =  Utilidades::number_f($compraI10);
+$compraI5 =  Utilidades::number_f($compraI5);
+$compraTotal =  Utilidades::number_f($compraTotal);
+$compraTotalIva =  Utilidades::number_f($compraTotalIva);
 
-$ventaExenta=  Utilidades::number_f(  $ventaExenta);
-$ventaI10=  Utilidades::number_f(  $ventaI10);
-$ventaI5=  Utilidades::number_f(  $ventaI5);
-$ventaTotal=  Utilidades::number_f(  $ventaTotal);
-$ventaTotalIva=  Utilidades::number_f(  $ventaTotalIva);
+$ventaExenta =  Utilidades::number_f($ventaExenta);
+$ventaI10 =  Utilidades::number_f($ventaI10);
+$ventaI5 =  Utilidades::number_f($ventaI5);
+$ventaTotal =  Utilidades::number_f($ventaTotal);
+$ventaTotalIva =  Utilidades::number_f($ventaTotalIva);
 
-$retencionTotal=  Utilidades::number_f(  $retencionTotal);
-$saldoAnterior=  Utilidades::number_f( $saldo_anterior);
-$saldoMonto=  Utilidades::number_f(  $saldoMonto);
+$retencionTotal =  Utilidades::number_f($retencionTotal);
+$saldoAnterior =  Utilidades::number_f($saldo_anterior);
+$saldoMonto =  Utilidades::number_f($saldoMonto);
 
- 
+
 ?>
 
+
+
+<?php if (isset($error)    &&   $error !=  "") : ?>
+    <?= view("plantillas/message") ?>
+<?php endif; ?>
 
 
 
@@ -94,7 +98,7 @@ $saldoMonto=  Utilidades::number_f(  $saldoMonto);
             <td></td>
             <td></td>
             <td id="saldo-anterior" class="text-right">
-            <?=$saldoAnterior?>
+                <?= $saldoAnterior ?>
             </td>
         </tr>
 
@@ -127,13 +131,15 @@ $saldoMonto=  Utilidades::number_f(  $saldoMonto);
             <td id="retencion-iva" class="text-right"><?= $retencionTotal ?></td>
         </tr>
 
-        <tr id="saldo-row" <?= $saldoDescripcionFondo?>>
+        <tr id="saldo-row" <?= $saldoDescripcionFondo ?>>
             <td></td>
             <td>Saldo final</td>
-            <td  <?= $saldoDescripcionColor?> id="saldo-descri" colspan="4">
+            <td <?= $saldoDescripcionColor ?> id="saldo-descri" colspan="4">
                 <?= $saldoDescripcion ?>
             </td>
             <td id="saldo" class="text-right"> <?= $saldoMonto ?></td>
         </tr>
     </tbody>
 </table>
+
+<?=view("movimientos/cierre_mes/boton_cierre")?>

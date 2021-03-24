@@ -302,18 +302,11 @@ class Compra extends ResourceController
 
 		$data = $this->request->getRawInput();
 		$fecha_compro =  $data['fecha'];
-		$mes_fecha_compro =   date("m",   strtotime($fecha_compro));
-		$anio_fecha_anio =   date("Y",   strtotime($fecha_compro));
+		 
+		//Operacion habilitada
+		$oper_habilitada =   (new Cierres())->operacion_habilitada($this->getClienteId(),  $fecha_compro);
+		if (!is_null($oper_habilitada))  return  $oper_habilitada;
 
-		//Al dia
-		$habilitado =  (new Usuario())->servicio_habilitado($this->getClienteId());
-		if (array_key_exists("msj",  $habilitado))
-			return $this->response->setJSON(['msj' =>  $habilitado['msj'],  'code' => "500"]);
-
-
-		//verificar mes abierto
-		if ((new Cierres())->esta_cerrado($mes_fecha_compro, $anio_fecha_anio))
-			return  $this->response->setJSON(['msj' =>  "El mes ya esta cerrado",  "code" =>  "500"]);
 
 		//inferir otros datos del cliente
 		$ModeloCliente =  (new Usuario_model())->find($this->getClienteId());
@@ -355,7 +348,7 @@ class Compra extends ResourceController
 					$data = Facturacion::convertir_a_moneda_nacional($data);
 				}
 				//Crear nuevo registro de ejercicio si es necesario
-				(new Cierres())->crear_ejercicio();
+				(new Cierres())->crear_periodos_ejercicios( $fecha_compro);
 				$id = $usu->insert($data);
 				$resu = $this->genericResponse((new Compras_model())->find($id), null, 200);
 				$db->transCommit();
@@ -420,15 +413,12 @@ class Compra extends ResourceController
 		//$data["codcliente"]=  $this->getClienteId();
 
 		$fecha_compro =  $data['fecha'];
-		$fecha_validacion= Facturacion::fechaDeComprobanteEsValida(  $fecha_compro);
-		if( !is_null($fecha_validacion))  return  $fecha_validacion;
-		
+		 
+		//Operacion habilitada Por fecha comprobante, y pago al dia por servicio
+		$oper_habilitada =  (new Cierres())->operacion_habilitada($this->getClienteId(),  $fecha_compro);
+		if (!is_null($oper_habilitada))  return  $oper_habilitada;
 
-		//Verificar si el periodo-ejercicio esta cerrado o fuera de rango
-		//	$Operacion_fecha_invalida = (new Cierres())->fecha_operacion_invalida($data['fecha']);
-		//	if (!is_null($Operacion_fecha_invalida))  return $Operacion_fecha_invalida;
-		//***** Fin check tiempo*/
- 
+
 		//Cliente
 		$ModeloCliente =  (new Usuario_model())->find($this->getClienteId());
 		//inferir otros datos del cliente 
@@ -437,13 +427,13 @@ class Compra extends ResourceController
 		$data['dv'] = $ModeloCliente->dv;
 		$data['origen'] =   $this->isAPI() ?  "A"   : "W";
 		//Compra
-		$ModeloCompra= (new Compras_model())->find($data['regnro']);
+		$ModeloCompra = (new Compras_model())->find($data['regnro']);
 
 		if ($this->validate('compras')) { //Validacion OK
 
 
 			/**Validacion Moneda */
-			$moneda = isset(  $data["moneda"] ) ?  $data["moneda"] : $ModeloCompra->moneda  ;
+			$moneda = isset($data["moneda"]) ?  $data["moneda"] : $ModeloCompra->moneda;
 			if (!$moneda && !is_null((new Monedas_model())->find($moneda))) {
 				return $this->genericResponse(null,  "Codigo de moneda: $moneda no existe", 500);
 			}
@@ -451,12 +441,13 @@ class Compra extends ResourceController
 				return $this->genericResponse(null,  "Indique el monto para cambio de moneda", 500);
 			}
 
-		
+
 			$resu = []; //Resultado de la operacion
 			try {
 				//calculo interno del iva
 				$data =  Facturacion::calcular_iva($data);
 
+				(new Cierres())->crear_periodos_ejercicios(	$fecha_compro );
 				//Convertir a guaranies
 				if ($moneda != 1) {
 					$data =  Facturacion::convertir_a_moneda_nacional($data);
@@ -517,7 +508,7 @@ class Compra extends ResourceController
 			return $this->genericResponse(null, "Compra  no existe",  500);
 		else {
 			(new Compras_model())->where("regnro", $id)->delete($id);
-			return $this->genericResponse("Compra eliminada", null,  200);
+			return  $this->response->setJSON( $this->genericResponse("Compra eliminada", null,  200) );
 		}
 	}
 

@@ -81,7 +81,7 @@ class Pagos_iva extends Controller {
 		$Ejercicio= is_null(  $ANIO ) ? date("Y")  :  $ANIO ;
 		$CLIENTE=   $this->getClienteId() ;
 		$REGISTROS= [];
-		if( $ESTADO  == "P"){
+		if( $ESTADO  == "P"){//Pendientes de pagar , y que esten en condicion de pagar
 
 			$REGISTROS = (new Estado_mes_model())->where("anio",  $Ejercicio)
 			->where("estado", "C")
@@ -108,9 +108,9 @@ class Pagos_iva extends Controller {
 		$pendientes = (new Estado_mes_model()); //->where("anio",  $Ejercicio) ;
 		
 		if( $estado == "P")
-		$pendientes= $pendientes->where("estado", "C");
+		$pendientes= $pendientes->where("estado", "C");//MES C-errado
 		else 
-		$pendientes= $pendientes->where("estado", "L");
+		$pendientes= $pendientes->where("estado", "L");//MES L-iquidado
 
 		$pendientes= $pendientes->where("codcliente", $CLIENTE)->get()->getResult();
  

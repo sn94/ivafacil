@@ -8,11 +8,6 @@ $ultimo_nro = isset($usuario) ?     $usuario->ultimo_nro : "";
 $clave_marangatu =  isset($usuario) ?  $usuario->clave_marangatu  : "";
 
 
-//Saldo inicial field
-use App\Models\Estado_mes_model;
-
-$reg_anio = (new Estado_mes_model())->where("codcliente", session("id"))->where("anio", date("Y"))->first();
-$yaestaCerrado =  !is_null($reg_anio) ? (($reg_anio->estado == "P") ? "" : "disabled")  :   "";
 ?>
 
 
@@ -34,7 +29,7 @@ $yaestaCerrado =  !is_null($reg_anio) ? (($reg_anio->estado == "P") ? "" : "disa
 
             <label for="nf-password" class=" form-control-label form-control-sm -label">
                 Saldo Inicial <?= date("Y") ?> : <span></span></label>
-            <input <?= $yaestaCerrado ?> onfocus="if(this.value=='0') this.value='';" onblur="if(this.value=='') this.value='0';" value="<?= $saldo_IVA ?>" maxlength="10" oninput="formatear( event)" type="text" name="saldo_IVA" class=" form-control form-control-label form-control-sm ">
+            <input  onfocus="if(this.value=='0') this.value='';" onblur="if(this.value=='') this.value='0';" value="<?= $saldo_IVA ?>" maxlength="10" oninput="formatear( event)" type="text" name="saldo_IVA" class=" form-control form-control-label form-control-sm ">
 
             <label for="" class=" form-control-label form-control-sm -label">N° Timbrado:</label>
             <input maxlength="8" type="text" name="timbrado" class="form-control form-control-sm" value="<?= $timbrado ?>">

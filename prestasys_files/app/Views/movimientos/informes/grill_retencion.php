@@ -1,7 +1,7 @@
 <?php
 
 use App\Helpers\Utilidades;
- 
+
 ?>
 
 
@@ -20,7 +20,16 @@ use App\Helpers\Utilidades;
     }
 </script>
 <form id="retencion-reports" method="POST" action="<?= base_url("retencion/informes/PDF") ?>" target="_blank">
-  
+
+
+    <?php if (isset($CLIENTE)) : ?>
+        <input type="hidden" name="cliente" value="<?= $CLIENTE ?>">
+    <?php endif; ?>
+
+    <input type="hidden" name="month" value="<?= date("m") ?>">
+    <input  type="hidden"  name="year" value="<?= date("Y") ?>">
+
+
 
     <button type="submit" style="display: none;"></button>
 
@@ -49,24 +58,25 @@ use App\Helpers\Utilidades;
         <?php foreach ($retencion as $it) : ?>
             <tr>
                 <td class="pb-0"><a style="color:black;" onclick="borrar_opera(event, informe_retencion )" href="<?= base_url("retencion/delete/" . $it->regnro) ?>"> <i class="fa fa-trash"></i></a> </td>
-                <td class="pb-0"> <a style="color:black;"  href="<?= base_url("retencion/update/" . $it->regnro) ?>"><i class="fa fa-pencil"></i></a> </td>
-                <td class="pb-0"> <?= Utilidades::fecha_f(   $it->fecha  )?> </td>
+                <td class="pb-0"> <a style="color:black;" href="<?= base_url("retencion/update/" . $it->regnro) ?>"><i class="fa fa-pencil"></i></a> </td>
+                <td class="pb-0"> <?= Utilidades::fecha_f($it->fecha) ?> </td>
                 <td class="pb-0"> <?= $it->retencion ?> </td>
                 <td class="pb-0 text-right"> <?= Utilidades::number_f($it->importe) ?></td>
 
             </tr>
         <?php
- 
+
         endforeach; ?>
     </tbody>
-   
+
 </table>
 
 
- 
-<?=view( "paginadores/paginador")?>
 
- 
+<?= view("paginadores/paginador") ?>
 
-<?php 
-//(sizeof($retencion) > 1) ? $retencion_pager->links() : '' ?>
+
+
+<?php
+//(sizeof($retencion) > 1) ? $retencion_pager->links() : '' 
+?>

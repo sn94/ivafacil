@@ -96,14 +96,7 @@ use App\Models\Parametros_model;
 </div>
 
 <script>
-    async function saldo_anterior_anio() {
-        let loader = "<img style='z-index: 400000;position: absolute;top: 50%;left: 50%;'  src='<?= base_url("assets/img/loader.gif") ?>'   />";
-        $("#loaderplace").html(loader);
-        let req = await fetch("<?= base_url("cierres/saldo-anterior-anio") ?>");
-        let resp_json = await req.json();
-        $("#loaderplace").html("");
-        $("#saldo-anterior").val(dar_formato_millares(resp_json.data));
-    }
+    
 
     async function totales_cierre(ev) {
 
@@ -209,7 +202,7 @@ use App\Models\Parametros_model;
 
 
     window.onload = function() {
-        //saldo_anterior_anio();
+   
         totales_cierre();
         comparativo_meses_del_anio();
     //    comparativo_por_ejercicio();

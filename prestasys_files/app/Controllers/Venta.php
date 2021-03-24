@@ -366,20 +366,7 @@ class Venta extends ResourceController
 
 
 
-	private function operacion_habilitada($ClienteCOD, $fecha_compro)
-	{
-		$mes_fecha_compro =   date("m",   strtotime($fecha_compro));
-		$anio_fecha_anio =   date("Y",   strtotime($fecha_compro));
 
-		//Al dia
-		$habilitado =  (new Usuario())->servicio_habilitado($ClienteCOD);
-		if (array_key_exists("msj",  $habilitado))
-			return $this->response->setJSON(['msj' =>  $habilitado['msj'],  'code' => "500"]);
-
-		elseif ((new Cierres())->esta_cerrado($mes_fecha_compro,  $anio_fecha_anio))
-			return  $this->response->setJSON(['msj' =>  "El mes ya esta cerrado",  "code" =>  "500"]);
-		else  return NULL;
-	}
 
 
 
@@ -415,11 +402,11 @@ class Venta extends ResourceController
 		//Manejo POST 
 		$usu = new Ventas_model();
 		$data = $this->request->getRawInput();
-		$fecha_compro =  $data['fecha'];
-		//Operacion habilitada
-		$oper_habilitada =   $this->operacion_habilitada($ClienteCOD,  $fecha_compro);
+		$fecha_compro =  $data['fecha']; 
+		//Operacion habilitada Por fecha comprobante
+		$oper_habilitada =  (new Cierres())->operacion_habilitada($ClienteCOD,  $fecha_compro);
 		if (!is_null($oper_habilitada))  return  $oper_habilitada;
-
+ 
 		//Timbrado registrado?
 		$existe_timbrado = isset($data['timbrado']) ? ($data['timbrado'] == "" ? false : true) : false;
 		$estado_anu = isset($data['estado']) ? ($data['estado'] == "B" ? true : false) : false;
@@ -432,13 +419,13 @@ class Venta extends ResourceController
 		$data['ruc'] =  $ModeloCliente->ruc;
 		$data['dv'] = $ModeloCliente->dv;
 		$data['origen'] =   $this->isAPI() ?  "A"   : "W";
-		 
+
 
 
 		//Validar factura normal o anulada?
-		$validacion_selectiva = (array_key_exists("estado", $data)  &&  $data['estado']=="B") 
-		? $this->validate("ventas_anuladas")  : 
-		 $this->validate("ventas");
+		$validacion_selectiva = (array_key_exists("estado", $data)  &&  $data['estado'] == "B")
+			? $this->validate("ventas_anuladas")  :
+			$this->validate("ventas");
 
 		if ($validacion_selectiva) { //Validacion OK
 
@@ -455,7 +442,8 @@ class Venta extends ResourceController
 			$db->transStart();
 			try {
 				$data['origen'] = ($this->isAPI()) ? "A" : "W"; //ORIGEN Aplicacion
-				$data['iva_incluido']= "S";/**Unico modo hasta ahora */
+				$data['iva_incluido'] = "S";
+				/**Unico modo hasta ahora */
 				//calculo interno del iva
 				$data = Facturacion::calcular_iva($data);
 				$data['estado'] =  array_key_exists("estado",  $data) ? $data['estado'] : "A";
@@ -467,7 +455,7 @@ class Venta extends ResourceController
 				}
 
 				//Crear nuevo registro de ejercicio si es necesario
-				(new Cierres())->crear_ejercicio();
+				(new Cierres())->crear_periodos_ejercicios( $fecha_compro);
 				$id = $usu->insert($data);
 				(new Usuario())->actualizar_ultimo_nro_fv($data['factura']);
 				$resu = $this->genericResponse((new Ventas_model())->find($id), null, 200);
@@ -530,21 +518,20 @@ class Venta extends ResourceController
 		$data['ruc'] =  $ModeloCliente->ruc;
 		$data['dv'] = $ModeloCliente->dv;
 		$data['origen'] =   $this->isAPI() ?  "A"   : "W";
-		
+
 		//Determinar el Estado 
-		$ElEstadoAnulado= isset( $data['estado']) ? ( $data['estado']=="B" ? true : false ) :  false;
-		if( $ElEstadoAnulado)  return $this->anular( $data['regnro'] );
+		$ElEstadoAnulado = isset($data['estado']) ? ($data['estado'] == "B" ? true : false) :  false;
+		if ($ElEstadoAnulado)  return $this->anular($data['regnro']);
 
 		//Modelo de ventas
-		$modeloVentas= (new Ventas_model())->find(   $data['regnro'] );
+		$modeloVentas = (new Ventas_model())->find($data['regnro']);
 
-		$fecha_compro =  isset($data['fecha']) ?  $data['fecha']  :   $modeloVentas->fecha  ;
-
+		$fecha_compro =  isset($data['fecha']) ?  $data['fecha']  :   $modeloVentas->fecha;
+	 
 		//Operacion habilitada
-		$oper_habilitada =   $this->operacion_habilitada($ClienteCOD,  $fecha_compro);
+		$oper_habilitada =   (new Cierres())->operacion_habilitada($ClienteCOD,  $fecha_compro);
 		if (!is_null($oper_habilitada))  return  $oper_habilitada;
-		
-
+ 
 
 		if ($this->validate('ventas_update')) { //Validacion OK
 
@@ -563,7 +550,7 @@ class Venta extends ResourceController
 			}
 
 			$resu = []; //Resultado de la operacion
-			 
+
 
 			try {
 
@@ -576,6 +563,7 @@ class Venta extends ResourceController
 					$data =  Facturacion::convertir_a_moneda_nacional($data);
 				}
 
+				(new Cierres())->crear_periodos_ejercicios($fecha_compro);
 				$usu->where("codcliente", $ClienteCOD)
 					->where("regnro", $data['regnro'])
 					->set($data)
@@ -638,7 +626,7 @@ class Venta extends ResourceController
 			return $this->genericResponse(null, "Venta  no existe",  500);
 		else {
 			(new Ventas_model())->where("regnro", $id)->delete($id);
-			return $this->genericResponse("Venta eliminada", null,  200);
+			return  $this->response->setJSON($this->genericResponse("Venta eliminada", null,  200));
 		}
 	}
 
@@ -655,8 +643,9 @@ class Venta extends ResourceController
 			$params =  $this->request->getRawInput();
 			$Mes = $params['month'];
 			$Anio =  $params['year'];
-			$Cliente =   (array_key_exists("cliente",  $params))  ?  $params['cliente']  : session("id");
+			$Cliente =   (array_key_exists("cliente",  $params))  ?  $params['cliente']  : $this->getClienteId();
 			$estado = "A";
+			
 			if (array_key_exists("anulados",  $params))  $estado =  $params['anulados'];
 
 			$lista =	(new Ventas_model())

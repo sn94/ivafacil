@@ -2,7 +2,7 @@
 
 use App\Helpers\Utilidades;
 
- 
+
 ?>
 
 <!--   GENERACION DE INFORME  --->
@@ -19,12 +19,17 @@ use App\Helpers\Utilidades;
     }
 </script>
 <form id="ventas-a-reports" method="POST" action="<?= base_url("venta/informes/PDF") ?>" target="_blank">
-     
 
-   
 
-    
-     <input  type="hidden" name="anulados" value="B"> 
+
+    <?php if (isset($CLIENTE)) : ?>
+        <input type="hidden" name="cliente" value="<?= $CLIENTE ?>">
+    <?php endif; ?>
+
+    <input type="hidden" name="month" value="<?= date("m") ?>">
+    <input  type="hidden"  name="year" value="<?= date("Y") ?>">
+
+    <input type="hidden" name="anulados" value="B">
 
 
     <select id="download-a-1" onchange="descarga_archivo_ventas_a(event)" style="font-size: 11px;border-radius: 15px;border: 0.5px solid #9f9f9f;color: #555;">
@@ -55,32 +60,31 @@ use App\Helpers\Utilidades;
     </thead>
     <tbody>
         <?php
-        if( $TotalRegistros > 0 ):
-        foreach ($ventas as $it) : ?>
-            <tr>
-                <td class="pb-0"><a  style="color:black;" onclick="borrar_opera(event, informe_ventas)" href="<?= base_url("venta/delete/" . $it->regnro) ?>"> <i class="fa fa-trash"></i></a> </td>
-                <td class="pb-0"> <a  style="color:black;" href="<?= base_url("venta/update/" . $it->regnro) ?>"><i class="fa fa-pencil"></i></a> </td>
+        if ($TotalRegistros > 0) :
+            foreach ($ventas as $it) : ?>
+                <tr>
+                    <td class="pb-0"><a style="color:black;" onclick="borrar_opera(event, informe_ventas)" href="<?= base_url("venta/delete/" . $it->regnro) ?>"> <i class="fa fa-trash"></i></a> </td>
+                    <td class="pb-0"> <a style="color:black;" href="<?= base_url("venta/update/" . $it->regnro) ?>"><i class="fa fa-pencil"></i></a> </td>
 
-                <td class="pb-0"> <?=($it->factura) ?> </td>
-                <td class="pb-0 text-right"> <?= Utilidades::number_f($it->importe3) ?></td>
-                <td class="pb-0 text-right"> <?= Utilidades::number_f($it->importe2) ?> </td>
-                <td class="pb-0 text-right"> <?= Utilidades::number_f($it->importe1) ?></td>
-                <td class="pb-0 text-right"> <?= Utilidades::number_f($it->total) ?></td>
+                    <td class="pb-0"> <?= ($it->factura) ?> </td>
+                    <td class="pb-0 text-right"> <?= Utilidades::number_f($it->importe3) ?></td>
+                    <td class="pb-0 text-right"> <?= Utilidades::number_f($it->importe2) ?> </td>
+                    <td class="pb-0 text-right"> <?= Utilidades::number_f($it->importe1) ?></td>
+                    <td class="pb-0 text-right"> <?= Utilidades::number_f($it->total) ?></td>
 
-            </tr>
+                </tr>
         <?php
-             
-        endforeach;
-    endif; ?>
+
+            endforeach;
+        endif; ?>
     </tbody>
-     
+
 </table>
- 
 
-<?php 
-//(  $ventas_total > 0) ?    $ventas_pager->makeLinks( 1,10, $ventas_total  ,   'paginador_g_ventas_a')  : '' ?>
 
- 
-<?=view( "paginadores/paginador")?>
+<?php
+//(  $ventas_total > 0) ?    $ventas_pager->makeLinks( 1,10, $ventas_total  ,   'paginador_g_ventas_a')  : '' 
+?>
 
- 
+
+<?= view("paginadores/paginador") ?>

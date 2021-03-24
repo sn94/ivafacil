@@ -46,9 +46,12 @@
             $T_5+= ($cmp['t_i_compras']   + $cmp['t_retencion']) -  $cmp['t_i_ventas'];
             $T_6+= $cmp['pago'];
            // $T_7+= $cmp['saldo'] +  $cmp['saldo_inicial'];
+
+           //Contextual row
+           $classRow=  $cmp['estado'] == "P"  ?"table-secondary" : "table-light";
         ?>
 
-            <tr>
+            <tr class="<?=$classRow?>">
                 <td class="text-left p-0"><?= $mes ?></td>
                 <td class="text-right p-0"><?= $saldo_ini ?></td>
                 <td class="text-right p-0"><?= $venta ?></td>
