@@ -312,6 +312,8 @@ class Cierres extends Controller
 		$MES_ = is_null($MES) ?  date("m") :  $MES;
 		$ANIO_ =  is_null($ANIO) ?  date("Y") :  $ANIO;
 		$codcliente =  $this->getClienteId();
+		$clienteModel= (new Usuario_model())->find(  $codcliente);
+
 		$susParametros = [];
 		$susParametros['codcliente']=  $codcliente;
 		$susParametros['error']=[];
@@ -339,6 +341,10 @@ class Cierres extends Controller
 
 		//Adjuntar los totales en el mes a los params
 		$totalesMesAntesDeCerrar = $this->totales_mes($MES_, $ANIO_,  $codcliente, "ARRAY");
+		if( ! $this->esta_cerrado($MES_,  $ANIO_))
+		//usar saldo inicial de usuario 
+		$totalesMesAntesDeCerrar['saldo_anterior']= $clienteModel->saldo_IVA;
+
 		//Concatenar los errores
 		
 		$susParametros['error']=  join("/",  $susParametros['error']);

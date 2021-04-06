@@ -14,7 +14,7 @@ $clave_marangatu =  isset($usuario) ?  $usuario->clave_marangatu  : "";
 
 <style>
     legend {
-        background-color: #d1d1d1;
+        background-color: #567754;
         border-radius: 0px 0px 20px 20px;
     }
 </style>
@@ -28,8 +28,11 @@ $clave_marangatu =  isset($usuario) ?  $usuario->clave_marangatu  : "";
 
 
             <label for="nf-password" class=" form-control-label form-control-sm -label">
-                Saldo Inicial <?= date("Y") ?> : <span></span></label>
-            <input  onfocus="if(this.value=='0') this.value='';" onblur="if(this.value=='') this.value='0';" value="<?= $saldo_IVA ?>" maxlength="10" oninput="formatear( event)" type="text" name="saldo_IVA" class=" form-control form-control-label form-control-sm ">
+                Saldo Inicial
+                <a href="#" data-toggle="tooltip" data-placement="top" title="Este saldo será utilizado como saldo inicial del mes a cerrar">
+                    <img src="<?= base_url('assets/img/info.png') ?>" alt="">
+                </a> <span></span></label>
+            <input onfocus="if(this.value=='0') this.value='';" onblur="if(this.value=='') this.value='0';" value="<?= $saldo_IVA ?>" maxlength="10" oninput="formatear( event)" type="text" name="saldo_IVA" class=" form-control form-control-label form-control-sm ">
 
             <label for="" class=" form-control-label form-control-sm -label">N° Timbrado:</label>
             <input maxlength="8" type="text" name="timbrado" class="form-control form-control-sm" value="<?= $timbrado ?>">

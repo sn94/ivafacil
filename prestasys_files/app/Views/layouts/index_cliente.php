@@ -22,7 +22,7 @@ $TERMINACION_RUC =   substr(session("ruc"), -1, 1);
     <meta http-equiv="Cache-Control" content="no-cache, mustrevalidate">
     <meta http-equiv="Pragma" content="no-cache">
 
-    <link rel="icon" type="image/png" href="<?= base_url("assets/img/Logo.jpg?" . date('is')) ?>" />
+    <link rel="icon" href="<?=base_url("assets/img/page_icon.png")?>" type="image/png">
     <link rel="stylesheet" href="<?= base_url("assets/template/vendors/bootstrap/dist/css/bootstrap.min.css") ?>">
     <link rel="stylesheet" href="<?= base_url("assets/template/vendors/font-awesome/css/font-awesome.min.css") ?>">
     <link rel="stylesheet" href="<?= base_url("assets/template/vendors/themify-icons/css/themify-icons.css") ?>">

@@ -99,7 +99,7 @@ Bienvenido
                     echo  form_open("usuario/update",  ['id' => 'user-form', 'class' => 'container', 'onsubmit' => 'registro(event)']); ?>
 
                     <input type="hidden" name="_method" value="PUT" />
-                    <?= view("usuario/form") ?>
+                    <?= view("usuario/forms/index") ?>
 
                     <div class="row mb-2">
                         <div class="col-12  offset-md-4 col-md-4 mb-2 ">

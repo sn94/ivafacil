@@ -569,7 +569,7 @@ if ($MODO == "ADMIN") {
 
 <?= $this->section("scripts") ?>
 <script src="<?= base_url("assets/xls_gen/xls.js") ?>"></script>
-<script src="<?= base_url("assets/xls_gen/xls_ini.js") ?>"></script>
+<script src="<?= base_url("assets/xls_gen/xls_ini.js?v=".rand(0.0, 100) ) ?>"></script>
 
 
 <?= $this->endSection() ?>

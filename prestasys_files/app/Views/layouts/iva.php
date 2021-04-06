@@ -19,7 +19,7 @@ $base_url_for_resources = base_url() . "/assets/ivax/";
     <meta name="description" content="gestion de IVA">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="icon" type="image/png" href="<?= base_url("assets/img/Logo.jpg?" . date('is')) ?>" />
+    <link rel="icon" href="<?=base_url("assets/img/page_icon.png")?>" type="image/png">
 
     <link href='<?= base_url("assets/Marvel-Regular.ttf") ?>' rel='stylesheet' type='text/css'>
 

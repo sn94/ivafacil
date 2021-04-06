@@ -305,7 +305,7 @@ class Usuario extends ResourceController
 			if ($this->isAdminView())
 				return view("admin/clientes/create");
 			else
-				return view("usuario/create");
+				return view("usuario/create/index");
 		}
 
 
@@ -370,7 +370,7 @@ class Usuario extends ResourceController
 				//if ($resu['code'] == 200) {
 				//	return $this->response->setJSON( $resu );
 				//	return redirect()->to(base_url("usuario/sign_in"));
-				//} else  return view("usuario/create", array("error" => $resu['msj']));
+				//} else  return view("usuario/create/index", array("error" => $resu['msj']));
 			}
 		}
 		//Hubo errores de validacion
@@ -380,7 +380,7 @@ class Usuario extends ResourceController
 			return $resultadoValidacion;
 		else
 			return $this->response->setJSON($resultadoValidacion);
-		//return view("usuario/create", array("error" => $resultadoValidacion['msj']));
+		//return view("usuario/create/index", array("error" => $resultadoValidacion['msj']));
 	}
 
 

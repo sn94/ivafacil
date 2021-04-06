@@ -16,7 +16,9 @@
     <meta http-equiv="Last-Modified" content="0">
     <meta http-equiv="Cache-Control" content="no-cache, mustrevalidate">
     <meta http-equiv="Pragma" content="no-cache">
+    <link rel="icon" href="<?=base_url("assets/img/page_icon.png")?>" type="image/png">
 
+    
     <link rel="apple-touch-icon" href="apple-icon.png">
     <link rel="shortcut icon" href="favicon.ico">
 

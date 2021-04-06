@@ -1,3 +1,13 @@
+<?php
+
+use App\Models\Usuario_model;
+
+$NOMBRE_CLIENTE= "";
+$DATA_CLI= (new Usuario_model())->find( $CLIENTE );
+if ( !  is_null( $DATA_CLI  ))
+$NOMBRE_CLIENTE=   $DATA_CLI->cliente." RUC: ".$DATA_CLI->ruc."-".$DATA_CLI->dv; 
+?>
+
 <?= $this->extend("admin/layout/index") ?>
 <?= $this->section("titulo") ?>
 Bienvenido
@@ -24,7 +34,7 @@ Bienvenido
         font-weight: bolder;
     }
 
-    
+
 
     .empty-field {
         border: 2px solid #ed2328;
@@ -87,15 +97,15 @@ Bienvenido
                 <?= view("plantillas/message") ?>
 
             </div>
-            <div class="col-12 offset-md-1 col-md-10 p-0">
+            <div class="col-12 col-md-12 p-0">
 
                 <div class="card">
 
 
-                    <div class="card-header"  style="border-radius: 15px 15px 0px 0px; background-color: #d1d1d1;">
+                    <div class="card-header" style="border-radius: 15px 15px 0px 0px; background-color: #d1d1d1;">
                         <div class="row">
                             <div class="col-12">
-                                <h3 class="text-center">NUEVO CLIENTE</h3>
+                                <h4 class="text-center"> PAGOS:  <?=$NOMBRE_CLIENTE?></h4>
                             </div>
                         </div>
                     </div>
@@ -104,9 +114,9 @@ Bienvenido
 
                         use App\Helpers\Utilidades;
 
-
+                        $CLIENTE = isset($CLIENTE) ? $CLIENTE : "";
                         echo  form_open(
-                            "admin/clientes/create",
+                            "admin/clientes/pagos",
                             [
                                 'id' => 'user-form',
                                 'class' => 'container p-0 p-md-2',
@@ -114,17 +124,61 @@ Bienvenido
                             ]
                         ); ?>
 
-                        <?= view("usuario/forms/index") ?>
-                        <div class="row">
 
-                            <div class="col-12 offset-md-4  col-md-4  mb-2 ">
+                        
+
+                        <input type="hidden" name="cliente" value="<?= $CLIENTE ?>">
+                        <input type="hidden" name="estado" value="A">
+
+                        <div class="row">
+                            <div class="col-12 col-md-4">
+                                <div class="row form-group">
+                                    <div class="col-12 col-md-4">
+                                        <label class=" form-control-label form-control-sm -label">Comprobante:</label>
+                                    </div>
+                                    <div class="col-12 col-md-8">
+                                        <input maxlength="20" type="text" name="comprobante" class="  form-control form-control-inline form-control-sm ">
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-3 pl-0">
+
+                                <div class="row form-group">
+                                    <div class="col-12 col-md-3 pr-0 ">
+                                        <label class=" form-control-label form-control-sm -label">Fecha:</label>
+                                    </div>
+                                    <div class="col-12 col-md-9">
+                                        <input size="10" value="<?= date("Y-m-d") ?>" type="date" name="fecha" class="  form-control form-control-inline form-control-sm ">
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-5 pl-0">
+                                <div class="row form-group">
+                                    <div class="col-12 col-md-3 ">
+                                        <label class=" form-control-label form-control-sm -label">Concepto:</label>
+                                    </div>
+                                    <div class="col-12 col-md-9 ">
+                                        <input " type=" text" name="concepto" class="  form-control form-control-inline form-control-sm ">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+                        <div class="row form-group">
+                            <div class="col-12   col-md-2  mb-2 ">
                                 <button style="font-size: 12px;font-weight: 600;width:100%;" type="submit" class="btn btn-success btn-sm">
                                     <i class="fa fa-dot-circle-o"></i> GUARDAR
                                 </button>
                             </div>
-
-
                         </div>
+
+
                         </form>
                     </div>
 
@@ -135,6 +189,15 @@ Bienvenido
 
         </div>
 
+        <?php
+
+        $pagos = isset($pagos)  ? $pagos :  [];
+        ?>
+        <!-- TABLA PAGOS -->
+        <div class="row" id="tabla-pagos">
+            <?= view("admin/clientes/grill_pagos") ?>
+        </div>
+        <!-- end PAGOS -->
 
         <script>
             /***
@@ -229,80 +292,7 @@ Bienvenido
 
 
 
-            /***
-            
-            **Fuentes de datos
-            **/
-            async function get_ciudades() {
-                let req = await fetch("<?= base_url("auxiliar/ciudades") ?>");
-                let json_r = await req.json();
 
-
-                let departs = json_r.map(
-                    function(obje) {
-                        return obje.departa;
-                    }
-                ).filter(function(obj, indice, arr) {
-
-                    return arr.indexOf(obj) == indice;
-                });
-
-
-                let ordenado = departs.map(function(key) {
-                    let cities = json_r.filter(function(obj_ciu) {
-                        return obj_ciu.departa == key;
-                    }).map(function(nuevo) {
-                        return {
-                            regnro: nuevo.regnro,
-                            ciudad: nuevo.ciudad
-                        };
-                    });
-                    return {
-                        [key]: cities
-                    };
-                });
-
-                ordenado.forEach(function(regi) {
-
-                    let depart = Object.keys(regi)[0];
-                    let ciudades = regi[depart];
-                    let str_ciudades = ciudades.map(function(citi) {
-                        return "<option value='" + citi.regnro + "'>" + citi.ciudad + "</option>";
-                    }).join();
-
-                    let optgr = "<optgroup label='" + depart + "'>" + str_ciudades + "</optgroup>";
-                    //clasificar
-                    $("select[name=ciudad]").append(optgr);
-                });
-
-                /* */
-            }
-
-
-
-
-
-            async function get_actividades_comer() {
-
-                let req = await fetch("<?= base_url("auxiliar/rubros") ?>");
-                let json_r = await req.json();
-
-                json_r.forEach(function(obj) {
-                    $("select[name=rubro]").append("<option value='" + obj.regnro + "'>" + obj.descr + "</option>");
-                });
-
-            }
-
-            async function get_planes() {
-
-                let req = await fetch("<?= base_url("auxiliar/planes") ?>");
-                let json_r = await req.json();
-
-                json_r.forEach(function(obj) {
-                    $("select[name=tipoplan]").append("<option value='" + obj.regnro + "'>" + obj.descr + "</option>");
-                });
-
-            }
 
 
 
@@ -314,41 +304,15 @@ Bienvenido
 
             function campos_vacios() {
 
-                if ($("input[name=email]").val() == "" || $("input[name=ruc]").val() == "" || $("input[name=dv]").val() == "") {
-                    if ($("input[name=email]").val() == "") {
-                        $("input[name=email]").addClass("empty-field");
-
-                    }
-                    if ($("input[name=ruc]").val() == "") {
-                        $("input[name=ruc]").addClass("empty-field");
-
-                    }
-                    if ($("input[name=dv]").val() == "") {
-                        $("input[name=dv]").addClass("empty-field");
-
-                    }
+                if ($("input[name=comprobante]").val() == "" || $("input[name=fecha]").val() == "") {
+                    alert("Indique al menos la fecha de pago")
                     return true;
                 }
 
                 return false;
             }
 
-            function claves_validas() {
-                if ($("input[name=pass]").val() == "") {
-                    alert("Proporcione una contraseña");
-                    return false;
-                }
-                if ($("#pass2").val() == "") {
-                    $("#pass2").addClass("empty-field");
-                    alert("Por favor repita su contraseña");
-                    return false;
-                }
-                if ($("input[name=pass]").val() != $("#pass2").val()) {
-                    alert("Ambas contraseñas no coinciden");
-                    return false;
-                }
-                return true;
-            }
+
 
 
             function show_loader() {
@@ -381,11 +345,9 @@ Bienvenido
 
 
                 ev.preventDefault();
-                if (campos_vacios() || !claves_validas()) return;
+                if (campos_vacios()) return;
 
-                //limpiar numeros
-                clean_number($("input[name=saldo_IVA]"));
-                clean_number($("input[name=cedula]"));
+
 
                 let datos = $("#user-form").serialize();
                 show_loader();
@@ -400,10 +362,11 @@ Bienvenido
                 hide_loader();
                 if (("data" in respuesta) && parseInt(respuesta.code) == 200) {
 
-                   // $("#message-modal-content").html("REGISTRADO");
+                    // $("#message-modal-content").html("REGISTRADO");
                     //$("#message-modal").modal("show");
                     alert("REGISTRADO");
-                    window.location.reload();
+                    //actualizar grilla de pagos
+                    actualizar_grilla();
                 } else {
                     $("#message-modal-content").html(procesar_errores(respuesta.msj));
                     $("#message-modal").modal("show");
@@ -412,20 +375,32 @@ Bienvenido
 
 
 
+            //- GRILLA DE PAGOS 
 
 
-
-            //init
-            window.onload = function() {
-                $('#message-modal').on('hidden.bs.modal', function(e) {
-                    actualizar_grilla();
-                });
-
-                get_planes();
-                get_actividades_comer();
-                get_ciudades();
-
+            function showLoader() {
+                let loader = "<img style='z-index: 400000;position: absolute;top: 50%;left: 50%;'  src='<?= base_url("assets/img/loader.gif") ?>'   />";
+                return loader;
             }
+
+            //Actualizar tabla
+            async function actualizar_grilla() {
+                $("#tabla-pagos").html(showLoader());
+                let form = await fetch("<?= base_url("admin/clientes/list-pagos/" . $CLIENTE) ?>", {
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest"
+                    }
+                });
+                let form_R = await form.text();
+                $("#tabla-pagos").html(form_R);
+                $("ul.pagination li").addClass("btn btn-dark btn-sm").css("font-weight", "600");
+            }
+
+
+
+            window.onload = function() {
+                actualizar_grilla();
+            };
         </script>
 
     </div> <!-- .content -->
