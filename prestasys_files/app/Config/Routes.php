@@ -193,7 +193,7 @@ $routes->get('/admin/estados-mes/(:num)', 'Cierres::resumen_mes/$1');
 $routes->get('/admin/cierre-anio/(:num)', 'Cierres::info_anio_cierre/$1'); 
 $routes->get('/admin/totales-mes/(:num)/(:num)/(:num)',   'Cierres::totales_mes/$1/$2/$3');//mes anio cliente
 //eliminar 
-$routes->get("/admin/deshacer-cierre-mes/(:num)/(:num)/(:num)",   "Cierres::deshacer_cierre_mes/$1/$2/$3");//mes anio cliente
+$routes->get("/admin/deshacer-cierre-mes/(:num)",   "Cierres::deshacer_cierre_mes/$1");//mes anio cliente
 $routes->get('/admin/recordar-pago/(:num)', 'Usuario::email_recordar_pago/$1'); 
 
 

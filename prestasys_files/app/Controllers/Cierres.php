@@ -126,7 +126,7 @@ class Cierres extends Controller
 			'ventas_total_iva' => round($df->iva1) +   round($df->iva2),
 			'retencion' => (intval($reten->importe)),
 			'saldo' => $saldo,
-			'saldo_anterior' =>  $saldo_a,
+			'saldo_anterior' => $saldo_a,
 			'pago' =>  $total_en_pagos->PAGOS,
 			'estado' => is_null($ESTADO_MES)  ? "P" : ($ESTADO_MES->estado)
 		];
@@ -206,51 +206,22 @@ class Cierres extends Controller
 		//Es un mes cerrado?
 		$estaCerrado = (new Estado_mes_model())->where("codcliente",  $CODCLIENTE)->where("mes",  $MES)
 			->where("anio",  $ANIO)->first();
+
 		if (!is_null($estaCerrado)    &&   $estaCerrado->estado != "P")  $retornar= $estaCerrado->saldo_inicial;
 		else{
-			//Entonces esta pendiente
-			$ANTERIOR_EN_MISMO_ANIO =  (new Estado_mes_model())
-				->where("codcliente",  $CODCLIENTE)
-				->where("estado <>", "P")
-				->groupStart()
-
-				->where("mes",  $MES - 1)
-				->where("anio",  $ANIO)
-
-				->groupEnd()
-				->orderBy("mes", "DESC")
-				->first();
-			//Si el mes anterior esta cerrado tomar su saldo como inicial
-			if (!is_null($ANTERIOR_EN_MISMO_ANIO)) $retornar = $ANTERIOR_EN_MISMO_ANIO->saldo + $ANTERIOR_EN_MISMO_ANIO->saldo_inicial;
-			else $retornar= 0;
+			$retornar=  $usuario->saldo_IVA < 0 ? 0 : $usuario->saldo_IVA;
+			 
 		}
 
 		
 		$request= \Config\Services::request();
 		$response= \Config\Services::response();
+
 		if( ! is_null($request->getHeader("formato"))   &&  $request->getHeader("formato")->getValue() == "JSON")
 		return $response->setJSON(  ["data"=>    $retornar ] );
 		else 
 		return $retornar;
-		
-		
 		 
-		//Si no hay mes anterior cerrado en el mismo anio, buscar en ejercicio anterior
-		$ANTERIOR_ANIO_PASADO =  (new Estado_mes_model())
-			->where("codcliente",  $CODCLIENTE)
-			->where("estado <>", "P")
-			->orGroupStart()
-			->where("anio <",  $ANIO)
-			->groupEnd()
-			->orderBy("mes", "DESC")
-			->first();
-		//Tomar como saldo inicial el saldo del ejercicio anterior
-		if (!is_null($ANTERIOR_ANIO_PASADO))   return $ANTERIOR_ANIO_PASADO->saldo + $ANTERIOR_ANIO_PASADO->saldo_inicial;
-
-
-		return 0;
-
-		return  $usuario->saldo_IVA;
 	}
 
 
@@ -337,10 +308,12 @@ class Cierres extends Controller
 		$mesesAnterioresAbiertos = ($this->mesesAnterioresAbiertos($MES_, $ANIO_,  $codcliente, false));
 
 		if (!is_null($mesesAnterioresAbiertos))
-			array_push(  $susParametros['error'], $mesesAnterioresAbiertos['msj']) ; 	 
+			array_push(  $susParametros['error'], $mesesAnterioresAbiertos['msj']) ; 
 
+		//Meses posteriores	 
 		//Adjuntar los totales en el mes a los params
 		$totalesMesAntesDeCerrar = $this->totales_mes($MES_, $ANIO_,  $codcliente, "ARRAY");
+		
 		if( ! $this->esta_cerrado($MES_,  $ANIO_))
 		//usar saldo inicial de usuario 
 		$totalesMesAntesDeCerrar['saldo_anterior']= $clienteModel->saldo_IVA;
@@ -388,6 +361,34 @@ class Cierres extends Controller
 	}
 
 
+	public function mesesPosterioresCerrados($MES, $ANIO, $CODCLIENTE, $JSON = TRUE)
+	{
+
+		$M = (new Estado_mes_model())
+			->where("codcliente",  $CODCLIENTE)
+			->where("estado <>", "P")
+			->groupStart()
+			->groupStart()
+			->where("mes  >",  $MES)
+			->where("anio",  $ANIO)
+			->groupEnd()
+			->orGroupStart()
+			->where("anio  >",  $ANIO)
+			->groupEnd()
+			->groupEnd()
+			->orderBy("mes", "DESC")
+			->first();
+		if (is_null($M))  return NULL;
+
+		$nombreMes_TARGET = Utilidades::monthDescr($MES);
+		$nombreMes_CERRADO= Utilidades::monthDescr($M->mes);
+		if ($JSON)
+			return $this->response->setJSON(['msj' => "No es posible cerrar  $nombreMes_TARGET . El mes $nombreMes_CERRADO ya ha sido cerrado ",  'code' => "500"]);
+		else return ['msj' => "No es posible cerrar  $nombreMes_TARGET . El mes $nombreMes_CERRADO ya ha sido cerrado ",  'code' => "500"];
+	}
+
+
+
 
 	//recibir mes y anio como parametros get
 	public function  cierre_mes($MES,  $ANIO)
@@ -399,11 +400,16 @@ class Cierres extends Controller
 		if (array_key_exists("msj",  $habilitado))
 			return $this->response->setJSON(['msj' => "Operación no disponible. Revise su estado de pago",  'code' => "500"]);
 
-		//Validacion 4  No puede cerrar un mes cuando el anterior esta abierto
+		//Validacion 2  No puede cerrar un mes cuando el anterior esta abierto
 		$mesesAnterioresAbiertos = ($this->mesesAnterioresAbiertos($MES, $ANIO,  $CODCLIENTE));
 		if (!is_null($mesesAnterioresAbiertos))   return $mesesAnterioresAbiertos;
+		//Validacion 3 No puede cerrarse un mes cuando uno  posterior ha sido cerrado. Este caso especial
+		//se da al intentar cerrar un mes que es anterior al MES INICIADOR, es decir el mes con el cual se inicio 
+		//por primera vez el registro de operaciones  en el sistema
+		$mesesPosterioresCerrados = ($this->mesesPosterioresCerrados($MES, $ANIO,  $CODCLIENTE));
+		if (!is_null($mesesPosterioresCerrados))   return $mesesPosterioresCerrados;
 
-		//Validacion 3 no cerrar un mes dos veces
+		//Validacion 4 no cerrar un mes dos veces
 		if ($this->esta_cerrado($MES,  $ANIO)) {
 			if ($this->esta_cerrado_anio($ANIO))
 				return $this->response->setJSON(['msj' => "No permitido. El Ejercicio ya cerró.",  'code' => "500"]);
@@ -413,7 +419,7 @@ class Cierres extends Controller
 			}
 		}
 
-		//Validacion 4 Clave de marangatu
+		//Validacion 5 Clave de marangatu
 		$clave_marangatu = (new Usuario())->clave_marangatu_definida($CODCLIENTE);
 		if (!$clave_marangatu)
 			return $this->response->setJSON(['msj' => "Para cerrar este mes, proporcione su clave de acceso de Marangatu para continuar",  'code' => "500"]);
@@ -1182,13 +1188,19 @@ class Cierres extends Controller
 	//Undo
 
 
-	public function  deshacer_cierre_mes($MES, $ANIO, $CLIENTE)
+	public function  deshacer_cierre_mes(  $CLIENTE)
 	{
 		$db = \Config\Database::connect();
 
 		$db->transStart();
 		$respuesta = "";
 		try {
+			//Obtener el ultimo periodo cerrado
+			$ultimoPeriodo= (new Estado_mes_model())->orderBy("ANIO", "DESC")
+			->orderBy("mes", "DESC")->first();
+			$MES=  $ultimoPeriodo->mes;
+			$ANIO=  $ultimoPeriodo->anio; 
+
 			(new Estado_mes_model())->where("codcliente", $CLIENTE)
 				->where("mes",  $MES)
 				->where("anio", $ANIO)
@@ -1210,7 +1222,9 @@ class Cierres extends Controller
 				->set(['estado' =>  'P'])
 				->update();
 			$db->transCommit();
-			$respuesta =  ['data' => "El mes ($MES), año ($ANIO) ha sido reabierto", 'code' => '200'];
+
+			$nombreMes= Utilidades::monthDescr( $MES);
+			$respuesta =  ['data' => "El mes de $nombreMes, año ($ANIO) ha sido reabierto", 'code' => '200'];
 		} catch (Exception $e) {
 			$db->transRollback();
 			$respuesta =  ['msj' => "Error de servidor",  'code' => '500'];

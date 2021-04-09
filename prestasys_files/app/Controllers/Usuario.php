@@ -450,14 +450,15 @@ class Usuario extends ResourceController
 					$usu->where("regnro",  $data['regnro'])
 						->set($data)
 						->update();
-
+/*
 					//actualizar saldo inicial
 					$update_estado_anio = (new Estado_anio_model())
 						->where("codcliente",   $data['regnro'])
 						->where("anio", date("Y"));
+
 					if (array_key_exists("saldo_IVA",  $data))
 						$update_estado_anio = $update_estado_anio->set(['saldo_inicial' =>   $data['saldo_IVA']])->update();
-
+*/
 					$db->transCommit();
 
 					$usu_Response = (new Usuario_model())
@@ -469,7 +470,7 @@ class Usuario extends ResourceController
 				}
 				$db->transComplete();
 				//Evaluar resultado
-				if ($this->API_MODE) return  $resu;
+				if ($this->isAPI()) return  $resu;
 				else {
 					if ($resu['code'] == 200) return	$this->response->setJSON(['data' => "ACTUALIZADO", "code" => "200"]);
 					else  return view("usuario/update", array("error" => $resu['msj']));

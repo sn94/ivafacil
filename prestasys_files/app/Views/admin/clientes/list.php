@@ -86,7 +86,7 @@ $adaptativo = new Mobile_Detect();
 
                                 <?php if ($mo->novedad_c_mes == "1") : ?>
                                     <a class="dropdown-item" onclick="descargar_estado_cierre(event)" href="<?= base_url("admin/cierre-mes/$mo->c_mes/$mo->c_anio/$mo->regnro") ?>"> Exportar<i class="fa fa-download" aria-hidden="true"></i> </a>
-                                    <a class="dropdown-item" onclick="reapertura_mes(event)" href="<?= base_url("admin/deshacer-cierre-mes/$mo->c_mes/$mo->c_anio/$mo->regnro") ?>"> Abrir<i class="fa fa-eye" aria-hidden="true"></i> </a>
+                                    <a class="dropdown-item" onclick="reapertura_mes(event)" href="<?= base_url("admin/deshacer-cierre-mes/$mo->regnro") ?>"> Abrir<i class="fa fa-eye" aria-hidden="true"></i> </a>
                                 <?php else : ?>
                                     Sin novedad
                                 <?php endif; ?>

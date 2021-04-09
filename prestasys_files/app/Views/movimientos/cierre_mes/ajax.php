@@ -16,13 +16,14 @@ $ventaTotalIva = isset($ventas_total_iva) ?  $ventas_total_iva :  0;
 
 $retencionTotal = isset($retencion) ?  $retencion :  0;;
 
+$saldo_anterior_verificado = isset($saldo) && isset($saldo_anterior) ?  ($saldo_anterior<0 ? 0 : $saldo_anterior) : 0;
 
-$saldoMonto = isset($saldo) && isset($saldo_anterior) ? ($saldo + $saldo_anterior) :  0;;
+$saldoMonto = isset($saldo) && isset($saldo_anterior) ? ($saldo + $saldo_anterior_verificado ) :  0;
 
 //Determinar descripcion del saldo
 $s_fisco = $ventaTotalIva;
 $s_contri = $compraTotalIva + $retencionTotal;
-$saldo_contri_fisco =  ($s_contri - $s_fisco) + $saldo_anterior;
+$saldo_contri_fisco =  ($s_contri - $s_fisco) + $saldo_anterior_verificado;
 
 //contextualizar colores para presentar saldo
 //#saldo-row  [table-success | table-danger]
@@ -55,7 +56,7 @@ $ventaTotal =  Utilidades::number_f($ventaTotal);
 $ventaTotalIva =  Utilidades::number_f($ventaTotalIva);
 
 $retencionTotal =  Utilidades::number_f($retencionTotal);
-$saldoAnterior =  Utilidades::number_f($saldo_anterior);
+$saldoAnterior =  Utilidades::number_f($saldo_anterior_verificado);
 $saldoMonto =  Utilidades::number_f($saldoMonto);
 
 

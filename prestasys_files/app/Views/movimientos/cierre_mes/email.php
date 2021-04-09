@@ -57,7 +57,7 @@ ha cerrado el mes de <?= Utilidades::monthDescr( $MES) ?>.
     </thead>
     <tr style="background-color: green;color: white;">
             <td colspan="3">Saldo inicial:</td>
-            <td class="text-right"> <?= Utilidades::number_f($saldo_anterior) ?></td>
+            <td class="text-right"> <?= $saldo_anterior< 0 ? 0 : Utilidades::number_f($saldo_anterior) ?></td>
         </tr>
     <tbody>
         <tr style="background-color: green;color: white;">
