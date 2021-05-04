@@ -1196,8 +1196,11 @@ class Cierres extends Controller
 		$respuesta = "";
 		try {
 			//Obtener el ultimo periodo cerrado
-			$ultimoPeriodo= (new Estado_mes_model())->orderBy("ANIO", "DESC")
+			$ultimoPeriodo= (new Estado_mes_model())
+			->where("codcliente", $CLIENTE)
+			->where("estado <>", "P")->orderBy("ANIO", "DESC")
 			->orderBy("mes", "DESC")->first();
+		 
 			$MES=  $ultimoPeriodo->mes;
 			$ANIO=  $ultimoPeriodo->anio; 
 
