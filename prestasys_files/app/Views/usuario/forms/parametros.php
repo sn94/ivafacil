@@ -14,7 +14,7 @@ $clave_marangatu =  isset($usuario) ?  $usuario->clave_marangatu  : "";
 
 <style>
     legend {
-        background-color: #567754;
+        background-color: var(--color-neutro-2);
         border-radius: 0px 0px 20px 20px;
     }
 </style>

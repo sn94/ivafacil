@@ -88,68 +88,26 @@
     <!-- Left Panel-->
 
     <aside id="left-panel" class="left-panel">
-        <nav class="navbar navbar-expand-sm navbar-default">
 
-            <div class="navbar-header">
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-menu" aria-controls="main-menu" aria-expanded="false" aria-label="Toggle navigation">
-                    <i class="fa fa-bars"></i>
-                </button>
-                <a class="navbar-brand" href="<?= base_url("admin/index") ?>"><img src="<?= base_url("assets/img/Logo.png?".date('is')) ?>" alt="Logo"></a>
-                <a class="navbar-brand hidden" href="<?= base_url("admin/index") ?>"><img src="<?= base_url("assets/img/Logo.png?".date('is')) ?>" alt="Logo"></a>
-            </div>
+    <?= view("componentes/SideBar", ['datos' => [
+            ['titulo' => 'Principal', 'opciones' => [
+                ["titulo" => "Clientes", "link" =>  base_url("admin/clientes") , "icon"=> "fa fa-address-book-o" ]
+            ]],
+            [
+                'titulo' => 'Configuración', 'opciones' => [
+                    ["titulo" => "Administradores", "link" =>  base_url("admin/list"), "icon"=> "fa fa-users"],
+                    ["titulo" => "Parámetros", "link" =>  base_url("admin/parametros/create"), "icon"=> "fa fa-wrench" ],
+                    ["titulo" => "Calendario perpetuo", "link" =>   base_url("admin/calendario"),  "icon"=> "fa fa-calendar"],
+                  
+                    ["titulo" => "Monedas", "link" =>   base_url("admin/monedas"), "icon"=> "fa fa-usd"],
+                    ["titulo" => "Planes", "link" =>    base_url("admin/planes"), "icon"=> "fa fa-pagelines"  ], 
+                    ["titulo" => "Cerrar sesión", "link" =>  base_url("usuario/sign-out"), "icon"=> "fa fa-sign-out"]
+                ]
+            ] 
 
-            <div id="main-menu" class="main-menu collapse navbar-collapse">
-                <ul class="nav navbar-nav">
+        ]]) ?>
 
-                    <h3 class="menu-title">Principal</h3>
-
-                    <li class="menu-item-has-children dropdown">
-                        <a href="<?= base_url("admin/clientes") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-address-book-o"></i>Clientes</a>
-                    </li>
-
-
-
-
-                    <!--
-                    <li class="menu-item-has-children dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-table"></i>Clientes</a>
-                        <ul class="sub-menu children dropdown-menu">
-                            <li><i class="fa fa-table"></i><a href="tables-basic.html">Basic Table</a></li>
-                            <li><i class="fa fa-table"></i><a href="tables-data.html">Data Table</a></li>
-                        </ul>
-                    </li> -->
-
-                    <h3 class="menu-title">Configuración</h3>
-
-                    <li class="menu-item-has-children dropdown">
-                        <a href="<?= base_url("admin/list") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-users"></i>Administradores</a>
-
-                    </li>
-                    <li class="menu-item-has-children dropdown">
-                        <a href="<?= base_url("admin/parametros/create") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-wrench"></i>Parametros</a>
-
-                    </li>
-
-                    <li class="menu-item-has-children dropdown">
-                        <a href="<?= base_url("admin/calendario") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-calendar"></i>Calendario perpetuo</a>
-
-                    </li>
-
-                    <li class="menu-item-has-children dropdown">
-                        <a href="<?= base_url("admin/monedas") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-usd"></i>Monedas</a>
-                    </li>
-                    <li class="menu-item-has-children dropdown">
-                        <a href="<?= base_url("admin/planes") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-pagelines"></i>Planes</a>
-
-                    </li>
-                    <li class="menu-item-has-children dropdown">
-                        <a href="<?= base_url("admin/sign-out") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-sign-out"></i>Cerrar sesión</a>
-
-                    </li>
-
-                </ul>
-            </div>
-        </nav>
+ 
     </aside>
 
     <!-- Left Panel -->

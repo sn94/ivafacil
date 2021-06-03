@@ -6,7 +6,7 @@ use App\Models\Parametros_model;
 <div class="row">
     <div class="col-12  col-md-6 mb-2">
         <input type="checkbox" name="aceptar-bases" value="S"> He leído y acepto las
-        <a href="<?= base_url("TyC.pdf") ?>">bases y condiciones</a>
+        <a style="font-weight: 600; color: var(--color-primario) !important;" href="<?= base_url("TyC.pdf") ?>">bases y condiciones</a>
     </div>
     <div class="col-12  col-md-6  mb-2 ">
         <button style="font-size: 12px;font-weight: 600;width:100%;" type="submit" class="btn btn-success btn-sm">

@@ -483,7 +483,7 @@ class Venta extends ResourceController
 			return $resultadoValidacion;
 		else
 			return $this->response->setJSON(['msj' =>  $resultadoValidacion['msj'], 'code' => '500']);
-		// return view("movimientos/comprobantes/f_venta", array("error" => $resultadoValidacion['msj']));
+		 
 	}
 
 
@@ -587,7 +587,7 @@ class Venta extends ResourceController
 			return $resultadoValidacion;
 		else
 			return $this->response->setJSON($resultadoValidacion);
-		// return view("movimientos/comprobantes/f_venta", array("error" => $resultadoValidacion['msj']));
+		 
 	}
 
 

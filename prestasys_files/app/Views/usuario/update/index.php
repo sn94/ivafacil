@@ -16,7 +16,7 @@
         <?=view("usuario/forms/personales2")?>
     </div>
 
-    <div class="col-12 pb-2" style="background: #528242;">
+    <div class="col-12 pb-2"  >
         <?= view("usuario/forms/parametros") ?>
     </div>
 

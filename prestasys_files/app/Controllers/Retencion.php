@@ -321,7 +321,7 @@ class Retencion extends ResourceController
 				if ($resu['code'] == 200)
 					return $this->response->setJSON(['data' =>  'Guardado', 'code' => '200']);
 				//return redirect()->to(base_url("movimiento/informe_mes"));
-				else  return view("movimientos/comprobantes/retencion", array("error" => $resu['msj']));
+				else  return view("movimientos/comprobantes/retencion/create", array("error" => $resu['msj']));
 			}
 		}
 
@@ -332,7 +332,7 @@ class Retencion extends ResourceController
 			return $resultadoValidacion;
 		else
 			return $this->response->setJSON(['msj' =>  $resultadoValidacion['msj'], 'code' => '500']);
-		//return view("movimientos/comprobantes/retencion", array("error" => $resultadoValidacion['msj']));
+		 
 
 
 	}
@@ -412,8 +412,7 @@ class Retencion extends ResourceController
 			if ($this->API_MODE) return  $resu;
 			else {
 				return $this->response->setJSON($resu);
-				//if ($resu['code'] == 200) return redirect()->to(base_url("movimiento/index"));
-				//else  return view("movimientos/comprobantes/retencion", array("error" => $resu['msj']));
+			  
 			}
 		}
 
@@ -424,8 +423,7 @@ class Retencion extends ResourceController
 			return $resultadoValidacion;
 		else
 			return $this->response->setJSON($resultadoValidacion);
-		//return view("movimientos/comprobantes/retencion", array("error" => $resultadoValidacion['msj']));
-
+		 
 
 	}
 

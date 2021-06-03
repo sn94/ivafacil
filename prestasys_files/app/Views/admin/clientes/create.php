@@ -114,7 +114,7 @@ Bienvenido
                             ]
                         ); ?>
 
-                        <?= view("usuario/forms/index") ?>
+                        <?= view("usuario/update/index") ?>
                         <div class="row">
 
                             <div class="col-12 offset-md-4  col-md-4  mb-2 ">

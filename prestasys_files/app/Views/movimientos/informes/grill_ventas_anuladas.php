@@ -44,7 +44,7 @@ use App\Helpers\Utilidades;
 
 
 
-
+<div class="table-responsive">
 <table style="font-size: 12.5px;font-weight: 600 !important;" class="table table-bordered table-striped table-secondary  ">
     <thead>
         <tr>
@@ -80,7 +80,7 @@ use App\Helpers\Utilidades;
     </tbody>
 
 </table>
-
+</div>
 
 <?php
 //(  $ventas_total > 0) ?    $ventas_pager->makeLinks( 1,10, $ventas_total  ,   'paginador_g_ventas_a')  : '' 

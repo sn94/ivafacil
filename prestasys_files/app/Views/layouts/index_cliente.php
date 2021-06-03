@@ -22,7 +22,7 @@ $TERMINACION_RUC =   substr(session("ruc"), -1, 1);
     <meta http-equiv="Cache-Control" content="no-cache, mustrevalidate">
     <meta http-equiv="Pragma" content="no-cache">
 
-    <link rel="icon" href="<?=base_url("assets/img/page_icon.png")?>" type="image/png">
+    <link rel="icon" href="<?= base_url("assets/img/page_icon.png") ?>" type="image/png">
     <link rel="stylesheet" href="<?= base_url("assets/template/vendors/bootstrap/dist/css/bootstrap.min.css") ?>">
     <link rel="stylesheet" href="<?= base_url("assets/template/vendors/font-awesome/css/font-awesome.min.css") ?>">
     <link rel="stylesheet" href="<?= base_url("assets/template/vendors/themify-icons/css/themify-icons.css") ?>">
@@ -54,7 +54,7 @@ $TERMINACION_RUC =   substr(session("ruc"), -1, 1);
 
 
         /**Espacio entre opciones del menu  */
-        .navbar .navbar-nav li.menu-item-has-children a { 
+        .navbar .navbar-nav li.menu-item-has-children a {
             line-height: 3px;
         }
 
@@ -110,75 +110,35 @@ $TERMINACION_RUC =   substr(session("ruc"), -1, 1);
 <body>
 
     <?= $this->renderSection("estilos") ?>
-
-
     <input type="hidden" id="TERMINACION-RUC" value="<?= $TERMINACION_RUC ?>">
     <!-- Left Panel-->
 
     <aside id="left-panel" class="left-panel">
-        <nav class="navbar navbar-expand-sm navbar-default">
 
-            <div class="navbar-header">
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-menu" aria-controls="main-menu" aria-expanded="false" aria-label="Toggle navigation">
-                    <i class="fa fa-bars"></i>
-                </button>
-                <a class="navbar-brand" href="<?= base_url("welcome/index") ?>"><img src="<?= base_url("assets/img/Logo.png?" . date('is')) ?>" alt="Logo"></a>
-                <a class="navbar-brand hidden" href="<?= base_url("welcome/index") ?>"><img src="<?= base_url("assets/img/Logo.png?" . date('is')) ?>" alt="Logo"></a>
-            </div>
+        <?= view("componentes/SideBar", ['datos' => [
+            ['titulo' => 'Comprobantes', 'opciones' => [
+                ["titulo" => "Factura de compra", "link" =>  base_url("compra/create") , "icon"=> "fa fa-tasks" ],
+                ["titulo" => "Factura de venta", "link" =>  base_url("venta/create"),  "icon"=> "fa fa-tasks"  ],
+                ["titulo" => "Retenciones", "link" =>  base_url("retencion/create"),  "icon"=> "fa fa-tasks" ]
+            ]],
+            [
+                'titulo' => 'Informes', 'opciones' => [
+                    ["titulo" => "Movimientos del mes", "link" =>  base_url("movimiento/informe_mes"), "icon"=>"fa fa-book"],
+                    ["titulo" => "Cierre del mes", "link" =>  base_url("cierres/view-cierre-mes"),  "icon"=> "fa fa-window-close-o" ],
+                    ["titulo" => "Resumen del año", "link" =>   base_url("cierres/comparativo-periodos"), "icon"=> "fa fa-list"],
+                    ["titulo" => "Comparativo anual", "link" =>  base_url("cierres/comparativo-ejercicios"), "icon"=>"fa fa-table"],
+                ]
+            ],
 
-            <div id="main-menu" class="main-menu collapse navbar-collapse">
-                <ul class="nav navbar-nav">
+            [
+                'titulo' => '', 'opciones' => [
+                    ["titulo" => "Pagos del IVA", "link" =>   base_url("pagos-iva/index") , "icon"=> "fa fa-money"],
+                    ["titulo" => "Cerrar sesión", "link" =>  base_url("usuario/sign-out"), "icon"=> "fa fa-sign-out"]
+                ]
+            ]
 
-                    <h3 class="menu-title">Comprobantes</h3>
+        ]]) ?>
 
-                    <li class="menu-item-has-children dropdown">
-                        <a href="<?= base_url("compra/create") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-tasks"></i>Factura de compra</a>
-
-                    </li>
-                    <li class="menu-item-has-children dropdown">
-                        <a href="<?= base_url("venta/create") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-tasks"></i>Factura de venta</a>
-
-                    </li>
-                    <li class="menu-item-has-children dropdown">
-                        <a href="<?= base_url("retencion/create") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-tasks"></i>Retención</a>
-
-                    </li>
-
-                    <h3 class="menu-title">Informes</h3>
-                    <li class="menu-item-has-children dropdown">
-                        <a href="<?= base_url("movimiento/informe_mes") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-book"></i>Movimientos del mes</a>
-
-                    </li>
-
-
-                    <li class="menu-item-has-children dropdown">
-                        <a href="<?= base_url("cierres/view-cierre-mes") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-window-close-o"></i>Cierre del mes</a>
-
-                    </li>
-
-                    <li class="menu-item-has-children dropdown">
-                        <a href="<?= base_url("cierres/comparativo-periodos") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-list"></i> Resumen del año</a>
-
-                    </li>
-
-                    <li class="menu-item-has-children dropdown">
-                        <a href="<?= base_url("cierres/comparativo-ejercicios") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-table"></i> Comparativo anual</a>
-
-                    </li>
-                    <li class="menu-item-has-children dropdown">
-                        <a href="<?= base_url("pagos-iva/index") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-money"></i>Pagos de IVA</a>
-
-                    </li>
-
-                    <li class="menu-item-has-children dropdown">
-                        <a href="<?= base_url("usuario/sign-out") ?>" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-sign-out"></i>Cerrar sesión</a>
-
-                    </li>
-
-
-                </ul>
-            </div>
-        </nav>
     </aside>
 
     <!-- Left Panel -->

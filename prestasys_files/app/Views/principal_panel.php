@@ -28,6 +28,7 @@ if (session("id") != "") {
 
 <style>
         #right-panel {
+            background-color: white !important;
             background-image: url(<?= $wallpaper ?>) !important;
             background-repeat: no-repeat;
             background-size: cover;
@@ -53,7 +54,7 @@ if (session("id") != "") {
  <?= $this->section("contenido") ?>
 
 
- <h1 class="text-center m-5">Bienvenido</h1>
+ <h1 class="text-center m-5" style="text-shadow: 1px 1px 5px black !important;color: white !important">Bienvenido</h1>
 
 
   

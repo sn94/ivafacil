@@ -1,0 +1,123 @@
+:root {
+    --color-primario: #137e4b;
+    --color-secundario: #437db7;
+    --color-neutro-1: #62a78b;
+    --color-neutro-2: #74c494;
+}
+
+@font-face {
+    font-family: "mainfont";
+    src: url("/ivafacil/assets/Marvel-Regular.ttf");
+}
+
+#TOPMENU {
+    background: #94bda69c !important;
+}
+
+#TOPMENU,
+#TOPMENU .container-fluid .container {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
+    margin: 0px !important;
+    padding: 0px !important;
+    height: 100vh !important;
+}
+
+#TOPMENU-CONTENT {
+    align-self: center !important;
+    position: absolute !important;
+    top: 0px !important;
+}
+
+.btn-ivafacil {
+    color: #0f633a !important;
+    background-color: #9fd1bb !important;
+    text-align: center !important;
+    border: 1px solid #437DB7 !important;
+    z-index: 1 !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+
+/* En línea #1 | http://localhost/MegaCss/skew.html */
+
+.btn-ivafacil::before,
+.btn-ivafacil::after {
+    transition: all 0.5s linear !important;
+    position: absolute !important;
+    content: '' !important;
+    background-color: transparent !important;
+    border: none !important;
+    z-index: -1 !important;
+}
+
+.btn-ivafacil::before {
+    left: -100% !important;
+}
+
+.btn-ivafacil::after {
+    left: 100% !important;
+}
+
+.btn-ivafacil:hover,
+.btn-ivafacil:active {
+    color: white !important;
+    box-shadow: 0px 0px 10px black !important;
+}
+
+.btn-ivafacil:hover::before,
+.btn-ivafacil:active::before,
+.btn-ivafacil:hover::after,
+.btn-ivafacil:active::after {
+    width: 100% !important;
+    height: 100% !important;
+    top: 0% !important;
+    transform: skewX(30deg) !important;
+    border: none !important;
+}
+
+.btn-ivafacil:hover::after,
+.btn-ivafacil:active::after {
+    background-color: #437DB7 !important;
+    left: 50% !important;
+}
+
+.btn-ivafacil:hover::before,
+.btn-ivafacil:active::before {
+    left: -50% !important;
+    background-color: #62A78B !important;
+}
+
+.ivafacil-footer {
+    position: absolute !important;
+    bottom: 0px;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    text-align: center !important;
+    width: 100%;
+}
+
+.ivafacil-footer a,
+p {
+    font-weight: 600;
+    font-size: 26px;
+}
+
+.ivafacil-footer a {
+    color: white !important;
+    text-shadow: 1px 1px 5px black !important;
+}
+
+.ivafacil-footer p {
+    color: #1b3159;
+    *
+}
+
+#ivafacil-curvas {
+    position: absolute !important;
+    bottom: 0px !important;
+}

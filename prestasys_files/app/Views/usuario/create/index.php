@@ -3,7 +3,7 @@
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9" lang=""> <![endif]-->
 <!--[if gt IE 8]><!-->
-<html class="no-js" lang="en">
+<html lang="en">
 <!--<![endif]-->
 
 <head>
@@ -20,7 +20,7 @@
 
     <link rel="apple-touch-icon" href="apple-icon.png">
     <link rel="shortcut icon" href="favicon.ico">
-
+    <link rel="stylesheet" href="<?= base_url("assets/css/custom.css") ?>">
     <link rel="stylesheet" href="<?= base_url("assets/template/vendors/bootstrap/dist/css/bootstrap.min.css") ?>">
     <link rel="stylesheet" href="<?= base_url("assets/template/vendors/font-awesome/css/font-awesome.min.css") ?>">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800' rel='stylesheet' type='text/css'>
@@ -49,21 +49,16 @@
         }
 
 
+        html, body{
+            height: 100vh !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
 
-        /***Opacidad */
-        <?php
-
-        use App\Libraries\Mobile_Detect;
-        use App\Models\Parametros_model;
-
-        $adaptativo = new Mobile_Detect();
-        $estilo_ = " ";
-        if ($adaptativo->isMobile())
-            $estilo_ = "#fondoimg{  background-color: #000000bf !important; }";
-        else
-            $estilo_ = "#fondoimg{  background-color: #000000e0 !important; }";
-        echo    $estilo_;
-        ?>
+      body{
+        background-image: url(<?= base_url("assets/ivax/assets/images/homebg.jpg") ?>) !important;
+   
+      }
     </style>
 
 
@@ -71,33 +66,34 @@
 
 </head>
 
-<body style="background-image: url(<?= base_url("assets/ivax/assets/images/homebg.jpg") ?>);">
+<body >
 
 
     <!-- Right Panel -->
 
-    <div class="container">
+
+    <div class="container-fluid m-0 p-0" style="background-color: #000000ba;position: absolute !important;"> 
 
 
-        <div class="content mt-3">
+        <div id="message-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content" style="background-color: var(--color-neutro-1) !important;">
 
-
-            <div id="message-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-sm">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel"></h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div id="message-modal-content" class="text-center p-2" style="font-weight: 600;">
-                        </div>
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel"></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="message-modal-content" class="text-center p-2" style="font-weight: 600;">
                     </div>
                 </div>
             </div>
+        </div>
 
 
+
+        <div class="container mt-2 mb-5">
             <div id="loaderplace">
             </div>
 
@@ -110,11 +106,12 @@
                 </div>
                 <div class="col-12 offset-md-1 col-md-10 p-0">
 
-                    <div class="card text-light" style="background-color: #0a2602e0;">
+                    <div class="card text-light" style="background-color: var(--color-neutro-1);">
+
                         <div class="card-header" style="background-color:  #ffffff !important;">
                             <div class="row">
                                 <div class="col-6">
-                                    <img style="width: 300px; height: 109px;" class="img-responsive" src="<?= base_url("assets/img/Logo.png?" . date('is')) ?>" alt="Logo">
+                                    <img style="width: 300px; height: auto;" class="img-responsive" src="<?= base_url("assets/img/Logo.png?" . date('is')) ?>" alt="Logo">
                                 </div>
                                 <div class="col-6"></div>
                             </div>
@@ -131,7 +128,7 @@
                                 ]
                             ); ?>
 
-                            <?= view("usuario/forms/index") ?>
+                            <?= view("usuario/update/index") ?>
 
                             <?= view("usuario/create/footer") ?>
                             </form>
@@ -153,12 +150,10 @@
             </div>
 
 
-            <?= view("usuario/create/js") ?>
+           
 
-        </div> <!-- .content -->
-    </div><!-- /#right-panel -->
-
-    <!-- Right Panel -->
+        </div><!-- /#right-panel -->
+    </div>
 
     <?php
 
@@ -169,6 +164,7 @@
     <script src="<?= $base_url_for_resources ?>vendors/bootstrap/dist/js/bootstrap.min.js"></script>
 
 
+    <?= view("usuario/create/js") ?>
 </body>
 
 </html>

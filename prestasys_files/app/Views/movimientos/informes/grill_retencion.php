@@ -42,7 +42,7 @@ use App\Helpers\Utilidades;
 </form>
 
 
-
+<div class="table-responsive">
 <table style="font-size: 12.5px;font-weight: 600 !important;" class="table table-bordered table-striped table-secondary ">
     <thead>
         <tr>
@@ -70,6 +70,7 @@ use App\Helpers\Utilidades;
     </tbody>
 
 </table>
+</div>
 
 
 

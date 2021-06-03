@@ -302,7 +302,9 @@
         hide_loader();
         if (("data" in respuesta) && parseInt(respuesta.code) == 200) {
 
-            $("#message-modal-content").html("REGISTRADO<br> <a href='<?= base_url("usuario/sign-in") ?>'>Iniciar sesión</a>");
+            $("#message-modal-content").html(`
+            TE HAS REGISTRADO!<br> <a class='btn btn-ivafacil' href='<?= base_url("usuario/sign-in") ?>'>Iniciar sesión</a>
+            `);
 
             $("#message-modal").modal("show");
         } else {

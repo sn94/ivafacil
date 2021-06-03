@@ -1,0 +1,29 @@
+ body {
+     padding: 0px !important;
+     margin: 0px !important;
+     background-color: #9bbbdb;
+     background-repeat: no-repeat;
+     background-size: cover;
+     animation-name: ivafacil-bg;
+     animation-duration: 10s;
+     animation-delay: 0s;
+     animation-timing-function: linear;
+     animation-iteration-count: infinite;
+     width: 100%;
+     height: 100%;
+ }
+ 
+ @keyframes ivafacil-bg {
+     /*azul #437DB7
+            VERDE AGUA #62A78B
+            VERDE CLARO  #74C494 */
+     0% {
+         background-image: "/ivafacil/assets/img/bg-transition-1.jpg";
+     }
+     50% {
+         background-image: url("/ivafacil/assets/img/bg-transition-2.jpg");
+     }
+     100% {
+         background-image: url("/ivafacil/assets/img/bg-transition-3.jpg");
+     }
+ }

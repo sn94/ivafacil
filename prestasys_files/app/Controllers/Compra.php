@@ -363,7 +363,7 @@ class Compra extends ResourceController
 				if ($resu['code'] == 200)
 					return $this->response->setJSON(['data' => "Guardado", "code" => "200"]);
 				//return redirect()->to(base_url("movimiento/informe_mes"));
-				else  return view("movimientos/comprobantes/f_compra", array("error" => $resu['msj']));
+				else  return view("movimientos/comprobantes/compra/create", array("error" => $resu['msj']));
 			}
 		}
 
@@ -374,7 +374,7 @@ class Compra extends ResourceController
 			return $resultadoValidacion;
 		else
 			return $this->response->setJSON(['msj' => $resultadoValidacion['msj'], "code" => "500"]);
-		// return view("movimientos/comprobantes/f_compra", array("error" => $resultadoValidacion['msj']));
+	 
 	}
 
 
@@ -467,7 +467,7 @@ class Compra extends ResourceController
 			else {
 				return $this->response->setJSON($resu);
 				//if ($resu['code'] == 200) return redirect()->to(base_url("movimiento/index"));
-				//else  return view("movimientos/comprobantes/f_compra", array("error" => $resu['msj']));
+			 
 			}
 		}
 
@@ -478,7 +478,7 @@ class Compra extends ResourceController
 			return $resultadoValidacion;
 		else
 			return $this->response->setJSON(['msj' => $resultadoValidacion['msj'], "code" => "500"]);
-		//return view("movimientos/comprobantes/f_compra", array("error" => $resultadoValidacion['msj']));
+		 
 	}
 
 

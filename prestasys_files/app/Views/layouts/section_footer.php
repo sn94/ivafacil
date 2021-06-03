@@ -1,38 +1,10 @@
-<section id="footer" class="footer sections">
-    <div class="container">
-         
-
-        <div class="row">
-            <div class="footer_bottom_area">
-                <div class="col-sm-9 col-xs-12">
-                    <div class="fo_bottom_right">
-                        <div class="row">
-
-                            <div class="col-sm-12 col-xs-12 col-mf-offset-md-4">
-                                <div class="fo_bottom_socail wow fadeIn" data-wow-duration="2.3s">
-                                    <a   href="#" ><i class="fa fa-phone"  > <span  style="font-family: mainfont;"  >(0986) 786 181</span> </i></a>
-                                    <a href=""  style="font-family: mainfont;"><i class="fa fa-envelope"></i> ivafacilpy@gmail.com</a>
-                                    <p  style="font-family: mainfont;">Esperanza Fernandina e Itapúa, Fernando de la Mora </p>
-                                </div>
-
-                            </div>
-
-
-
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-3 col-xs-12">
-
-                </div>
-            </div>
-        </div>
-
-
-
-
-
-    </div>
+<section id="footer" class="ivafacil-footer">
+      
+            <a href="#"><i class="fa fa-phone"> <span style="font-family: mainfont;">(0986) 786 181</span> </i></a>
+            <a href="" style="font-family: mainfont;"><i class="fa fa-envelope"></i> ivafacilpy@gmail.com</a>
+            <p style="font-family: mainfont;">Esperanza Fernandina e Itapúa, Fernando de la Mora </p>
+       
+ 
 </section><!-- End of footer3 section -->
 
 <!--
